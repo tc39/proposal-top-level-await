@@ -192,3 +192,8 @@ the target module has not run to end of source text in Evaluation yet. At the cu
 ## Implementations
 
 * none yet
+
+## References
+
+* https://github.com/bmeck/top-level-await-talking/
+* https://gist.github.com/Rich-Harris/0b6f317657f5167663b493c722647221
