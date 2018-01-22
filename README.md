@@ -181,8 +181,11 @@ try {
 }
 ```
 
-This mechanism could even be codified into `import()` by making it reject if
-the target module has not run to end of source text in Evaluation yet. At the current time [a search](https://github.com/search?utf8=%E2%9C%93&q=%22export+async+function%22&type=Code) for "export async function" on github produces over 5000 unique code examples of exporting an async function.
+While it is tempting to codify this behavior by specifying that `import()` should reject if the imported module has not finished evaluating, that behavior would make `import()` a poor abstraction for importing asynchronous modules, since it would deprive well-behaved modules of the chance to finish async work, just because they were imported using `import()`.
+
+Instead of `import()` rejecting if the imported module is suspended on an `await` expression, it might be more useful if there was a way for dynamic `import()` to obtain a reference to the incomplete module namespace object, similar to how CommonJS `require` returns an incomplete `module.exports` object in the event of cycles. As long as the incomplete namespace object provides enough information, or the namespace object isn't used until later, this strategy would allow the application to keep making progress, rather than deadlocking.
+
+At the current time [a search](https://github.com/search?utf8=%E2%9C%93&q=%22export+async+function%22&type=Code) for "export async function" on github produces over 5000 unique code examples of exporting an async function.
 
 ## Specification
 
