@@ -85,7 +85,7 @@ try {
 
 #### Isn't top-level `await` a footgun?
 
-If you have seen [the gist](https://gist.github.com/Rich-Harris/0b6f317657f5167663b493c722647221) you likely have heard this critique before. My hope is that as a committee we can weigh the pros / cons of the various approaches and determine if the feature is in fact a foot gun
+If you have seen [the gist](https://gist.github.com/Rich-Harris/0b6f317657f5167663b493c722647221) you likely have heard this critique before. My hope is that as a committee we can weigh the pros / cons of the various approaches and determine if the benefits of the feature outweigh the risks.
 
 #### Halting Progress
 
