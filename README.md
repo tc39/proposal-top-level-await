@@ -182,7 +182,7 @@ try {
 ```
 
 This mechanism could even be codified into `import()` by making it reject if
-the target module has not run to end of source text in Evaluation yet.
+the target module has not run to end of source text in Evaluation yet. At the current time [a search](https://github.com/search?utf8=%E2%9C%93&q=%22export+async+function%22&type=Code) for "export async function" on github produces over 5000 unique code examples of exporting an async function.
 
 ## Specification
 
