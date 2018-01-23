@@ -12,31 +12,53 @@ Since the decision to delay standardizing top-level `await` it has come up in a 
 
 ## Motivation
 
-The current implementation of `async / await` only support the `await` keyword inside of `async` functions. As such we are beginning to see the following pattern emerge:
+### top-level main and IIAFEs
+
+The current implementation of `async / await` only support the `await` keyword inside of `async` functions. As such many programs that are utilizing `await` now make use of top-level main function:
 
 ```js
 import ...
 async function main() {
   const dynamic = await import('./dynamic-thing.mjs');
+  const data = await fetch(dynamic.url);
+  console.log(data);
 }
 main();
 export ...
 ```
 
-This pattern is reminiscent of the classic pattern of wrapping all of your code in a self executing function `(fn(){}())`. This type of "magic" does not benefit new developers and creates excessive repeated code throughout the ecosystem.
+This pattern is creating an abundance of boilerplate code in the ecosystem. If the pattern is repeated throughout the module graph it degrages the determinism of the execution.
 
-Another risk with the above pattern is that it makes the body of the function asynchronous. If people are utilizing this pattern throughout their graph there will no longer be a deterministic execution order.
+This pattern can also be immediately invoked.
+
+```mjs
+import static1 from './static1.mjs';
+import { readFile } from 'fs';
+
+(async () => {
+  const dynamic = await import('./dynamic' + process.env.something + '.js');
+  const file = JSON.parse(await readFile('./config.json'));
+
+  // main program goes here...
+})();
+```
+
+###  completely dynamic modules
 
 Another pattern that is beginning to surface is exporting async function and awaiting the results of imports, which drastically impacts our ability to do static analysis of the module graph.
 
-```js
-export default async function (url) {
-  if (!fetch) {
-    const fetch = await import('./fetch-polyfill.mjs');
-  }
-  const data = await fetch(url);
-  return data;
-}
+```mjs
+export default async () => {
+  // import other modules like this one
+  const import1 = await (await import('./import1.mjs')).default();
+  const import2 = await (await import('./import2.mjs')).default();
+
+  // compute some exports...
+  return {
+    export1: ...,
+    export2: ...
+  };
+};
 ```
 
 At the current time [a search](https://github.com/search?utf8=%E2%9C%93&q=%22export+async+function%22&type=Code) for "export async function" on github produces over 5000 unique code examples of exporting an async function.
