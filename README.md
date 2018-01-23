@@ -45,9 +45,58 @@ export default async function (url) {
 
 In this proposed solution a call to `top-level await` would block execution in the graph until it had resolved.
 
+In this implementation you could consider the following
+
+```mjs
+import a from './a.mjs'
+import b from './b.mjs'
+import c from './c.mjs'
+
+console.log(a, b, c);
+```
+
+If each of the modules above had a top level await present the loading would have similar execution order to
+
+```
+async function main() {
+  const a = await import('./a.mjs');
+  const b = await import('./b.mjs');
+  const c = await import('./c.mjs');
+  
+  console.log(a, b, c);
+}
+```
+
+Module a would need to finish executing before b or c could execute.
+
 ### Variant B: top-level `await` does not block sibling execution
 
 In this proposed solution a call to `top-level await` would block execution of child nodes in the graph but would allow siblings to continue to execute. 
+
+In this implementation you could consider the following
+
+```mjs
+import a from './a.mjs'
+import b from './b.mjs'
+import c from './c.mjs'
+
+console.log(a, b, c);
+```
+
+If each of the modules above had a top level await present the loading would have similar execution order to
+
+```mjs
+async function main() {
+  const [a, b, c] = await Promise.all([
+    import('./a.mjs'),
+    import('./b.mjs'),
+    import('./c.mjs')
+  ]);
+  console.log(a, b, c);
+}
+```
+
+Modules a, b, and c would all execute in order up until the first await in each of them; we then wait on all of them to resume and finish evaluating before continuing.
 
 ### Variant C: top-level `await` can only be used in modules without exports
 
