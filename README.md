@@ -49,6 +49,10 @@ In this proposed solution a call to `top-level await` would block execution in t
 
 In this proposed solution a call to `top-level await` would block execution of child nodes in the graph but would allow siblings to continue to execute. 
 
+### Variant C: top-level `await` can only be used in modules without exports
+
+Many of the use cases for top-level `await` are for bootstrapping an application. Enforcing that top-level `await` could only be used inside of a module without exports would allow individuals to use many of the patterns they would like to use in application bootstrapping while avoiding the edge cases of graph blocking or deadlocks.
+
 ## Illustrative examples
 
 ### Dynamic dependency pathing
