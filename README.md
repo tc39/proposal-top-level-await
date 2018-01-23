@@ -25,9 +25,9 @@ export ...
 
 This pattern is reminiscent of the classic pattern of wrapping all of your code in a self executing function `(fn(){}())`. This type of "magic" does not benefit new developers and creates excessive repeated code throughout the ecosystem.
 
-Another risk with the above pattern is that it makes the body of the function asynchronus. If people are utilizing this pattern throughout their graph there will no longer be a deterministic execution order.
+Another risk with the above pattern is that it makes the body of the function asynchronous. If people are utilizing this pattern throughout their graph there will no longer be a deterministic execution order.
 
-Another pattern that is begining to surface is exporting async function and awaiting the results of imports, which drasticly impacts our ability to do static analysis of the module graph.
+Another pattern that is beginning to surface is exporting async function and awaiting the results of imports, which drastically impacts our ability to do static analysis of the module graph.
 
 ```js
 export default async function (url) {
