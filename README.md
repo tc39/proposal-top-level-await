@@ -110,7 +110,7 @@ console.log(a, b, c);
 If each of the modules above had a top level await present the loading would have similar execution order to
 
 ```mjs
-(async () -> {
+(async () => {
   const [a, b, c] = await Promise.all([
     import('./a.mjs'),
     import('./b.mjs'),
