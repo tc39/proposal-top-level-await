@@ -12,7 +12,7 @@ Since the decision to delay standardizing top-level `await` it has come up in a 
 
 ## Motivation
 
-### top-level main
+### top-level main and IIAFEs
 
 The current implementation of `async / await` only support the `await` keyword inside of `async` functions. As such many programs that are utilizing `await` now make use of top-level main function:
 
@@ -29,7 +29,7 @@ export ...
 
 This pattern is creating an abundance of boilerplate code in the ecosystem. If the pattern is repeated throughout the module graph it degrages the determinism of the execution.
 
-### IIAFEs
+This pattern can also be immediately invoked.
 
 ```mjs
 import static1 from './static1.mjs';
@@ -45,11 +45,13 @@ import { readFile } from 'fs';
 
 ###  completely dynamic modules
 
+Another pattern that is beginning to surface is exporting async function and awaiting the results of imports, which drastically impacts our ability to do static analysis of the module graph.
+
 ```mjs
 export default async () => {
   // import other modules like this one
-  const import1 = await (await import('./import1.mjs'))();
-  const import2 = await (await import('./import2.mjs'))();
+  const import1 = await (await import('./import1.mjs')).default();
+  const import2 = await (await import('./import2.mjs')).default();
 
   // compute some exports...
   return {
