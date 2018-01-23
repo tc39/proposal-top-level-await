@@ -82,13 +82,13 @@ console.log(a, b, c);
 If each of the modules above had a top level await present the loading would have similar execution order to
 
 ```mjs
-async function main() {
+(async () => {
   const a = await import('./a.mjs');
   const b = await import('./b.mjs');
   const c = await import('./c.mjs');
   
   console.log(a, b, c);
-}
+})();
 ```
 
 Module a would need to finish executing before b or c could execute.
@@ -110,14 +110,14 @@ console.log(a, b, c);
 If each of the modules above had a top level await present the loading would have similar execution order to
 
 ```mjs
-async function main() {
+(async () -> {
   const [a, b, c] = await Promise.all([
     import('./a.mjs'),
     import('./b.mjs'),
     import('./c.mjs')
   ]);
   console.log(a, b, c);
-}
+})();
 ```
 
 Modules a, b, and c would all execute in order up until the first await in each of them; we then wait on all of them to resume and finish evaluating before continuing.
