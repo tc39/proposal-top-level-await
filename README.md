@@ -16,7 +16,7 @@ Since the decision to delay standardizing top-level `await` it has come up in a 
 
 The current implementation of `async / await` only support the `await` keyword inside of `async` functions. As such many programs that are utilizing `await` now make use of top-level main function:
 
-```js
+```mjs
 import ...
 async function main() {
   const dynamic = await import('./dynamic-thing.mjs');
@@ -27,7 +27,7 @@ main();
 export ...
 ```
 
-This pattern is creating an abundance of boilerplate code in the ecosystem. If the pattern is repeated throughout the module graph it degrages the determinism of the execution.
+This pattern is creating an abundance of boilerplate code in the ecosystem. If the pattern is repeated throughout the module graph it degrades the determinism of the execution.
 
 This pattern can also be immediately invoked.
 
@@ -81,7 +81,7 @@ console.log(a, b, c);
 
 If each of the modules above had a top level await present the loading would have similar execution order to
 
-```
+```mjs
 async function main() {
   const a = await import('./a.mjs');
   const b = await import('./b.mjs');
