@@ -39,6 +39,8 @@ export default async function (url) {
 }
 ```
 
+At the current time [a search](https://github.com/search?utf8=%E2%9C%93&q=%22export+async+function%22&type=Code) for "export async function" on github produces over 5000 unique code examples of exporting an async function.
+
 ## Proposed solutions
 
 ### Variant A: top-level `await` blocks tree execution
@@ -181,11 +183,9 @@ try {
 }
 ```
 
-While it is tempting to codify this behavior by specifying that `import()` should reject if the imported module has not finished evaluating, that behavior would make `import()` a poor abstraction for importing asynchronous modules, since it would deprive well-behaved modules of the chance to finish async work, just because they were imported using `import()`.
+While it is tempting to codify this behavior by specifying that `import()` should reject if the imported module has not finished evaluating, that behavior would make `import()` a less predictable abstraction for importing asynchronous modules, since it would deprive modules using top-level `await` safely (that is, without creating dependency cycles) of the chance to finish async work, just because they were imported using `import()`. Given the likelihood that these "safe" modules will vastly outnumber modules using top-level `await` unsafely, the rejection policy would cause more problems than it solves.
 
-Instead of `import()` rejecting if the imported module is suspended on an `await` expression, it might be more useful if there was a way for dynamic `import()` to obtain a reference to the incomplete module namespace object, similar to how CommonJS `require` returns an incomplete `module.exports` object in the event of cycles. As long as the incomplete namespace object provides enough information, or the namespace object isn't used until later, this strategy would allow the application to keep making progress, rather than deadlocking.
-
-At the current time [a search](https://github.com/search?utf8=%E2%9C%93&q=%22export+async+function%22&type=Code) for "export async function" on github produces over 5000 unique code examples of exporting an async function.
+Instead of `import()` rejecting if the imported module is suspended on an `await` expression, it might be more useful if there was a way for dynamic `import()` to obtain a reference to the incomplete module namespace object, similar to how CommonJS `require` returns an incomplete `module.exports` object in the event of cycles. As long as the incomplete namespace object provides enough information, or the namespace object isn't used until later, this strategy would allow the application to keep making progress, rather than deadlocking. In contrast to CommonJS, ECMAScript modules can better enforce TDZ restrictions (preventing export use before initialization), and can throw more useful static errors. However, preventing any access to the incomplete namespace object would be a loss of functionality compared to CommonJS.
 
 ## Specification
 
