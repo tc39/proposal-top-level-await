@@ -2,7 +2,7 @@
 
 ## Status
 
-This proposal is currently being considered to enter stage 0 of [the TC39 process](https://tc39.github.io/process-document/).
+This proposal is currently in stage 1 of [the TC39 process](https://tc39.github.io/process-document/).
 
 ## Background
 
