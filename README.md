@@ -126,6 +126,14 @@ Modules a, b, and c would all execute in order up until the first await in each 
 
 Many of the use cases for top-level `await` are for bootstrapping an application. Enforcing that top-level `await` could only be used inside of a module without exports would allow individuals to use many of the patterns they would like to use in application bootstrapping while avoiding the edge cases of graph blocking or deadlocks.
 
+Note that variant C is compatible with both A and B above, though A and B are mutually exclusive. In other words, we may consider variants A, B, AC, or BC, but not (for example) AB or ABC.
+
+### Variant C<sup>h</sup>: top-level `await` can be used in modules containing only _hoistable_ exports
+
+Dependency cycles become problematic when a module whose evaluation is currently suspended (e.g. on a top-level `await` expression) has not yet initialized all of its declared exports. However, some `export` declarations are _hoistable_, meaning they are available from the very beginning of module evaluation, so they can never be uninitialized. In the spirit of variant C, hoistable exports seem less likely to cause problems for modules using top-level `await`, and thus could be permitted in a variant C<sup>h</sup> of variant C.
+
+[_HoistableDeclaration_](https://tc39.github.io/ecma262/#prod-HoistableDeclaration)s generally include function declarations, which can be generator functions, `async` functions, or anonymous `export default` function declarations.
+
 ## Illustrative examples
 
 ### Dynamic dependency pathing
