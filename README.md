@@ -122,9 +122,11 @@ If each of the modules above had a top level await present the loading would hav
 
 Modules a, b, and c would all execute in order up until the first await in each of them; we then wait on all of them to resume and finish evaluating before continuing.
 
-### Variant C: top-level `await` can only be used in modules without exports
+### Optional Constraint: top-level `await` can only be used in modules without exports
 
 Many of the use cases for top-level `await` are for bootstrapping an application. Enforcing that top-level `await` could only be used inside of a module without exports would allow individuals to use many of the patterns they would like to use in application bootstrapping while avoiding the edge cases of graph blocking or deadlocks.
+
+With this constraint the implementation would still need to decide between Variant A or B for sibling execution behavior.
 
 ## Illustrative examples
 
