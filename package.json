@@ -2,10 +2,12 @@
   "private": true,
   "scripts": {
     "test": ":",
-    "build": "mkdir -p dist; ecmarkup --verbose spec.html dist/index.html --css dist/ecmarkup.css --js dist/ecmarkup.js",
-    "watch": "mkdir -p dist; ecmarkup --watch --verbose spec.html dist/index.html --css dist/ecmarkup.css --js dist/ecmarkup.js"
+    "prebuild": "mkdirp dist",
+    "build": "ecmarkup --verbose spec.html dist/index.html",
+    "watch": "npm run build -- --watch"
   },
   "devDependencies": {
-    "ecmarkup": "^3.12.0"
+    "ecmarkup": "^3.12.0",
+    "mkdirp": "^0.5.1"
   }
 }
