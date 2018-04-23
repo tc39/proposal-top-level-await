@@ -17,6 +17,29 @@ contributors: Myles Borins
     <p>Top-Level Await allows the `await` keyword to be used at the top level of the module goal.</p>
 </emu-intro>
 
+<emu-clause id="sec-asyncblockstart" aoid="AsyncBlockStart">
+  <h1><ins>AsyncBlockStart ( _promiseCapability_, _asyncBody_, _asyncContext_ )</ins></h1>
+  <emu-alg>
+    1. Let _runningContext_ be the running execution context.
+    1. Set the code evaluation state of _asyncContext_ such that when evaluation is resumed for that execution context the following steps will be performed:
+      1. Let _result_ be the result of evaluating _asyncBody_.
+      1. Assert: If we return here, the async function either threw an exception or performed an implicit or explicit return; all awaiting is done.
+      1. Remove _asyncContext_ from the execution context stack and restore the execution context that is at the top of the execution context stack as the running execution context.
+      1. If _result_.[[Type]] is ~normal~, then
+        1. Perform ! Call(_promiseCapability_.[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).
+      1. Else if _result_.[[Type]] is ~return~, then
+        1. Perform ! Call(_promiseCapability_.[[Resolve]], *undefined*, &laquo;_result_.[[Value]]&raquo;).
+      1. Else,
+        1. Assert: _result_.[[Type]] is ~throw~.
+        1. Perform ! Call(_promiseCapability_.[[Reject]], *undefined*, &laquo;_result_.[[Value]]&raquo;).
+      1. Return.
+    1. Push _asyncContext_ onto the execution context stack; _asyncContext_ is now the running execution context.
+    1. Resume the suspended evaluation of _asyncContext_. Let _result_ be the value returned by the resumed computation.
+    1. Assert: When we return here, _asyncContext_ has already been removed from the execution context stack and _runningContext_ is the currently running execution context.
+    1. Assert: _result_ is a normal completion with a value of *undefined*. The possible sources of completion values are Await or, if the async function doesn't await anything, the step 2.g above.
+  </emu-alg>
+</emu-clause>
+
 <emu-clause id="sec-innermoduleevaluation" aoid="InnerModuleEvaluation">
   <h1>InnerModuleEvaluation( _module_, _stack_, _index_ )</h1>
 
@@ -78,28 +101,12 @@ contributors: Myles Borins
     1. Set the VariableEnvironment of _moduleCxt_ to _module_.[[Environment]].
     1. Set the LexicalEnvironment of _moduleCxt_ to _module_.[[Environment]].
     1. <ins>Let _promiseCapability_ be ! NewPromiseCapability(%Promise%).</ins>
-    1. <ins>Let _runningContext_ be the running execution context.</ins>
-    1. Suspend <del>the currently running execution context</del><ins>_runningContext_</ins>. <!-- ??? Why is this here and not an equivalent in AsyncFunctionStart? Oh well. -->
-    1. <ins>Set the code evaluation state of _moduleCxt_ such that when evaluation is resumed for that execution context the following steps will be performed:</ins>
-      1. Let _result_ be the result of evaluating _module_.[[ECMAScriptCode]].
-      1. Assert: If we return here, the async function either threw an exception or performed an implicit or explicit return; all awaiting is done.
-      1. Remove _moduleCxt_ from the execution context stack and restore the execution context that is at the top of the execution context stack as the running execution context.
-      1. If _result_.[[Type]] is ~normal~, then
-        1. Perform ! Call(_promiseCapability_.[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).
-      1. Else if _result_.[[Type]] is ~return~, then
-        1. Perform ! Call(_promiseCapability_.[[Resolve]], *undefined*, &laquo;_result_.[[Value]]&raquo;).
-      1. Else,
-        1. Assert: _result_.[[Type]] is ~throw~.
-        1. Perform ! Call(_promiseCapability_.[[Reject]], *undefined*, &laquo;_result_.[[Value]]&raquo;).
-      1. Return.
-    1. <ins>Push _moduleCxt_ onto the execution context stack; _moduleCxt_ is now the running execution context.</ins>
-    1. <ins>Resume the suspended evaluation of _moduleCxt_. Let _result_ be the value returned by the resumed computation.</ins>
-    1. <ins>Assert: When we return here, _moduleCxt_ has already been removed from the execution context stack and _runningContext_ is the currently running execution context.</ins>
-    1. <ins>Assert: _result_ is a normal completion with a value of *undefined*. The possible sources of completion values are Await or, if the module body doesn't await anything, the step X.g above.</ins>
+    1. Suspend the currently running execution context.
+    1. <ins>Perform ! AsyncBlockStart(_promiseCapability_, _module_.[[ECMAScriptCode]], _moduleCxt_).</ins>
     1. <del>Push _moduleCxt_ on to the execution context stack; _moduleCxt_ is now the running execution context.</del>
     1. <del>Let _result_ be the result of evaluating _module_.[[ECMAScriptCode]].</del>
     1. <del>Suspend _moduleCxt_ and remove it from the execution context stack.</del>
-    1. Resume <del>the context</del><ins>_runningContext_,</ins> that is now on the top of the execution context stack as the running execution context.
+    1. Resume the context that is now on the top of the execution context stack as the running execution context.
     1. Return Completion(<del>_result_</del><ins>_promiseCapability_.[[Promise]]</ins>).
   </emu-alg>
 </emu-clause>
@@ -110,22 +117,23 @@ contributors: Myles Borins
   <emu-alg>
     1. Let _runningContext_ be the running execution context.
     1. Let _asyncContext_ be a copy of _runningContext_.
-    1. Set the code evaluation state of _asyncContext_ such that when evaluation is resumed for that execution context the following steps will be performed:
-      1. Let _result_ be the result of evaluating _asyncFunctionBody_.
-      1. Assert: If we return here, the async function either threw an exception or performed an implicit or explicit return; all awaiting is done.
-      1. Remove _asyncContext_ from the execution context stack and restore the execution context that is at the top of the execution context stack as the running execution context.
-      1. If _result_.[[Type]] is ~normal~, then
-        1. Perform ! Call(_promiseCapability_.[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).
-      1. Else if _result_.[[Type]] is ~return~, then
-        1. Perform ! Call(_promiseCapability_.[[Resolve]], *undefined*, &laquo;_result_.[[Value]]&raquo;).
-      1. Else,
-        1. Assert: _result_.[[Type]] is ~throw~.
-        1. Perform ! Call(_promiseCapability_.[[Reject]], *undefined*, &laquo;_result_.[[Value]]&raquo;).
-      1. Return.
-    1. Push _asyncContext_ onto the execution context stack; _asyncContext_ is now the running execution context.
-    1. Resume the suspended evaluation of _asyncContext_. Let _result_ be the value returned by the resumed computation.
-    1. Assert: When we return here, _asyncContext_ has already been removed from the execution context stack and _runningContext_ is the currently running execution context.
-    1. Assert: _result_ is a normal completion with a value of *undefined*. The possible sources of completion values are Await or, if the async function doesn't await anything, the step 3.g above.
+    1. <ins>Perform ! AsyncBlockStart(_promiseCapability_, _asyncFunctionBody_, _asyncContext_).</ins>
+    1. <del>Set the code evaluation state of _asyncContext_ such that when evaluation is resumed for that execution context the following steps will be performed:</del>
+      1. <del>Let _result_ be the result of evaluating _asyncFunctionBody_.</del>
+      1. <del>Assert: If we return here, the async function either threw an exception or performed an implicit or explicit return; all awaiting is done.</del>
+      1. <del>Remove _asyncContext_ from the execution context stack and restore the execution context that is at the top of the execution context stack as the running execution context.</del>
+      1. <del>If _result_.[[Type]] is ~normal~, then</del>
+        1. <del>Perform ! Call(_promiseCapability_.[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).</del>
+      1. <del>Else if _result_.[[Type]] is ~return~, then</del>
+        1. <del>Perform ! Call(_promiseCapability_.[[Resolve]], *undefined*, &laquo;_result_.[[Value]]&raquo;).</del>
+      1. <del>Else,</del>
+        1. <del>Assert: _result_.[[Type]] is ~throw~.</del>
+        1. <del>Perform ! Call(_promiseCapability_.[[Reject]], *undefined*, &laquo;_result_.[[Value]]&raquo;).</del>
+      1. <del>Return.</del>
+    1. <del>Push _asyncContext_ onto the execution context stack; _asyncContext_ is now the running execution context.</del>
+    1. <del>Resume the suspended evaluation of _asyncContext_. Let _result_ be the value returned by the resumed computation.</del>
+    1. <del>Assert: When we return here, _asyncContext_ has already been removed from the execution context stack and _runningContext_ is the currently running execution context.</del>
+    1. <del>Assert: _result_ is a normal completion with a value of *undefined*. The possible sources of completion values are Await or, if the async function doesn't await anything, the step 3.g above.</del>
     1. Return.
   </emu-alg>
 </emu-clause>
