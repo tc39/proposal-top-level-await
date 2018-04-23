@@ -107,7 +107,8 @@ contributors: Myles Borins
     1. <del>Let _result_ be the result of evaluating _module_.[[ECMAScriptCode]].</del>
     1. <del>Suspend _moduleCxt_ and remove it from the execution context stack.</del>
     1. Resume the context that is now on the top of the execution context stack as the running execution context.
-    1. Return Completion(<del>_result_</del><ins>_promiseCapability_.[[Promise]]</ins>).
+    1. <del>Return Completion(_result_).</del>
+    1. <ins>Return _promiseCapability_.[[Promise]].</ins>
   </emu-alg>
 </emu-clause>
 
