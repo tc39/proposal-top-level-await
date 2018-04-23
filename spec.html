@@ -160,3 +160,43 @@ contributors: Myles Borins
     1. Return.
   </emu-alg>
 </emu-clause>
+
+<emu-clause id="sec-async-function-definitions">
+  <h1>Async Function Definitions</h1>
+  <h2>Syntax</h2>
+  <emu-clause id="sec-async-function-definitions">
+    <h1>Async Function Definitions</h1>
+    <h2>Syntax</h2>
+    <emu-grammar type="definition">
+      AsyncFunctionDeclaration[Yield, Await, Default] :
+        `async` [no LineTerminator here] `function` BindingIdentifier[?Yield, ?Await] `(` FormalParameters[~Yield, +Await] `)` `{` AsyncFunctionBody `}`
+        [+Default] `async` [no LineTerminator here] `function` `(` FormalParameters[~Yield, +Await] `)` `{` AsyncFunctionBody `}`
+
+      AsyncFunctionExpression :
+        `async` [no LineTerminator here] `function` `(` FormalParameters[~Yield, +Await] `)` `{` AsyncFunctionBody `}`
+        `async` [no LineTerminator here] `function` BindingIdentifier[~Yield, +Await] `(` FormalParameters[~Yield, +Await] `)` `{` AsyncFunctionBody `}`
+
+      AsyncMethod[Yield, Await] :
+        `async` [no LineTerminator here] PropertyName[?Yield, ?Await] `(` UniqueFormalParameters[~Yield, +Await] `)` `{` AsyncFunctionBody `}`
+
+      AsyncFunctionBody :
+        FunctionBody[~Yield, +Await]
+
+      AwaitExpression[Yield] :
+        `await` UnaryExpression[?Yield, +Await]
+    </emu-grammar>
+
+    <emu-note>
+      <p>`await` is parsed as an |AwaitExpression| when the <sub>[Await]</sub> parameter is present. The <sub>[Await]</sub> parameter is present in the following contexts:</p>
+      <ul>
+        <li>In an |AsyncFunctionBody|.</li>
+        <li>In the |FormalParameters| of an |AsyncFunctionDeclaration|, |AsyncFunctionExpression|, |AsyncGeneratorDeclaration|, or |AsyncGeneratorExpression|. |AwaitExpression| in this position is a Syntax error via static semantics.</li>
+        <li><ins>When |Module| is the syntactic goal symbol</ins></li>
+      </ul>
+      <p><del>When |Module| is the syntactic goal symbol and the <sub>[Await]</sub> parameter is absent, `await` is parsed as a keyword and will be a Syntax error.</del> When |Script| is the syntactic goal symbol, `await` may be parsed as an identifier when the <sub>[Await]</sub> parameter is absent. This includes the following contexts:</p>
+      <ul>
+        <li>Anywhere outside of an |AsyncFunctionBody| or |FormalParameters| of an |AsyncFunctionDeclaration|, |AsyncFunctionExpression|, |AsyncGeneratorDeclaration|, or |AsyncGeneratorExpression|.</li>
+        <li>In the |BindingIdentifier| of a |FunctionExpression|, |GeneratorExpression|, or |AsyncGeneratorExpression|.</li>
+      </ul>
+    </emu-note>
+</emu-clause>
