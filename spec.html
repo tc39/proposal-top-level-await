@@ -48,12 +48,20 @@ contributors: Myles Borins
   <p>This abstract operation performs the following steps:</p>
 
   <emu-alg>
+    1. <ins>Let _promiseCapability_ be ! NewPromiseCapability(%Promise%).</ins>
     1. If _module_ is not a Source Text Module Record, then
-      1. Perform ? _module_.Evaluate().
-      1. Return _index_.
+      1. <del>Perform _module_.Evaluate()</del>.
+      1. <del>Return _index_.</del>
+      1. <ins>Let _evaluateResult_ be Await(! _module_.Evaluate())</ins>
+      1. <ins>If _evaluateResult_ is an abrupt completion, perform ! Call(_promiseCapability_.[[Reject]], *undefined*, &laquo;_evaluateResult_.[[Value]]&raquo;).</ins>
+      1. <ins>Otherwise, perform ! Call(_promiseCapability_.[[Resolve]], *undefined*, &laquo;_index_&raquo;).</ins>
+      1. <ins>Return _promiseCapability_.[[Promise]]</ins>
     1. If _module_.[[Status]] is `"evaluated"`, then
-      1. If _module_.[[EvaluationError]] is *undefined*, return _index_.
-      1. Otherwise return _module_.[[EvaluationError]].
+      1. <del>If _module_.[[EvaluationError]] is *undefined*, return _index_.</del>
+      1. <del>Otherwise return _module_.[[EvaluationError]].</del>
+      1. <ins>If _module_.[[EvaluationError]] is an abrupt completion, perform ! Call(_promiseCapability_.[[Reject]], *undefined*, &laquo;_module_.[[EvaluationError]].[[Value]]&raquo;).</ins>
+      1. <ins>Otherwise, perform ! Call(_promiseCapability_.[[Resolve]], *undefined*, &laquo;_index_&raquo;).</ins>
+      1. <ins>Return _promiseCapability_.[[Promise]]</ins>
     1. If _module_.[[Status]] is `"evaluating"`, return _index_.
     1. Assert: _module_.[[Status]] is `"instantiated"`.
     1. Set _module_.[[Status]] to `"evaluating"`.
@@ -64,13 +72,17 @@ contributors: Myles Borins
     1. For each String _required_ that is an element of _module_.[[RequestedModules]], do
       1. Let _requiredModule_ be ! HostResolveImportedModule(_module_, _required_).
       1. NOTE: Instantiate must be completed successfully prior to invoking this method, so every requested module is guaranteed to resolve successfully.
-      1. Set _index_ to ? InnerModuleEvaluation(_requiredModule_, _stack_, _index_).
+      1. <del>Set _index_ to ? InnerModuleEvaluation(_requiredModule_, _stack_, _index_).</del>
+      1. <ins>Let _childResult_ be Await(! InnerModuleEvaluation(_requiredModule_, _stack_, _index_).</ins>
+      1. <ins>IfAbruptRejectPromise(_childResult_, _promiseCapability_).
       1. Assert: _requiredModule_.[[Status]] is either `"evaluating"` or `"evaluated"`.
       1. Assert: _requiredModule_.[[Status]] is `"evaluating"` if and only if _requiredModule_ is in _stack_.
       1. If _requiredModule_.[[Status]] is `"evaluating"`, then
         1. Assert: _requiredModule_ is a Source Text Module Record.
         1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
-    1. Perform ? ModuleExecution(_module_).
+    1. <del>Perform ? ModuleExecution(_module_).</del>
+    1. <ins>Let _executionResult_ be Await(! ModuleExecution(_module_)).</ins>
+    1. <ins>IfAbruptRejectPromise(_executionResult_, _promiseCapability_).
     1. Assert: _module_ occurs exactly once in _stack_.
     1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
     1. If _module_.[[DFSAncestorIndex]] equals _module_.[[DFSIndex]], then
@@ -80,7 +92,9 @@ contributors: Myles Borins
         1. Remove the last element of _stack_.
         1. Set _requiredModule_.[[Status]] to `"evaluated"`.
         1. If _requiredModule_ and _module_ are the same Module Record, set _done_ to *true*.
-    1. Return _index_.
+    1. <del>Return _index_.</del>
+    1. <ins>Perform ! Call(_promiseCapability_.[[Resolve]], *undefined*, &laquo;_index_&raquo;).</ins>
+    1. <ins>Return _promiseCapability_.[[Promise]]</ins>
   </emu-alg>
 </emu-clause>
 
