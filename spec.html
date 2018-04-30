@@ -17,6 +17,28 @@ contributors: Myles Borins
     <p>Top-Level Await allows the `await` keyword to be used at the top level of the module goal.</p>
 </emu-intro>
 
+<emu-clause id="sec-modules">
+    <h1>Modules</h1>
+    <h2>Syntax</h2>
+    <emu-grammar type="definition">
+      Module :
+        ModuleBody?
+
+      ModuleBody :
+        ModuleItemList
+
+      ModuleItemList :
+        ModuleItem
+        ModuleItemList ModuleItem
+
+      ModuleItem :
+        ImportDeclaration
+        ExportDeclaration
+        <del>StatementListItem[~Yield, ~Await, ~Return]</del>
+        <ins>StatementListItem[~Yield, +Await, ~Return]</ins>
+    </emu-grammar>
+</emu-clause>
+
 <emu-clause id="sec-asyncblockstart" aoid="AsyncBlockStart">
   <h1><ins>AsyncBlockStart ( _promiseCapability_, _asyncBody_, _asyncContext_ )</ins></h1>
   <emu-alg>
