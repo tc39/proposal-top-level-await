@@ -172,7 +172,7 @@ Variant A would halt progress in the module graph until resolved.
 
 Variant B offers a unique approach to blocking, as it will not block siblings execution.
 
-Variant C would alleviate concerns of halting process
+The Optional Constraint would alleviate concerns of halting process.
 
 ##### Existing Ways to halt progress
 
