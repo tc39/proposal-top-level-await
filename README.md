@@ -224,11 +224,15 @@ Exporting a `then` function allows blocking `import()`.
 
 #### What about deadlock?
 
-The main problem space in designing top level await is to aid in detecting and preventing forms of deadlock that can occur. All examples below will use a cyclic `import()` to a graph of ``'a' -> 'b', 'b' -> 'a'`` with both using top level await to halt progress until the other finishes loading. For brevity the examples will only show one side of the graph, the other side is a mirror.
+A potential problem space to solve for in designing top level await is to aid in detecting and preventing forms of deadlock that can occur. For example awaiting on a cyclical dynamic import could introduce deadlock into the module graph execution.
 
-##### Guarding against
+##### Deferring to current behavior
 
-###### Implementing a TDZ
+There is already the potential to introduce deadlock into the module graph execution via dynamic import. Rather than trying to solve for specific types of deadlock we can simply defer to the current behavior and accept deadlock as a possibility. 
+
+##### Implementing a TDZ
+
+All examples below will use a cyclic `import()` to a graph of ``'a' -> 'b', 'b' -> 'a'`` with both using top level await to halt progress until the other finishes loading. For brevity the examples will only show one side of the graph, the other side is a mirror.
 
 ```mjs
 // a
