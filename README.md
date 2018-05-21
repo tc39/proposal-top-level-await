@@ -270,6 +270,21 @@ Given the amount of boilerplate code required to implement this behavior, one co
 
 Instead of `import()` rejecting if the imported module is suspended on an `await` expression, it might be useful if there was a way for dynamic `import()` to obtain a reference to the incomplete module namespace object, similar to how CommonJS `require` returns an incomplete `module.exports` object in the event of cycles. As long as the incomplete namespace object provides enough information, or the namespace object isn't used until later, this strategy would allow the application to keep making progress, rather than deadlocking. In contrast to CommonJS, ECMAScript modules can better enforce TDZ restrictions (preventing export use before initialization), and can throw more useful static errors. However, preventing any access to the incomplete namespace object would be a loss of functionality compared to CommonJS.
 
+#### Doesn't Variant B break the Polyfill use case?
+
+There currently isn't a way to dynamically import polyfills and ensure they are loaded before other code executes.
+
+With Variant A individuals would be able to dynamically import polyfills and be guaranteed they would load before other code executes.
+
+With Variant B there is no guarantee that other code wouldn't execute prior to the polyfill being available. Module goal scripts are [deferred by default][defer] [with execution order between multiple scripts being guaranteed](https://html.spec.whatwg.org/multipage/scripting.html#attr-script-defer). In the case of wanting to have dynamic polyfills that are guaranteed to execute prior to application code one could import polyfills as a seperate scipt tag in their html
+
+```html
+<!-- This script will execute before… -->
+<script type="module" src="polyfills.mjs"></script>
+<!-- …this script. -->
+<script type="module" src="index.mjs"></script>
+```
+
 ## Specification
 
 * [Ecmarkup source](https://github.com/mylesborins/proposal-top-level-await/blob/master/spec.html)
@@ -283,3 +298,5 @@ Instead of `import()` rejecting if the imported module is suspended on an `await
 
 * https://github.com/bmeck/top-level-await-talking/
 * https://gist.github.com/Rich-Harris/0b6f317657f5167663b493c722647221
+
+[defer]: https://jakearchibald.com/2017/es-modules-in-browsers/#defer-by-default
