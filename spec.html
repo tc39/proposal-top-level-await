@@ -80,13 +80,6 @@ contributors: Myles Borins
   </emu-alg>
 </emu-clause>
 
-<emu-clause id="sec-awaitall" aoid="AwaitAll">
-  <h1><ins>AwaitAll( _promises_ )</ins></h1>
-  <emu-alg>
-    // TODO / HELP: Spec-based Promise.all for a List of Promises
-  </emu-alg>
-</emu-clause>
-
 <emu-clause id="sec-performbuiltinpromisethen" aoid="PerformBuiltinPromiseThen">
   <h1><ins>PerformBuiltinPromiseThen( _builtinFunction_, _onFulfilled_, _onRejected_ )</ins></h1>
   <emu-alg>
@@ -448,7 +441,8 @@ contributors: Myles Borins
       <p>This abstract operation performs the following steps:</p>
 
       <emu-alg>
-        1. <ins>Perform ? AwaitAll(_dependencyExecPromises_).</ins>
+        1. <ins>For each Promise _promise_ in _dependencyExecPromises_, do</ins>
+          1. <ins>AwaitWithReturn(_module_.[[ExecPromise]]).</ins>
         1. Let _moduleCxt_ be a new ECMAScript code execution context.
         1. Set the Function of _moduleCxt_ to *null*.
         1. Assert: _module_.[[Realm]] is not *undefined*.
