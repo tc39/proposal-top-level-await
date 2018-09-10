@@ -287,8 +287,8 @@ With Variant B there is no guarantee that other code wouldn't execute prior to t
 
 ## Specification
 
-* [Ecmarkup source](https://github.com/mylesborins/proposal-top-level-await/blob/master/spec.html)
-* [HTML version](https://mylesborins.github.io/proposal-top-level-await/)
+* [Ecmarkup source](https://github.com/tc39/proposal-top-level-await/blob/master/spec.html)
+* [HTML version](https://tc39.github.io/proposal-top-level-await/)
 
 ## Implementations
 
