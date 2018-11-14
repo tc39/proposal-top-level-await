@@ -95,7 +95,7 @@ Module a would need to finish executing before b or c could execute.
 
 ### Variant B: top-level `await` does not block sibling execution
 
-In this proposed solution a call to `top-level await` would block execution of child nodes in the graph but would allow siblings to continue to execute. 
+In this proposed solution a call to `top-level await` would block execution of parent nodes in the graph but would allow siblings to continue to execute. 
 
 In this implementation you could consider the following
 
