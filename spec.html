@@ -6,7 +6,7 @@ status: proposal
 stage: 2
 location: https://tc39.github.io/proposal-top-level-await/
 copyright: false
-contributors: Myles Borins
+contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
 </pre>
 <script src="ecmarkup.js" defer></script>
 <link rel="stylesheet" href="ecmarkup.css">
@@ -64,130 +64,6 @@ contributors: Myles Borins
     1. Assert: When we return here, _asyncContext_ has already been removed from the execution context stack and _runningContext_ is the currently running execution context.
     1. Assert: _result_ is a normal completion with a value of *undefined*. The possible sources of completion values are Await or, if the async function doesn't await anything, the step 2.g above.
   </emu-alg>
-</emu-clause>
-
-<emu-clause id="sec-awaitwithreturn" aoid="AwaitWithReturn">
-  <h1><ins>AwaitWithReturn( _promise_ )</ins></h1>
-  <emu-alg>
-    1. Let _resolveCapability_ be ! NewPromiseCapability(%Promise%).
-    1. Perform ! Call(_resolveCapability_.[[Resolve]], *undefined*, &laquo;_promise_&raquo;).
-    1. Let _resolvedPromise_ be _resolveCapability_.[[Promise]].
-    1. Let _stepsFulfilled_ be the following steps of the algorithm that invoked Await, with argument value.
-    1. Let _onFulfilled_ be _CreateBuiltinFunction_(_stepsFulfilled_).
-    1. Let _resultCapability_ be ! NewPromiseCapability(%Promise%).
-    1. Perform ! PerformPromiseThen(_resolvedPromise_, _onFulfilled_, *undefined*, _resultCapability_).
-    1. Return _resultCapability_.
-  </emu-alg>
-</emu-clause>
-
-<emu-clause id="sec-awaitall" aoid="AwaitAll">
-    <h1><ins>AwaitAll( _promises_ )</ins></h1>
-    <emu-alg>
-      1. Let _resolveCapability_ be ! NewPromiseCapability(%Promise%).
-      1. Let _index_ be 0.
-      1. Let _fullfilledCount_ be 0.
-      1. Let _total_ be the length of the list _promises_.
-      1. For each Promise _promises_ in _promises_, do
-        1. Let _stepsFulfilled_ be the following steps with argument _arg_
-          1. Set _fulfilledCount_ to _fulfilledCount_ + 1.
-          1. If _fulfilledCount_ is equal to _total_, then
-            1. Perform ! Call(_resolveCapability_.[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).
-        1. Let _onFulfilled_ be _CreateBuiltinFunction(_stepsFulfilled_).
-        1. Let _stepsReject_ be the following steps with argument _arg_
-          1. Perform ! Call(_resolveCapability_.[[Reject]], *undefined*, &laquo;_arg_&raquo;).
-        1. Let _onReject_ be _CreateBuiltinFunction_(_stepsReject_).
-        1. Perform ! PerformPromiseThen(_promise_, _onFulfilled_, _onRejected_).
-      1. AwaitWithReturn(_resolveCapability_.[[Promise]])).
-    </emu-alg>
-  </emu-clause>
-
-<emu-clause id="sec-performbuiltinpromisethen" aoid="PerformBuiltinPromiseThen">
-  <h1><ins>PerformBuiltinPromiseThen( _builtinFunction_, _onFulfilled_, _onRejected_ )</ins></h1>
-  <emu-alg>
-    // TODO / HELP: spec-based Promise.then for a builtinFunction,
-    // returning synchronously, but adding the execution to the execution stack
-  </emu-alg>
-</emu-clause>
-
-<emu-clause id="sec-abstract-module-records">
-  <h1>Abstract Module Records</h1>
-  <p>A <dfn>Module Record</dfn> encapsulates structural information about the imports and exports of a single module. This information is used to link the imports and exports of sets of connected modules. A Module Record includes four fields that are only used when evaluating a module.</p>
-  <p>For specification purposes Module Record values are values of the Record specification type and can be thought of as existing in a simple object-oriented hierarchy where Module Record is an abstract class with concrete subclasses. This specification only defines a single Module Record concrete subclass named Source Text Module Record. Other specifications and implementations may define additional Module Record subclasses corresponding to alternative module definition facilities that they defined.</p>
-  <p>Module Record defines the fields listed in <emu-xref href="#table-36"></emu-xref>. All Module Definition subclasses include at least those fields. Module Record also defines the abstract method list in <emu-xref href="#table-37"></emu-xref>. All Module definition subclasses must provide concrete implementations of these abstract methods.</p>
-  <emu-table id="table-36" caption="Module Record Fields">
-    <table>
-      <thead>
-      <tr>
-        <th>
-          Field Name
-        </th>
-        <th>
-          Value Type
-        </th>
-        <th>
-          Meaning
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td>
-          [[Realm]]
-        </td>
-        <td>
-          Realm Record | *undefined*
-        </td>
-        <td>
-          The Realm within which this module was created. *undefined* if not yet assigned.
-        </td>
-      </tr>
-      <tr>
-        <td>
-          [[Environment]]
-        </td>
-        <td>
-          Lexical Environment | *undefined*
-        </td>
-        <td>
-          The Lexical Environment containing the top level bindings for this module. This field is set when the module is instantiated.
-        </td>
-      </tr>
-      <tr>
-        <td>
-          [[Namespace]]
-        </td>
-        <td>
-          Object | *undefined*
-        </td>
-        <td>
-          The Module Namespace Object (<emu-xref href="#sec-module-namespace-objects"></emu-xref>) if one has been created for this module. Otherwise *undefined*.
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <ins>[[ExecPromise]]</ins>
-        </td>
-        <td>
-          <ins>Promise | *undefined*</ins>
-        </td>
-        <td>
-          <ins>The evaluation promise for this Abstract Module Record, including any dependency evaluations.</ins>
-        </td>
-      </tr>  
-      <tr>
-        <td>
-          [[HostDefined]]
-        </td>
-        <td>
-          Any, default value is *undefined*.
-        </td>
-        <td>
-          Field reserved for use by host environments that need to associate additional information with a module.
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </emu-table>
 </emu-clause>
 
 <emu-clause id="sec-source-text-module-records">
@@ -303,6 +179,17 @@ contributors: Myles Borins
         </tr>
         <tr>
           <td>
+            <ins>[[ExecPromise]]</ins>
+          </td>
+          <td>
+            <ins>Promise | *undefined*</ins>
+          </td>
+          <td>
+            <ins>The evaluation promise for this Abstract Module Record, including any dependency evaluations.</ins>
+          </td>
+        </tr>
+        <tr>
+          <td>
             [[DFSIndex]]
           </td>
           <td>
@@ -357,7 +244,7 @@ contributors: Myles Borins
           1. Append _ee_ to _starExportEntries_.
         1. Else,
           1. Append _ee_ to _indirectExportEntries_.
-      1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: *undefined*, [[Namespace]]: *undefined*, <ins>[[ExecPromise]]: *undefined*, </ins>[[Status]]: `"uninstantiated"`, [[EvaluationError]]: *undefined*, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: *undefined*, [[DFSAncestorIndex]]: *undefined* }.
+      1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: *undefined*, [[Namespace]]: *undefined*, <ins>[[ExecPromise]]: *undefined*, </ins>[[Status]]: `"uninstantiated"`, <del>[[EvaluationError]]: *undefined*,</del> [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: *undefined*, [[DFSAncestorIndex]]: *undefined* }.
     </emu-alg>
     <emu-note>
       <p>An implementation may parse module source text and analyse it for Early Error conditions prior to the evaluation of ParseModule for that module source text. However, the reporting of any errors must be deferred until the point where this specification actually performs ParseModule upon that source text.</p>
@@ -378,19 +265,21 @@ contributors: Myles Borins
       1. Let _module_ be this Source Text Module Record.
       1. Assert: _module_.[[Status]] is `"instantiated"`, `"evaluating"`<ins> or `"evaluated"`</ins>.
       1. Let _stack_ be a new empty List.
-      1. Perform ! InnerModuleEvaluation(_module_, _stack_, 0).
+      1. <del>Let _result_ be </del><ins>Perform ! </ins>InnerModuleEvaluation(_module_, _stack_, 0).
       1. <ins>Assert: _stack_ is empty.</ins>
-      1. Let _result_ be AwaitWithReturn(_module_.[[ExecPromise]]).
-      1. If _result_ is an abrupt completion, then
+      1. <ins>Assert: _module_.[[Status]] is `"evaluated"`.</ins>
+      1. <ins>Return _module_.[[ExecPromise]].</ins>
+      1. <del>If _result_ is an abrupt completion, then</del>
         1. <del>For each module _m_ in _stack_, do</del>
           1. <del>Assert: _m_.[[Status]] is `"evaluating"`.</del>
           1. <del>Set _m_.[[Status]] to `"evaluated"`.</del>
           1. <del>Set _m_.[[EvaluationError]] to _result_.</del>
         1. <del>Assert: _module_.[[Status]] is `"evaluated"` and _module_.[[EvaluationError]] is _result_.</del>
-        1. Return _result_.
-      1. Assert: _module_.[[Status]] is `"evaluated"`<del> and _module_.[[EvaluationError]] is *undefined*</del>.
+        1. <del>Return _result_.</del>
+      1. <del>Assert: _result_ is *undefined*.</del>
+      1. <del>Assert: _module_.[[Status]] is `"evaluated"` and _module_.[[EvaluationError]] is *undefined*</del>.
       1. <del>Assert: _stack_ is empty.</del>
-      1. Return *undefined*.
+      1. <del>Return *undefined*.</del>
     </emu-alg>
 
     <emu-clause id="sec-innermoduleevaluation" aoid="InnerModuleEvaluation">
@@ -414,7 +303,7 @@ contributors: Myles Borins
         1. Set _module_.[[DFSIndex]] to _index_.
         1. Set _module_.[[DFSAncestorIndex]] to _index_.
         1. <ins>Let _evalCapability_ be ! NewPromiseCapability(%Promise%).</ins>
-        1. <ins>Set _module_.[[ExecPromise]] to _evalCapability.[[Promise]]_.
+        1. <ins>Set _module_.[[ExecPromise]] to _evalCapability_.[[Promise]].
         1. Set _index_ to _index_ + 1.
         1. Append _module_ to _stack_.
         1. <ins>Let _dependencyExecPromises_ be an empty List.</ins>
@@ -433,11 +322,7 @@ contributors: Myles Borins
             1. <ins>Perform ! PerformPromiseThen(_requiredModule_.[[ExecPromise]], *undefined*, _stackErrorCapability_.[[Reject]]).</ins>
             1. <ins>Add _stackErrorCapability_ to the list _dependencyExecPromises_.</ins>
         1. <del>Perform ? ModuleExecution(_module_).</del>
-        1. <ins>Let _executionSteps_ be the algorithm steps defined in ModuleExecution.</ins>
-        1. <ins>Let _execution_ be CreateBuiltinFunction(_executionSteps_, &laquo; Module, DependencyExecPromises, Resolve, Reject &raquo;).</ins>
-        1. <ins>Set _execution_.[[Module]] to _module_.</ins>
-        1. <ins>Set _execution_.[[DependencyExecPromises]] to _dependencyExecPromises_.</ins>
-        1. <ins>Perform ! PerformBuiltinPromiseThen(_execution_, _evalCapability_.[[Resolve]], _evalCapability_.[[Reject]]).</ins>
+        1. <ins>Perform ! ExecuteModuleWhenImportsReady(_module_, _dependencyExecPromises_, _evalCapability_).</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
         1. If _module_.[[DFSAncestorIndex]] equals _module_.[[DFSIndex]], then
@@ -451,18 +336,41 @@ contributors: Myles Borins
       </emu-alg>
       <emu-note>
         <p>A module is `"evaluating"` while it is being traversed by InnerModuleEvaluation. A module is `"evaluated"` when ModuleExecution has been called, even if that module execution is a promise that has not yet resolved.</p>
-      </emu-nnote>
+      </emu-note>
     </emu-clause>
 
+  <emu-clause id="sec-execute-module-when-imports-ready" aoid="ExecuteModuleWhenImportsReady">
+    <h1><ins>ExecuteModuleWhenImportsReady( _module_, _promises_, _capability_ )</ins></h1>
+    <emu-alg>
+      1. If _promises_ is an empty List,
+        1. Perform ! ModuleExecution(_module_, _capability_).
+        1. Return.
+      1. Let _index_ be 0.
+      1. Let _fullfilledCount_ be 0.
+      1. Let _total_ be the length of the List _promises_.
+      1. For each Promise _promise_ in _promises_, do
+        1. Let _stepsFulfilled_ be the following steps with argument _arg_
+          1. Assert: _arg_ is *undefined*.
+          1. Set _fulfilledCount_ to _fulfilledCount_ + 1.
+          1. If _fulfilledCount_ is equal to _total_, then
+            1. Perform ! ModuleExecution(_module_, _capability_).
+        1. Let _onFulfilled_ be CreateBuiltinFunction(_stepsFulfilled_).
+        1. Let _stepsReject_ be the following steps with argument _arg_
+          1. Perform ! Call(_capability_.[[Reject]], *undefined*, &laquo;_arg_&raquo;).
+        1. Let _onReject_ be CreateBuiltinFunction(_stepsReject_).
+        1. Perform ! PerformPromiseThen(_promise_, _onFulfilled_, _onRejected_).
+      1. Return.
+    </emu-alg>
+  </emu-clause>
+
     <emu-clause id="sec-moduleexecution" aoid="ModuleExecution">
-      <h1>ModuleExecution( _module_, _dependencyExecPromises_, _resolve_, _reject_ )</h1>
+      <h1>ModuleExecution( _module_, <ins>_capability_</ins>)</h1>
 
       <p>The ModuleExecution abstract operation is used by InnerModuleEvaluation to initialize the execution context of the module and evaluate the module's code within it.</p>
 
       <p>This abstract operation performs the following steps:</p>
 
       <emu-alg>
-        1. <ins>Perform ? AwaitAll(_dependencyExecPromises_).</ins>
         1. Let _moduleCxt_ be a new ECMAScript code execution context.
         1. Set the Function of _moduleCxt_ to *null*.
         1. Assert: _module_.[[Realm]] is not *undefined*.
@@ -471,13 +379,14 @@ contributors: Myles Borins
         1. Assert: _module_ has been linked and declarations in its module environment have been instantiated.
         1. Set the VariableEnvironment of _moduleCxt_ to _module_.[[Environment]].
         1. Set the LexicalEnvironment of _moduleCxt_ to _module_.[[Environment]].
-        1. Suspend the currently running execution context.
-        1. <ins>Perform ! AsyncBlockStart(_promiseCapability_, _module_.[[ECMAScriptCode]], _moduleCxt_).</ins>
+        1. <del>Suspend the currently running execution context.</del>
         1. <del>Push _moduleCxt_ on to the execution context stack; _moduleCxt_ is now the running execution context.</del>
         1. <del>Let _result_ be the result of evaluating _module_.[[ECMAScriptCode]].</del>
         1. <del>Suspend _moduleCxt_ and remove it from the execution context stack.</del>
-        1. Resume the context that is now on the top of the execution context stack as the running execution context.
-        1. <ins>AwaitWithReturn(_promiseCapability_.[[Promise]])</ins>
+        1. <del>Resume the context that is now on the top of the execution context stack as the running execution context.</del>
+        1. <del>Return Completion(_result_).</del>
+        1. <ins>Perform ! AsyncBlockStart(_capability_, _module_.[[ECMAScriptCode]], _moduleCxt_).</ins>
+        1. <ins>Return.</ins>
       </emu-alg>
     </emu-clause>
   </emu-clause>
