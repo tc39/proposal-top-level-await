@@ -66,6 +66,58 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
   </emu-alg>
 </emu-clause>
 
+<emu-clause id="sec-abstract-module-records">
+  <h1>Abstract Module Records</h1>
+  <emu-table id="table-37" caption="Abstract Methods of Module Records">
+    <table>
+      <tbody>
+      <tr>
+        <th>
+          Method
+        </th>
+        <th>
+          Purpose
+        </th>
+      </tr>
+      <tr>
+        <td>
+          GetExportedNames(_exportStarSet_)
+        </td>
+        <td>
+          Return a list of all names that are either directly or indirectly exported from this module.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          ResolveExport(_exportName_, _resolveSet_)
+        </td>
+        <td>
+          <p>Return the binding of a name exported by this module. Bindings are represented by a <dfn id="resolvedbinding-record">ResolvedBinding Record</dfn>, of the form { [[Module]]: Module Record, [[BindingName]]: String }. Return *null* if the name cannot be resolved, or `"ambiguous"` if multiple bindings were found.</p>
+          <p>This operation must be idempotent if it completes normally. Each time it is called with a specific _exportName_, _resolveSet_ pair as arguments it must return the same result.</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Instantiate()
+        </td>
+        <td>
+          <p>Prepare the module for evaluation by transitively resolving all module dependencies and creating a module Environment Record.</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Evaluate()
+        </td>
+        <td>
+          <p><del>If this module has already been evaluated successfully, return *undefined*; if it has already been evaluated unsuccessfully, throw the exception that was produced. Otherwise,</del> Transitively evaluate all module dependencies of this module and then evaluate this module. <ins> Return a Promise representing the evaluation state of the module. If the module has been evaluated successfully, return a Promise resulved with *undefined*. If the module was evaluated unsuccessfully, return a Promise rejected with the error. If the evaluation of the module has not yet completed (e.g., due to a top-level await), return a Promise which is not settled, and which may settle into one of the previous states when appropriate. If this method is called multiple times, return the previous Promise rather than re-evaluating the module.</ins></p>
+          <p>Instantiate must have completed successfully prior to invoking this method.</p>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </emu-table>
+</emu-clause>
+
 <emu-clause id="sec-source-text-module-records">
     <h1>Source Text Module Records</h1>
 
@@ -263,7 +315,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
 
     <emu-alg>
       1. Let _module_ be this Source Text Module Record.
-      1. Assert: _module_.[[Status]] is `"instantiated"`, `"evaluating"`<ins> or `"evaluated"`</ins>.
+      1. Assert: _module_.[[Status]] is `"instantiated"` or `"evaluated"`.
       1. Let _stack_ be a new empty List.
       1. <del>Let _result_ be </del><ins>Perform ! </ins>InnerModuleEvaluation(_module_, _stack_, 0).
       1. <ins>Assert: _stack_ is empty.</ins>
@@ -389,6 +441,70 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. <ins>Return.</ins>
       </emu-alg>
     </emu-clause>
+  </emu-clause>
+
+  <emu-clause id="sec-example-source-text-module-record-graphs">
+    <h1>Example Source Text Module Record Graphs</h1>
+
+    <p>This non-normative section gives a series of examples of the instantiation and evaluation of a few common module graphs, with a specific focus on how errors can occur.</p>
+
+    <p>First consider the following simple module graph:</p>
+
+    <emu-figure id="figure-module-graph-simple" caption="A simple module graph">
+      <img alt="A module graph in which module A depends on module B" width="121" height="211" src="img/module-graph-simple.svg">
+    </emu-figure>
+
+    <p>Let's first assume that there are no error conditions. When a host first calls _A_.Instantiate(), this will complete successfully by assumption, and recursively instantiate modules _B_ and _C_ as well, such that _A_.[[Status]] = _B_.[[Status]] = _C_.[[Status]] = `"instantiated"`. This preparatory step can be performed at any time. Later, when the host is ready to incur any possible side effects of the modules, it can call _A_.Evaluate(), which will complete successfully<ins>, returning a Promsie resolving to *undefined*</ins> (again by assumption), recursively having evaluated first _C_ and then _B_. Each module's [[Status]] at this point will be `"evaluated`".</p>
+
+    <p>Consider then cases involving instantiation errors. If InnerModuleInstantiation of _C_ succeeds but, thereafter, fails for _B_, for example because it imports something that _C_ does not provide, then the original _A_.Instantiate() will fail, and both _A_ and _B_'s [[Status]] remain `"uninstantiated"`. _C_'s [[Status]] has become `"instantiated"`, though.</p>
+
+    <p>Finally, consider a case involving evaluation errors. If InnerModuleEvaluation of _C_ succeeds but, thereafter, fails for _B_, for example because _B_ contains code that throws an exception, then the original _A_.Evaluate() will fail<ins>, returning a Promise resolving to *undefined*</ins>. The resulting exception will be recorded in both _A_ and _B_'s <del>[[EvaluationError]]</del><ins>[[ExecPromise]]</ins> fields <ins>as a rejected Promise</ins>, and their [[Status]] will become `"evaluated"`. _C_ will also become `"evaluated"` but, in contrast to _A_ and _B_, will <del>remain without an [[EvaluationError]]</del><ins>have its [[ExecPromise]] internal slot set to a Promise resolved to *undefined*</ins>, as it successfully completed evaluation. Storing the exception <ins>in [[ExecPromise]] as a Promse rejection</ins> ensures that any time a host tries to reuse _A_ or _B_ by calling their Evaluate() method, it will encounter the same exception. (Hosts are not required to reuse Source Text Module Records; similarly, hosts are not required to expose the exception objects thrown by these  methods. However, the specification enables such uses.)</p>
+
+    <p>The difference here between instantiation and evaluation errors is due to how evaluation must be only performed once, as it can cause side effects; it is thus important to remember whether evaluation has already been performed, even if unsuccessfully. (In the error case, it makes sense to also remember the exception because otherwise subsequent Evaluate() calls would have to synthesize a new one.) Instantiation, on the other hand, is side-effect-free, and thus even if it fails, it can be retried at a later time with no issues.</p>
+
+    <p>Now consider a different type of error condition:</p>
+
+    <emu-figure id="figure-module-graph-missing" caption="A module graph with an unresolvable module">
+      <img alt="A module graph in which module A depends on a missing (unresolvable) module, represented by ???" width="121" height="121" src="img/module-graph-missing.svg">
+    </emu-figure>
+
+    <p>In this scenario, module _A_ declares a dependency on some other module, but no Module Record exists for that module, i.e. HostResolveImportedModule throws an exception when asked for it. This could occur for a variety of reasons, such as the corresponding resource not existing, or the resource existing but ParseModule throwing an exception when trying to parse the resulting source text. Hosts can choose to expose the cause of failure via the exception they throw from HostResolveImportedModule. In any case, this exception causes an instantiation failure, which as before results in _A_'s [[Status]] remaining `"uninstantiated"`.</p>
+
+    <p>Lastly, consider a module graph with a cycle:</p>
+
+    <emu-figure id="figure-module-graph-cycle" caption="A cyclic module graph">
+      <img alt="A module graph in which module A depends on module B and C, but module B also depends on module A" width="181" height="121" src="img/module-graph-cycle.svg">
+    </emu-figure>
+
+    <p>Here we assume that the entry point is module _A_, so that the host proceeds by calling _A_.Instantiate(), which performs InnerModuleInstantiation on _A_. This in turn calls InnerModuleInstantiation on _B_. Because of the cycle, this again triggers InnerModuleInstantiation on _A_, but at this point it is a no-op since _A_.[[Status]] is already `"instantiating"`. _B_.[[Status]] itself remains `"instantiating"` when control gets back to _A_ and InnerModuleInstantiation is triggered on _C_. After this returns with _C_.[[Status]] being `"instantiated"` , both _A_ and _B_ transition from `"instantiating"` to `"instantiated"` together; this is by design, since they form a strongly connected component.</p>
+
+    <p>An analogous story occurs for the evaluation phase of a cyclic module graph, in the success case.</p>
+
+    <p>Now consider a case where _A_ has an instantiation error; for example, it tries to import a binding from _C_ that does not exist. In that case, the above steps still occur, including the early return from the second call to InnerModuleInstantiation on _A_. However, once we unwind back to the original InnerModuleInstantiation on _A_, it fails during ModuleDeclarationEnvironmentSetup, namely right after _C_.ResolveExport(). The thrown *SyntaxError* exception propagates up to _A_.Instantiate, which resets all modules that are currently on its _stack_ (these are always exactly the modules that are still `"instantiating"`). Hence both _A_ and _B_ become `"uninstantiated"`. Note that _C_ is left as `"instantiated"`.</p>
+
+    <p>Finally, consider a case where _A_ has an evaluation error; for example, its source code throws an exception. In that case, the evaluation-time analog of the above steps still occurs, including the early return from the second call to InnerModuleEvaluation on _A_. However, once we unwind back to the original InnerModuleEvaluation on _A_, it fails by assumption. The exception thrown propagates up to _A_.Evaluate() <del>, which records the error in all modules that are currently on its _stack_ (i.e., the modules that are still `"evaluating"`)</del><ins>via Promise rejections, which form a chain through the whole dependency graph due to ExecuteModuleWhenImportsReady</ins>. Hence both _A_ and _B_ become `"evaluated"` and the exception is recorded in both _A_ and _B_'s <del>[[EvaluationError]]</del><ins>[[ExecPromise]]</ins> fields, while _C_ is left as `"evaluated"` with <del>no [[EvaluationError]]</del><ins>its [[ExecPromise]] set to a Promise resolved to *undefined*.</p>
+  </emu-clause>
+
+  <emu-clause id="sec-toplevelmoduleevaluationjob" aoid="TopLevelModuleEvaluationJob">
+    <h1>Runtime Semantics: TopLevelModuleEvaluationJob ( _sourceText_, _hostDefined_ )</h1>
+    <p>A TopLevelModuleEvaluationJob with parameters _sourceText_ and _hostDefined_ is a job that parses, validates, and evaluates _sourceText_ as a |Module|.</p>
+    <emu-alg>
+      1. Assert: _sourceText_ is an ECMAScript source text (see clause <emu-xref href="#sec-ecmascript-language-source-code"></emu-xref>).
+      1. Let _realm_ be the current Realm Record.
+      1. Let _m_ be ParseModule(_sourceText_, _realm_, _hostDefined_).
+      1. If _m_ is a List of errors, then
+        1. Perform HostReportErrors(_m_).
+        1. Return NormalCompletion(*undefined*).
+      1. Perform ? _m_.Instantiate().
+      1. Assert: All dependencies of _m_ have been transitively resolved and _m_ is ready for evaluation.
+      1. <del>Return</del><ins>Let _promise_ be</ins> ? _m_.Evaluate().
+      1. <ins>Upon rejection of _promise_ with reason _r_,</ins> <!--TODO(littledan): Upgrade to ECMASpeak-->
+        1. <ins>Perform HostReportErrors(&laquo; _r_ &raquo;).</ins>
+      1. <ins>Return.</ins>
+    </emu-alg>
+    <emu-note>
+      <p>An implementation may parse a _sourceText_ as a |Module|, analyse it for Early Error conditions, and instantiate it prior to the execution of the TopLevelModuleEvaluationJob for that _sourceText_. An implementation may also resolve, pre-parse and pre-analyse, and pre-instantiate module dependencies of _sourceText_. However, the reporting of any errors detected by these actions must be deferred until the TopLevelModuleEvaluationJob is actually executed.</p>
+    </emu-note>
   </emu-clause>
 </emu-clause>
 
