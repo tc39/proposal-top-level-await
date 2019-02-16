@@ -72,10 +72,10 @@ Then, the module could be used as:
 
 ```mjs
 // usage.mjs
-import default, { output } from "./awaiting.mjs";
+import promise, { output } from "./awaiting.mjs";
 export function outputPlusValue(value) { return output + value }
 
-default.then(() => {
+promise.then(() => {
   console.log(outputPlusValue(100));
   setTimeout(() => console.log(outputPlusValue(100), 1000)
 });
