@@ -88,6 +88,39 @@ However, this leaves us with a number of problems still:
 
 For example, here, we waited on the promise from `"./awaiting.mjs"` properly, but we forgot to re-export it, so modules that use our module may still run into the original race condition.
 
+### Avoiding the race through significant additional dynamism
+
+To avoid the hazard of forgetting to wait for the exported Promise before accessing exports, a module could instead export a Promise which resolves to an object which contains exports
+
+```mjs
+// awaiting.mjs
+import { process } from "./some-module.mjs";
+export default (async () => {
+  const dynamic = await import(computedModuleSpecifier);
+  const data = await fetch(url);
+  const output = process(dynamic.default, data);
+  return { output };
+})();
+```
+
+```mjs
+// usage.mjs
+import promise from "./awaiting.mjs";
+
+export default promise.then({output} => {
+  function outputPlusValue(value) { return output + value }
+
+  console.log(outputPlusValue(100));
+  setTimeout(() => console.log(outputPlusValue(100), 1000)
+
+  return { outputPlusValue };
+});
+```
+
+It's unclear whether this pattern has caught on, but it's sometimes [recommended in StackOverflow](https://stackoverflow.com/questions/42958334/how-can-i-export-promise-result/42958644#42958644) to people who face these sorts of issues.
+
+However, this pattern has the undesirable effect of requiring a broad reorganization of the related source into more dynamic patterns, and placing much of the module body inside the `.then()` callback in order to use the dynamically available imports. This represents a significant regression in terms of static analyzability, testability, ergonomics and more, compared to ES2015 modules. And when you run into a deep dependency which needs to `await`, you need to reorganize all dependent modules to use this pattern.
+
 ### Solution: Top-level `await`
 
 Top-level `await` lets us rely on the module system itself to handle all of these promises, and make sure that things are well-coordinated. The above example could be simply written and used as follows:
@@ -98,7 +131,9 @@ import { process } from "./some-module.mjs";
 const dynamic = await import(computedModuleSpecifier);
 const data = await fetch(url);
 export const output = process(dynamic.default, data);
+```
 
+```mjs
 // usage.mjs
 import { output } from "./awaiting.mjs";
 export function outputPlusValue(value) { return output + value }
@@ -227,7 +262,9 @@ Dependencies are required to be explicitly noted in order to boost the potential
 
 #### What is guaranteed about code execution order?
 
-Regardless of whether top-level `await` is used, modules always start running in the same post-order traversal established in ES2015: execution of module bodies starts with the deepest imports, in the order that the import statements for them are reached. After a top-level `await` is reached, control may be passed to start the next module in this traversal order.
+Modules maintain the same ordering as in ES2015 for when they start executing. If a module reaches an `await`, it will yield control and let other modules initialize themselves in the same well-specified order.
+
+To be specific: Regardless of whether top-level `await` is used, modules always initially start running in the same post-order traversal established in ES2015: execution of module bodies starts with the deepest imports, in the order that the import statements for them are reached. After a top-level `await` is reached, control is passed to start the next module in this traversal order, or to other asynchronously scheduled code.
 
 #### Do these guarantees meet the needs of polyfills?
 
