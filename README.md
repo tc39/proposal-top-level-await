@@ -107,7 +107,7 @@ console.log(outputPlusValue(100));
 setTimeout(() => console.log(outputPlusValue(100), 1000)
 ```
 
-None of the statements in `usage.mjs` will execute until the `await`s in `awaiting.mjs` have had their Promises resolve, so the race condition is avoided by design.
+None of the statements in `usage.mjs` will execute until the `await`s in `awaiting.mjs` have had their Promises resolve, so the race condition is avoided by design. This is an extension of how, if `awaiting.mjs` didn't use top-level `await`, none of the statements in `usage.mjs` will execute until `awaiting.mjs` is loaded and all of its statements have executed.
 
 ## Use cases
 
@@ -151,7 +151,7 @@ WebAssembly Modules are "compiled" and "instantiated" in a logically asynchronou
 
 ## Semantics as desugaring
 
-Top-level `await` makes importing a module automatically block on any top-level `await`s. You can think of it like, each module exports a Promise, and after all the `import` statements, but before the rest of the module, the Promises are all `await`ed:
+Currently, a module waits for all of its dependencies to execute all of their statements before the import is considered finished, and the module's code can run. This proposal maintains this property when introducing `await`, : dependencies still execute through to the end, even if you need to wait for that execution to finish asynchronously. One way to think of this is as if each module exported a Promise, and after all the `import` statements, but before the rest of the module, the Promises are all `await`ed:
 
 ```mjs
 import { a } from './a.mjs'
@@ -164,11 +164,11 @@ console.log(a, b, c);
 would be equivalent to
 
 ```mjs
-import aPromise, { a } from './a.mjs'
-import bPromise, { b } from './b.mjs'
-import cPromise, { c } from './c.mjs'
+import { promise as aPromise, a } from './a.mjs'
+import { promise as bPromise, b } from './b.mjs'
+import { promise as cPromise, c } from './c.mjs'
 
-Promise.all([aPromise, bPromise, cPromise]).then(() => {
+export const promise = Promise.all([aPromise, bPromise, cPromise]).then(() => {
 
 console.log(a, b, c);
 
@@ -197,22 +197,27 @@ Many JavaScript developers are learning about `import()` specifically as a tool 
 
 #### What exactly is blocked by a top-level `await`?
 
-When one module imports another one, the importing module will only start executing its module body once the exporting module's body has finished executing. If the exporting module reaches a top-level await, that will have to complete before the importing module's body starts executing.
+When one module imports another one, the importing module will only start executing its module body once the dependency's body has finished executing. If the dependency reaches a top-level await, that will have to complete before the importing module's body starts executing.
 
 #### Why doesn't top-level `await` block the import of an adjacent module?
 
-If one module wants to declare itself dependent on another module, for the purposes of waiting for that other module to complete its top-level `await` statements before the module body executes, it can delcare that other module as an import.
+If one module wants to declare itself dependent on another module, for the purposes of waiting for that other module to complete its top-level `await` statements before the module body executes, it can declare that other module as an import.
 
-In a case such as the following, `"Y"` will be printed on the console before `"X"`, because importing one module "before" another does not create an implicit dependency.
+In a case such as the following, the printed order will be `"X1"`, `"Y"`, `"X2"`, because importing one module "before" another does not create an implicit dependency.
 
 ```mjs
 // x.mjs
+console.log("X1");
 await new Promise(r => setTimeout(r, 1000));
-console.log("X");
+console.log("X2");
+```
 
+```mjs
 // y.mjs
 console.log("Y");
+```
 
+```mjs
 // z.mjs
 import "./x.mjs";
 import "./y.mjs";
