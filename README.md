@@ -1,134 +1,152 @@
 # ECMAScript proposal: Top-level `await`
 
-## Status
+Champion: Myles Borins
 
-This proposal is currently in stage 2 of [the TC39 process](https://tc39.github.io/process-document/).
+Status: Stage 2
 
-## Background
+## Synopsis
 
-[The `async` / `await` proposal](https://github.com/tc39/ecmascript-asyncawait) was originally brought to committee in [January of 2014](https://github.com/tc39/tc39-notes/blob/master/es6/2014-01/jan-30.md). In [April of 2014](https://github.com/tc39/tc39-notes/blob/master/es6/2014-04/apr-10.md) it was discussed that the keyword `await` should be reserved in the module goal for the purpose of top-level `await`. In [July of 2015](https://github.com/tc39/tc39-notes/blob/master/es7/2015-07/july-30.md) [the `async` / `await` proposal](https://github.com/tc39/ecmascript-asyncawait) advanced to Stage 2. During this meeting it was decided to punt on top-level `await` to not block the current proposal as top-level `await` would need to be "designed in concert with the loader".
-
-Since the decision to delay standardizing top-level `await` it has come up in a handful of committee discussions, primarily to ensure that it would remain possible in the language.
+Top-level `await` enables modules to act as big async functions: With top-level `await`, modules can `await` resources, causing other modules who `import` them to wait before they start evaluating their body.
 
 ## Motivation
 
-### top-level main and IIAFEs
+### Limitations on IIAFEs
 
-The current implementation of `async / await` only support the `await` keyword inside of `async` functions. As such many programs that are utilizing `await` now make use of top-level main function:
+With `await` only available within `async` functions, a module can include an `await` in the code that executes at startup by factoring that code into an `async` function:
 
 ```mjs
-import ...
+// awaiting.mjs
+import { process } from "./some-module.mjs";
+let output;
 async function main() {
-  const dynamic = await import('./dynamic-thing.mjs');
-  const data = await fetch(dynamic.url);
-  console.log(data);
+  const dynamic = await import(computedModuleSpecifier);
+  const data = await fetch(url);
+  output = process(dynamic.default, data);
 }
 main();
-export ...
+export output;
 ```
 
-This pattern is creating an abundance of boilerplate code in the ecosystem. If the pattern is repeated throughout the module graph it degrades the determinism of the execution.
-
-This pattern can also be immediately invoked.
+This pattern can also be immediately invoked. You could call this an Immediately Invoked Async Function Expression (IIAFE), as a play on [IIFE](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) idiom.
 
 ```mjs
-import static1 from './static1.mjs';
-import { readFile } from 'fs';
-
+// awaiting.mjs
+import { process } from "./some-module.mjs";
+let output;
 (async () => {
-  const dynamic = await import('./dynamic' + process.env.something + '.js');
-  const file = JSON.parse(await readFile('./config.json'));
+  const dynamic = await import(computedModuleSpecifier);
+  const data = await fetch(url);
+  output = process(dynamic.default, data);
+})();
+export output;
+```
 
-  // main program goes here...
+This pattern is appropriate for situations where loading a module is intended to schedule work that will happen some time later. However, the exports from this module may be accessed before this async function completes: If another module imports this one, it may see `output` as `undefined`, or it may see it after it's initialized to the return value of `process`, depending on when the access occurs! For example:
+
+```mjs
+// usage.mjs
+import { output } from "./awaiting.mjs";
+export function outputPlusValue(value) { return output + value }
+
+console.log(outputPlusValue(100));
+setTimeout(() => console.log(outputPlusValue(100), 1000)
+```
+
+### Workaround: Export a Promise to represent initialization
+
+In the absense of this feature, it's possible to export a Promise from a module, and wait on that to know when its exports are ready. For example, the above module could be written as:
+
+```mjs
+// awaiting.mjs
+import { process } from "./some-module.mjs";
+let output;
+export default (async () => {
+  const dynamic = await import(computedModuleSpecifier);
+  const data = await fetch(url);
+  output = process(dynamic.default, data);
+})();
+export output;
+```
+
+Then, the module could be used as:
+
+```mjs
+// usage.mjs
+import promise, { output } from "./awaiting.mjs";
+export function outputPlusValue(value) { return output + value }
+
+promise.then(() => {
+  console.log(outputPlusValue(100));
+  setTimeout(() => console.log(outputPlusValue(100), 1000)
+});
+```
+
+However, this leaves us with a number of problems still:
+- Everyone has to learn about a particular protocol to find the right Promise to wait on the module being loaded
+- If you forget to apply the protocol, things might "just work" some of the time (due to the race being won in a certain way)
+- In a deep module hierarchy, the Promise needs to be explicitly threaded through each step of the chain.
+
+For example, here, we waited on the promise from `"./awaiting.mjs"` properly, but we forgot to re-export it, so modules that use our module may still run into the original race condition.
+
+### Avoiding the race through significant additional dynamism
+
+To avoid the hazard of forgetting to wait for the exported Promise before accessing exports, a module could instead export a Promise which resolves to an object which contains exports
+
+```mjs
+// awaiting.mjs
+import { process } from "./some-module.mjs";
+export default (async () => {
+  const dynamic = await import(computedModuleSpecifier);
+  const data = await fetch(url);
+  const output = process(dynamic.default, data);
+  return { output };
 })();
 ```
 
-###  completely dynamic modules
-
-Another pattern that is beginning to surface is exporting async function and awaiting the results of imports, which drastically impacts our ability to do static analysis of the module graph.
-
 ```mjs
-export default async () => {
-  // import other modules like this one
-  const import1 = await (await import('./import1.mjs')).default();
-  const import2 = await (await import('./import2.mjs')).default();
+// usage.mjs
+import promise from "./awaiting.mjs";
 
-  // compute some exports...
-  return {
-    export1: ...,
-    export2: ...
-  };
-};
+export default promise.then({output} => {
+  function outputPlusValue(value) { return output + value }
+
+  console.log(outputPlusValue(100));
+  setTimeout(() => console.log(outputPlusValue(100), 1000)
+
+  return { outputPlusValue };
+});
 ```
 
-At the current time [a search](https://github.com/search?utf8=%E2%9C%93&q=%22export+async+function%22&type=Code) for "export async function" on github produces over 5000 unique code examples of exporting an async function.
+It's unclear whether this pattern has caught on, but it's sometimes [recommended in StackOverflow](https://stackoverflow.com/questions/42958334/how-can-i-export-promise-result/42958644#42958644) to people who face these sorts of issues.
 
-## Proposed solutions
+However, this pattern has the undesirable effect of requiring a broad reorganization of the related source into more dynamic patterns, and placing much of the module body inside the `.then()` callback in order to use the dynamically available imports. This represents a significant regression in terms of static analyzability, testability, ergonomics and more, compared to ES2015 modules. And when you run into a deep dependency which needs to `await`, you need to reorganize all dependent modules to use this pattern.
 
-### Variant A: top-level `await` blocks tree execution
+### Solution: Top-level `await`
 
-In this proposed solution a call to `top-level await` would block execution in the graph until it had resolved.
-
-In this implementation you could consider the following
+Top-level `await` lets us rely on the module system itself to handle all of these promises, and make sure that things are well-coordinated. The above example could be simply written and used as follows:
 
 ```mjs
-import a from './a.mjs'
-import b from './b.mjs'
-import c from './c.mjs'
-
-console.log(a, b, c);
+// awaiting.mjs
+import { process } from "./some-module.mjs";
+const dynamic = await import(computedModuleSpecifier);
+const data = await fetch(url);
+export const output = process(dynamic.default, data);
 ```
-
-If each of the modules above had a top level await present the loading would have similar execution order to
 
 ```mjs
-(async () => {
-  const a = await import('./a.mjs');
-  const b = await import('./b.mjs');
-  const c = await import('./c.mjs');
-  
-  console.log(a, b, c);
-})();
+// usage.mjs
+import { output } from "./awaiting.mjs";
+export function outputPlusValue(value) { return output + value }
+
+console.log(outputPlusValue(100));
+setTimeout(() => console.log(outputPlusValue(100), 1000)
 ```
 
-Module a would need to finish executing before b or c could execute.
+None of the statements in `usage.mjs` will execute until the `await`s in `awaiting.mjs` have had their Promises resolve, so the race condition is avoided by design. This is an extension of how, if `awaiting.mjs` didn't use top-level `await`, none of the statements in `usage.mjs` will execute until `awaiting.mjs` is loaded and all of its statements have executed.
 
-### Variant B: top-level `await` does not block sibling execution
+## Use cases
 
-In this proposed solution a call to `top-level await` would block execution of parent nodes in the graph but would allow siblings to continue to execute. 
-
-In this implementation you could consider the following
-
-```mjs
-import a from './a.mjs'
-import b from './b.mjs'
-import c from './c.mjs'
-
-console.log(a, b, c);
-```
-
-If each of the modules above had a top level await present the loading would have similar execution order to
-
-```mjs
-(async () => {
-  const [a, b, c] = await Promise.all([
-    import('./a.mjs'),
-    import('./b.mjs'),
-    import('./c.mjs')
-  ]);
-  console.log(a, b, c);
-})();
-```
-
-Modules a, b, and c would all execute in order up until the first await in each of them; we then wait on all of them to resume and finish evaluating before continuing.
-
-### Optional Constraint: top-level `await` can only be used in modules without exports
-
-Many of the use cases for top-level `await` are for bootstrapping an application. Enforcing that top-level `await` could only be used inside of a module without exports would allow individuals to use many of the patterns they would like to use in application bootstrapping while avoiding the edge cases of graph blocking or deadlocks.
-
-With this constraint the implementation would still need to decide between Variant A or B for sibling execution behavior.
-
-## Illustrative examples
+When would it make sense to have a module which waits on an asynchronous operation to load? This section gives some examples.
 
 ### Dynamic dependency pathing
 
@@ -160,21 +178,111 @@ try {
 }
 ```
 
+Some kinds of dependency fallbacks may be handled by [import maps](https://github.com/wicg/import-maps), but even with the support of import maps, [some scenarios](https://github.com/WICG/import-maps/blob/master/README.md#alternating-logic-based-on-the-presence-of-a-built-in-module) which are outside of the declaratively handled set would still benefit from top-level `await`.
+
+### WebAssembly Modules
+
+WebAssembly Modules are "compiled" and "instantiated" in a logically asynchronous way, based on their imports: Some WebAssembly implementations do nontrivial work at either phase, which is important to be able to shunt off into another thread. To integrate with the JavaScript module system, they will need to do the equivalent of a top-level await. See the [WebAssembly ESM integration proposal](https://github.com/webassembly/esm-integration) for more details.
+
+## Semantics as desugaring
+
+Currently, a module waits for all of its dependencies to execute all of their statements before the import is considered finished, and the module's code can run. This proposal maintains this property when introducing `await`, : dependencies still execute through to the end, even if you need to wait for that execution to finish asynchronously. One way to think of this is as if each module exported a Promise, and after all the `import` statements, but before the rest of the module, the Promises are all `await`ed:
+
+```mjs
+import { a } from './a.mjs'
+import { b } from './b.mjs'
+import { c } from './c.mjs'
+
+console.log(a, b, c);
+```
+
+would be equivalent to
+
+```mjs
+import { promise as aPromise, a } from './a.mjs'
+import { promise as bPromise, b } from './b.mjs'
+import { promise as cPromise, c } from './c.mjs'
+
+export const promise = Promise.all([aPromise, bPromise, cPromise]).then(() => {
+
+console.log(a, b, c);
+
+});
+```
+
+Modules `a.mjs`, `b.mjs`, and `c.mjs` would all execute in order up until the first await in each of them; we then wait on all of them to resume and finish evaluating before continuing.
+
 ### FAQ
 
 #### Isn't top-level `await` a footgun?
 
-If you have seen [the gist](https://gist.github.com/Rich-Harris/0b6f317657f5167663b493c722647221) you likely have heard this critique before. My hope is that as a committee we can weigh the pros / cons of the various approaches and determine if the benefits of the feature outweigh the risks.
+If you have seen [the gist](https://gist.github.com/Rich-Harris/0b6f317657f5167663b493c722647221) you likely have heard this critique before.
 
-#### Halting Progress
+Some responses to some of the top concerns here:
 
-Variant A would halt progress in the module graph until resolved.
+##### Will top-level `await` cause developers to make their code block longer than it should?
 
-Variant B offers a unique approach to blocking, as it will not block siblings execution.
+It's true that top-level `await` gives developers a new tool to make their code wait. Our hope is that proper developer education can ensure that the semantics of top-level `await` are well-understood, so that people know to use it just when they intend that importers should block on it.
 
-The Optional Constraint would alleviate concerns of halting process.
+We've seen this work well in the past. For example, it's easy to write code with async/await that serializes two tasks that could be done in parallel, but a deliberate developer education effort has popularized the use of `Promise.all` to avoid this hazard.
 
-##### Existing Ways to halt progress
+##### Will top-level `await` encourage developers to use `import()` unnecessarily, which is less optimizable?
+
+Many JavaScript developers are learning about `import()` specifically as a tool for code splitting. People are becoming aware of the relationship between bundling and multiple requests, and learning how to combine them for good application performance. Top-level `await` doesn't really change the calculus--using `import()` from a top-level `await` will have similar performance effects to using it from a function. As long as we can tie top-level `await`'s educational materials into the existing knowledge of that performance tradeoff, we hope to be able to avoid counterproductive increases in the use of `import()`.
+
+#### What exactly is blocked by a top-level `await`?
+
+When one module imports another one, the importing module will only start executing its module body once the dependency's body has finished executing. If the dependency reaches a top-level await, that will have to complete before the importing module's body starts executing.
+
+#### Why doesn't top-level `await` block the import of an adjacent module?
+
+If one module wants to declare itself dependent on another module, for the purposes of waiting for that other module to complete its top-level `await` statements before the module body executes, it can declare that other module as an import.
+
+In a case such as the following, the printed order will be `"X1"`, `"Y"`, `"X2"`, because importing one module "before" another does not create an implicit dependency.
+
+```mjs
+// x.mjs
+console.log("X1");
+await new Promise(r => setTimeout(r, 1000));
+console.log("X2");
+```
+
+```mjs
+// y.mjs
+console.log("Y");
+```
+
+```mjs
+// z.mjs
+import "./x.mjs";
+import "./y.mjs";
+```
+
+Dependencies are required to be explicitly noted in order to boost the potential for parallelism: Most setup work that will be blocking due to a top-level await (for example, all of the case studies above) can be done in parallel with other setup work from unrelated modules. When some of this work may be highly parallelizable (e.g., network fetches), it's important to get as many of these queued up close to the start of execution as possible.
+
+#### What is guaranteed about code execution order?
+
+Modules maintain the same ordering as in ES2015 for when they start executing. If a module reaches an `await`, it will yield control and let other modules initialize themselves in the same well-specified order.
+
+To be specific: Regardless of whether top-level `await` is used, modules always initially start running in the same post-order traversal established in ES2015: execution of module bodies starts with the deepest imports, in the order that the import statements for them are reached. After a top-level `await` is reached, control is passed to start the next module in this traversal order, or to other asynchronously scheduled code.
+
+#### Do these guarantees meet the needs of polyfills?
+
+Currently (in a world without top-level `await`), polyfills are synchronous. So, the idiom of importing a polyfill (which modifies the global object) and then importing a module which should be affected by the polyfill will still work if top-level `await` is added. However, if a polyfill includes a top-level `await`, it will need to be imported by modules that depend on it in order to reliably take effect.
+
+#### Does the `Promise.all` happen even if none of the imported modules have a top-level `await`?
+
+Yes. In particular, if none of the imported modules have a top-level `await`, there will still be a delay of some turns on the Promise job queue until the module body executes. The goal here is to avoid too much synchronous behavior, which would break if something turns out to be asynchronous in the future, or even alternate between those two depending on runtime conditions ("releasing Zalgo"). Similar considerations led to the decision that `await` should always be asynchronous, even if passed a non-Promise.
+
+Note, this is an observable change from current ES Module semantics, where the Evaluate phase is entirely synchronous. For a concrete example and further discussion, see [issue #43](https://github.com/tc39/proposal-top-level-await/issues/43)
+
+#### Does top-level `await` increase the risk of deadlocks?
+
+Top-level `await` creates a new mechanism for deadlocks, but the champions of this proposal consider the risk to be worth it, because:
+- There are many existing ways that modules can create deadlocks or otherwise halt progress, and developer tools can help in debugging them
+- All deterministic deadlock prevention strategies considered would be overly broad and block appropriate, realistic, useful patterns
+
+##### Existing Ways to block progress
 
 ###### Infinite Loops
 
@@ -221,69 +329,46 @@ async function start() {
 
 Exporting a `then` function allows blocking `import()`.
 
+###### Conclusion: Ensuring continued progress is a larger problem
 
-#### What about deadlock?
+##### Rejected deadlock prevention mechanisms
 
 A potential problem space to solve for in designing top level await is to aid in detecting and preventing forms of deadlock that can occur. For example awaiting on a cyclical dynamic import could introduce deadlock into the module graph execution.
 
-##### Deferring to current behavior
-
-There is already the potential to introduce deadlock into the module graph execution via dynamic import. Rather than trying to solve for specific types of deadlock we can simply defer to the current behavior and accept deadlock as a possibility. 
-
-##### Implementing a TDZ
-
-All examples below will use a cyclic `import()` to a graph of ``'a' -> 'b', 'b' -> 'a'`` with both using top level await to halt progress until the other finishes loading. For brevity the examples will only show one side of the graph, the other side is a mirror.
+The following sections about deadlock prevention will be based on this code example:
 
 ```mjs
-// a
-await import('b');
+// file.html
+<script type=module src="a.mjs"></script>
 
-// implement a hoistable then()
-export function then(f, r) {
-  r('not finished');
-};
+// a.mjs
+await import("./b.mjs");
 
-// remove the rejection
-then = null;
+// b.mjs
+await import("./a.mjs");
 ```
 
-```mjs
-// b
-await import('a');
-```
+###### Alternative: Return a partially filled module record
 
-Having a `then` in the TDZ is a way to prevent cycles while a module is still 
-evaluating. `try{}catch{}` can also be used as a recovery or notification
-mechanism.
+In `b.mjs`, resolve the Promise immediately, even though `a.mjs` has not yet completed, to avoid a deadlock.
 
-```mjs
-// b
-let a;
-try {
-  a = await import('a');
-} catch {
-  // do something
-}
-```
+###### Alternative: Throw an exception on use of in-progress modules
 
-Given the amount of boilerplate code required to implement this behavior, one could argue that the language specification should codify this behavior by saying that `import()` should always reject if the imported module has not finished evaluating. However, that behavior would make `import()` a less predictable abstraction for importing asynchronous modules, since it would deprive modules using top-level `await` safely (that is, without creating dependency cycles) of the chance to finish async work, just because they were imported using `import()`. Given the likelihood that these "safe" modules will vastly outnumber modules using top-level `await` unsafely, rejection should not be a blanket policy, but instead an option for handling specific cases of circular imports.
+In `b.mjs`, reject the Promise when importing `a.mjs` because that module hasn't completed yet, to prevent a deadlock.
 
-Instead of `import()` rejecting if the imported module is suspended on an `await` expression, it might be useful if there was a way for dynamic `import()` to obtain a reference to the incomplete module namespace object, similar to how CommonJS `require` returns an incomplete `module.exports` object in the event of cycles. As long as the incomplete namespace object provides enough information, or the namespace object isn't used until later, this strategy would allow the application to keep making progress, rather than deadlocking. In contrast to CommonJS, ECMAScript modules can better enforce TDZ restrictions (preventing export use before initialization), and can throw more useful static errors. However, preventing any access to the incomplete namespace object would be a loss of functionality compared to CommonJS.
+###### Case study: Race to `import()` a module
 
-#### Doesn't Variant B break the Polyfill use case?
+Both of these strategies fall over when considering that multiple pieces of code may want to dynamically import the same module. Such multiple imports would not ordinarily be any sort of race or deadlock to worry about. However, neither of the above mechanisms would handle the situation well: One would reject the Promise, and the other would fail to wait for the imported module to be initailized.
 
-There currently isn't a way to dynamically import polyfills and ensure they are loaded before other code executes.
+###### Conclusion: No feasible strategy for deadlock avoidance
 
-With Variant A individuals would be able to dynamically import polyfills and be guaranteed they would load before other code executes.
+## History
 
-With Variant B there is no guarantee that other code wouldn't execute prior to the polyfill being available. Module goal scripts are [deferred by default][defer] [with execution order between multiple scripts being guaranteed](https://html.spec.whatwg.org/multipage/scripting.html#attr-script-defer). In the case of wanting to have dynamic polyfills that are guaranteed to execute prior to application code one could import polyfills as a seperate scipt tag in their html
+[The `async` / `await` proposal](https://github.com/tc39/ecmascript-asyncawait) was originally brought to committee in [January of 2014](https://github.com/tc39/tc39-notes/blob/master/es6/2014-01/jan-30.md). In [April of 2014](https://github.com/tc39/tc39-notes/blob/master/es6/2014-04/apr-10.md) it was discussed that the keyword `await` should be reserved in the module goal for the purpose of top-level `await`. In [July of 2015](https://github.com/tc39/tc39-notes/blob/master/es7/2015-07/july-30.md) [the `async` / `await` proposal](https://github.com/tc39/ecmascript-asyncawait) advanced to Stage 2. During this meeting it was decided to punt on top-level `await` to not block the current proposal as top-level `await` would need to be "designed in concert with the loader".
 
-```html
-<!-- This script will execute before… -->
-<script type="module" src="polyfills.mjs"></script>
-<!-- …this script. -->
-<script type="module" src="index.mjs"></script>
-```
+Since the decision to delay standardizing top-level `await` it has come up in a handful of committee discussions, primarily to ensure that it would remain possible in the language.
+
+In May 2018, this proposal reached Stage 2 in TC39's process, with many design decisions (in particular, whether to block "sibling" execution) left open to be discussed during Stage 2.
 
 ## Specification
 
