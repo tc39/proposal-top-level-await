@@ -316,7 +316,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-alg>
       1. Let _module_ be this Source Text Module Record.
       1. Assert: _module_.[[Status]] is `"instantiated"` or `"evaluated"`.
-      1. Let _stack_ be a new empty List.
+      1. Let _stack_ be a new empty List <ins>of Records of the form { [[Module]]: a Source Text Module Record, [[Capability]]: a Promise Capability for the [[ExecPromise]] of the [[Module]] }</ins>.
       1. <del>Let _result_ be </del><ins>Perform ! </ins>InnerModuleEvaluation(_module_, _stack_, 0).
       1. <ins>Assert: _stack_ is empty.</ins>
       1. <ins>Assert: _module_.[[Status]] is `"evaluated"`.</ins>
@@ -357,33 +357,40 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. <ins>Let _evalCapability_ be ! NewPromiseCapability(%Promise%).</ins>
         1. <ins>Set _module_.[[ExecPromise]] to _evalCapability_.[[Promise]].
         1. Set _index_ to _index_ + 1.
-        1. Append _module_ to _stack_.
+        1. Append <del>_module_</del><ins>{ [[Module]]: _module_, [[Capability]]: _evalCapability_ }</ins> to _stack_.
         1. <ins>Let _dependencyExecPromises_ be an empty List.</ins>
         1. For each String _required_ that is an element of _module_.[[RequestedModules]], do
           1. Let _requiredModule_ be ! HostResolveImportedModule(_module_, _required_).
           1. NOTE: Instantiate must be completed successfully prior to invoking this method, so every requested module is guaranteed to resolve successfully.
           1. Set _index_ to ? InnerModuleEvaluation(_requiredModule_, _stack_, _index_).
           1. Assert: _requiredModule_.[[Status]] is either `"evaluating"` or `"evaluated"`.
-          1. Assert: _requiredModule_.[[Status]] is `"evaluating"` if and only if _requiredModule_ is in _stack_.
+          1. Assert: _requiredModule_.[[Status]] is `"evaluating"` if and only if <del>_requiredModule_ is in _stack_</del><ins>_stack_ contains an entry _entry_ such that _entry_.[[Module]] is _requiredModule_</ins>.
           1. <ins>If _requiredModule_.[[Status]] is `"evaluated"`, then</ins>
-            1. <ins>Add _requiredModule_.[[ExecPromise]] to the list _dependencyExecPromises_.</ins>
+            1. <ins>If _requiredModule_.[[ExecPromise]] is settled, then</ins>
+              1. <ins>If _requiredModule_.[[ExecPromise]] is rejected, then</ins>
+                1. <ins>Let _reason_ be _module_.[[ExecPromise]].[[PromiseResult]].</ins>
+                1. <ins>Perform ! Call(_evalCapability_.[[Reject]], *undefined*, &laquo; _requiredModule_.[[ExecPromise]].[[PromiseResult]])</ins>
+            1. <ins>Otherwise,</ins>
+              1. <ins>Add _requiredModule_.[[ExecPromise]] to the list _dependencyExecPromises_.</ins>
           1. If _requiredModule_.[[Status]] is `"evaluating"`, then
             1. Assert: _requiredModule_ is a Source Text Module Record.
             1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
-            1. <ins>Let _stackErrorCapability_ be ! NewPromiseCapability(%Promise%).</ins>
-            1. <ins>Perform ! PerformPromiseThen(_requiredModule_.[[ExecPromise]], *undefined*, _stackErrorCapability_.[[Reject]]).</ins>
-            1. <ins>Add _stackErrorCapability_ to the list _dependencyExecPromises_.</ins>
         1. <del>Perform ? ModuleExecution(_module_).</del>
-        1. <ins>Perform ! ExecuteModuleWhenImportsReady(_module_, _dependencyExecPromises_, _evalCapability_).</ins>
-        1. Assert: _module_ occurs exactly once in _stack_.
+        1. <ins>If _evalCapability_.[[Promise]] is not rejected,</ins>
+          1. <ins>Perform ! ExecuteModuleWhenImportsReady(_module_, _dependencyExecPromises_, _evalCapability_).</ins>
+        1. Assert: _module_ occurs exactly once in <ins>a [[Module]] field of a record of</ins> _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
         1. If _module_.[[DFSAncestorIndex]] equals _module_.[[DFSIndex]], then
           1. Let _done_ be *false*.
           1. Repeat, while _done_ is *false*,
-            1. Let _requiredModule_ be the last element in _stack_.
+            1. Let <del>_requiredModule_<del><ins>_record_</ins> be the last element in _stack_.
+            1. <ins>Let _requiredModule_ be _record_.[[Module]]</ins>
             1. Remove the last element of _stack_.
             1. Set _requiredModule_.[[Status]] to `"evaluated"`.
             1. If _requiredModule_ and _module_ are the same Module Record, set _done_ to *true*.
+            1. <ins>Otherwise, if _module_.[[ExecPromise]] is rejected,</ins>
+              1. <ins>Let _reason_ be _module_.[[ExecPromise]].[[PromiseResult]].</ins>
+              1. <ins>Perform ! Call(_record_.[[Capability]].[[Reject]], *undefined*, &laquo; _reason_ &raquo;).</ins>
         1. Return _index_.
       </emu-alg>
       <emu-note>
