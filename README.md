@@ -46,7 +46,7 @@ This pattern is appropriate for situations where loading a module is intended to
 ```mjs
 // usage.mjs
 import { output } from "./awaiting.mjs";
-export function outputPlusValue(value) { return output + value }
+export function outputPlusValue(value) { return output + value; }
 
 console.log(outputPlusValue(100));
 setTimeout(() => console.log(outputPlusValue(100), 1000);
