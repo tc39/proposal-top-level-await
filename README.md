@@ -24,7 +24,7 @@ async function main() {
   output = process(dynamic.default, data);
 }
 main();
-export output;
+export { output };
 ```
 
 This pattern can also be immediately invoked. You could call this an Immediately Invoked Async Function Expression (IIAFE), as a play on [IIFE](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) idiom.
@@ -38,7 +38,7 @@ let output;
   const data = await fetch(url);
   output = process(dynamic.default, data);
 })();
-export output;
+export { output };
 ```
 
 This pattern is appropriate for situations where loading a module is intended to schedule work that will happen some time later. However, the exports from this module may be accessed before this async function completes: If another module imports this one, it may see `output` as `undefined`, or it may see it after it's initialized to the return value of `process`, depending on when the access occurs! For example:
@@ -65,7 +65,7 @@ export default (async () => {
   const data = await fetch(url);
   output = process(dynamic.default, data);
 })();
-export output;
+export { output };
 ```
 
 Then, the module could be used as:
