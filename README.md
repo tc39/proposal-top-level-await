@@ -274,8 +274,6 @@ Currently (in a world without top-level `await`), polyfills are synchronous. So,
 
 Yes. In particular, if none of the imported modules have a top-level `await`, there will still be a delay of some turns on the Promise job queue until the module body executes. The goal here is to avoid too much synchronous behavior, which would break if something turns out to be asynchronous in the future, or even alternate between those two depending on runtime conditions ("releasing Zalgo"). Similar considerations led to the decision that `await` should always be asynchronous, even if passed a non-Promise.
 
-To avoid reordering the execution of modules due to job queue activity, when there is no need to wait on a not-yet-resolved module, the job queue is run to completion after loading a module.
-
 Note, this is an observable change from current ES Module semantics, where the Evaluate phase is entirely synchronous. For a concrete example and further discussion, see [issue #43](https://github.com/tc39/proposal-top-level-await/issues/43) and [#47](https://github.com/tc39/proposal-top-level-await/issues/47).
 
 #### Does top-level `await` increase the risk of deadlocks?
