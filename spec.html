@@ -372,7 +372,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
         1. <del>Perform ? ModuleExecution(_module_).</del>
         1. <ins>Perform ! ExecuteModuleWhenImportsReady(_module_, _dependencyExecPromises_, _evalCapability_).</ins>
-        1. <ins>Perform ! FlushJobs().</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
         1. If _module_.[[DFSAncestorIndex]] equals _module_.[[DFSIndex]], then
@@ -508,19 +507,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     </emu-note>
   </emu-clause>
 
-  <emu-clause id="sec-flushjobs" aoid="FlushJobs">
-    <h1>FlushJobs ( )</h1>
-    <emu-alg>
-      1. Assert: There is no running execution context.
-      1. Yield control to the RunJobs algorithm.
-      1. When RunJobs has no more jobs to run, return from this algorithm.
-    </emu-alg>
-    <emu-note type=editor>
-      <p>This algorithm completes asynchronously, but is to be used synchronously within a larger ECMAScript algorithm. For this reason, it may only be called when there is no running execution context.</p>
-      <p>HTML and ECMAScript have different notions of how the Job Queue works, with HTML employing a willful violation to describe the layering; see <a href="https://html.spec.whatwg.org/#integration-with-the-javascript-job-queue">Integration with the JavaScript job queue</a> for details.See <a href="https://github.com/tc39/ecma262/pull/735">#735</a> for one approach to improving the layering. Until some kind of fix in this area occurs, this proposal sticks with the "willful violation" layering approach.</p>
-      <p>In the HTML context, the FlushJobs() algorithm would be replaced, via a willful violation, with the <a href="https://html.spec.whatwg.org/#perform-a-microtask-checkpoint">perform a microtask checkpoint</a> algorithm</p>
-    </emu-note>
-  </emu-clause>
 </emu-clause>
 
 <emu-clause id="sec-modules">
