@@ -553,7 +553,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-note type=editor>
       <p>This algorithm completes asynchronously, but is to be used synchronously within a larger ECMAScript algorithm. For this reason, it may only be called when there is no running execution context.</p>
       <p>HTML and ECMAScript have different notions of how the Job Queue works, with HTML employing a willful violation to describe the layering; see <a href="https://html.spec.whatwg.org/#integration-with-the-javascript-job-queue">Integration with the JavaScript job queue</a> for details.See <a href="https://github.com/tc39/ecma262/pull/735">#735</a> for one approach to improving the layering. Until some kind of fix in this area occurs, this proposal sticks with the "willful violation" layering approach.</p>
-      <p>In the HTML context, the FlushJobs() algorithm would be replaced, via a willful violation, with the <a href="https://html.spec.whatwg.org/#perform-a-microtask-checkpoint">perform a microtask checkpoint</a> algorithm</p>
+      <p>In the HTML context, the FlushJobs() algorithm would be replaced, via a willful violation, with the <a href="https://html.spec.whatwg.org/#perform-a-microtask-checkpoint">perform a microtask checkpoint</a> algorithm or <a href="https://html.spec.whatwg.org/#queue-a-task">queue a task</a> to continue the algorithm. See <a href="https://github.com/whatwg/html/issues/4400">HTML issue #4400</a> for further discussion.</p>
     </emu-note>
   </emu-clause>
 </emu-clause>
