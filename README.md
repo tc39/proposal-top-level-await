@@ -407,6 +407,20 @@ Just like `async` functions, modules which contain top-level `await` need to be 
 
 The same applies to top-level `await`--their dependencies need to `await` the module when importing, and recursively so. This means that, just like changing a function into an `async` function, it's a semver-major change to add top-level `await` to a module. We will need to document this effect carefully, to avoid potential ecosystem breakage.
 
+#### What's the difference between `import await "module"` and `await import("module")`?
+
+`import await` starts fetching during the `Fetch and Parse` phase, while `await import()` starts fetching during the `Evaluation` phase.
+
+Multiple `import await` will run in parallel, while multiple `await import()` will run sequential.
+
+Exports of `import await` can be analysed statically and incorrect export names will result in a SyntaxError. Analyzing `await import()` is harder and incorrect export names will result in `undefined` and a RuntimeError.
+
+`import await` is hoisted, `await import()` is an Expression and not hoisted.
+
+`import await` can only be placed on top-level, while `await import()` can be placed at top-level or in async functions at any location where an Expression is allowed. 
+
+`import await` must be used with a String Literal, while `await import()` can be used with any expression as argument (``await import(`./data/${value}.js`)``)
+
 ## History
 
 [The `async` / `await` proposal](https://github.com/tc39/ecmascript-asyncawait) was originally brought to committee in [January of 2014](https://github.com/tc39/tc39-notes/blob/master/es6/2014-01/jan-30.md). In [April of 2014](https://github.com/tc39/tc39-notes/blob/master/es6/2014-04/apr-10.md) it was discussed that the keyword `await` should be reserved in the module goal for the purpose of top-level `await`. In [July of 2015](https://github.com/tc39/tc39-notes/blob/master/es7/2015-07/july-30.md) [the `async` / `await` proposal](https://github.com/tc39/ecmascript-asyncawait) advanced to Stage 2. During this meeting it was decided to punt on top-level `await` to not block the current proposal as top-level `await` would need to be "designed in concert with the loader".
