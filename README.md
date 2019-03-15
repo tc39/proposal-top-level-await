@@ -135,7 +135,7 @@ export const output = process(dynamic.default, data);
 
 ```mjs
 // usage.mjs
-import { output } from "./awaiting.mjs";
+import await { output } from "./awaiting.mjs";
 export function outputPlusValue(value) { return output + value }
 
 console.log(outputPlusValue(100));
@@ -159,6 +159,8 @@ dependencies. This is useful for things like development/production splits,
 internationalization, environment splits, etc.
 
 ### Resource initialization
+
+Talking to the database, reading or writing to a file, etc., may make more sense either after initial page load (i.e., loaded with `import()`) or in a non-web application than on the web blocking initial page load. Be careful what you `import await`, as it may affect startup time.
 
 ```mjs
 const connection = await dbConnector();
@@ -184,14 +186,31 @@ Some kinds of dependency fallbacks may be handled by [import maps](https://githu
 
 WebAssembly Modules are "compiled" and "instantiated" in a logically asynchronous way, based on their imports: Some WebAssembly implementations do nontrivial work at either phase, which is important to be able to shunt off into another thread. To integrate with the JavaScript module system, they will need to do the equivalent of a top-level await. See the [WebAssembly ESM integration proposal](https://github.com/webassembly/esm-integration) for more details.
 
+## New syntax
+
+This proposal allows `await` to be used at the top-level of a module, outside of functions.
+
+This proposal adds a new type of `import` statement, which is `import await`. `import await` can be used both modules which do and don't contain a top-level `await`. However, `import` statements may not be used on modules with top-level `await`--that misuse causes an error during the Linking phase. Some forms of `import await`:
+- `import await "specifier";`
+- `import await * as namespace from "specifier";`
+- `import await { name } from "specifier";`
+- `import await defaultExport from "specifier";`
+- etc.
+
+There are also `export await` statements for re-exporting from modules with top-level await:
+- `export await * from "specifier";`
+- `export await { name, name2 as name3 } from "specifier";`
+
 ## Semantics as desugaring
 
-Currently, a module waits for all of its dependencies to execute all of their statements before the import is considered finished, and the module's code can run. This proposal maintains this property when introducing `await`, : dependencies still execute through to the end, even if you need to wait for that execution to finish asynchronously. One way to think of this is as if each module exported a Promise, and after all the `import` statements, but before the rest of the module, the Promises are all `await`ed:
+Currently, a module waits for all of its dependencies to execute all of their statements before the import is considered finished, and the module's code can run. This proposal maintains this property when introducing top-level `await`: dependencies still execute through to the end, even if you need to wait for that execution to finish asynchronously.
+
+One way to think of this is: each module imported with `import await` exports a Promise, and after all the `import` statements, but before the rest of the module, the Promises are all `await`ed:
 
 ```mjs
-import { a } from './a.mjs';
-import { b } from './b.mjs';
-import { c } from './c.mjs';
+import await { a } from './a.mjs';
+import await { b } from './b.mjs';
+import await { c } from './c.mjs';
 
 console.log(a, b, c);
 ```
@@ -226,15 +245,21 @@ It's true that top-level `await` gives developers a new tool to make their code 
 
 We've seen this work well in the past. For example, it's easy to write code with async/await that serializes two tasks that could be done in parallel, but a deliberate developer education effort has popularized the use of `Promise.all` to avoid this hazard.
 
-##### Will top-level `await` encourage developers to use `import()` unnecessarily, which is less optimizable?
+As with async/await, top-level await makes it explicit when execution is being blocked, giving programmers control over when it's appropriate to do so.
+
+##### Will top-level `await` encourage developers to use `import()` unnecessarily?
 
 Many JavaScript developers are learning about `import()` specifically as a tool for code splitting. People are becoming aware of the relationship between bundling and multiple requests, and learning how to combine them for good application performance. Top-level `await` doesn't really change the calculus--using `import()` from a top-level `await` will have similar performance effects to using it from a function. As long as we can tie top-level `await`'s educational materials into the existing knowledge of that performance tradeoff, we hope to be able to avoid counterproductive increases in the use of `import()`.
 
+In this proposal, `import()`, like `import await`, can be used with both modules that include and exclude top-level await. The parity of behavior here lets developers chose whichever is appropriate.
+
 #### What exactly is blocked by a top-level `await`?
 
-When one module imports another one, the importing module will only start executing its module body once the dependency's body has finished executing. If the dependency reaches a top-level await, that will have to complete before the importing module's body starts executing.
+When one module `import await`s another one, the importing module will only start executing its module body once the dependency's body has finished executing. If the dependency reaches a top-level await, that will have to complete before the importing module's body starts executing.
 
-#### Why doesn't top-level `await` block the import of an adjacent module?
+#### If there are two consecutive `import await` statements, does the first one finish before the second one starts?
+
+Just as import statements are hoisted to the top of a module, and the fetches are done in parallel, the `await`s are done in parallel too, and before the rest of the module runs.
 
 If one module wants to declare itself dependent on another module, for the purposes of waiting for that other module to complete its top-level `await` statements before the module body executes, it can declare that other module as an import.
 
@@ -254,8 +279,8 @@ console.log("Y");
 
 ```mjs
 // z.mjs
-import "./x.mjs";
-import "./y.mjs";
+import await "./x.mjs";
+import await "./y.mjs";
 ```
 
 Dependencies are required to be explicitly noted in order to boost the potential for parallelism: Most setup work that will be blocking due to a top-level await (for example, all of the case studies above) can be done in parallel with other setup work from unrelated modules. When some of this work may be highly parallelizable (e.g., network fetches), it's important to get as many of these queued up close to the start of execution as possible.
@@ -268,13 +293,17 @@ To be specific: Regardless of whether top-level `await` is used, modules always 
 
 #### Do these guarantees meet the needs of polyfills?
 
-Currently (in a world without top-level `await`), polyfills are synchronous. So, the idiom of importing a polyfill (which modifies the global object) and then importing a module which should be affected by the polyfill will still work if top-level `await` is added. However, if a polyfill includes a top-level `await`, it will need to be imported by modules that depend on it in order to reliably take effect.
+Currently (in a world without top-level `await`), polyfills are synchronous. If they are imported with `import` and not `import await`, then they are guaranteed to run to completion in the order they are declared. So, the idiom of importing a polyfill (which modifies the global object) and then importing a module which should be affected by the polyfill will still work, even if other modules use top-level `await`.
+
+If a polyfill includes a top-level `await`, and is used with `import await`, it will need to be imported by modules that depend on it in order to reliably take effect, as its `await` could make it finish running after sibling imports, which happen in parallel. However, up until the first `await`, it will be executed synchronously, in the order that the `import` statements happen.
 
 #### Does the `Promise.all` happen even if none of the imported modules have a top-level `await`?
 
-Yes. In particular, if none of the imported modules have a top-level `await`, there will still be a delay of some turns on the Promise job queue until the module body executes. The goal here is to avoid too much synchronous behavior, which would break if something turns out to be asynchronous in the future, or even alternate between those two depending on runtime conditions ("releasing Zalgo"). Similar considerations led to the decision that `await` should always be asynchronous, even if passed a non-Promise.
+Each module which is imported with `import await` is included in the `Promise.all`, whether they include a top-level await or not. Modules which are imported with plain `import` are not.
 
-Note, this is an observable change from current ES Module semantics, where the Evaluate phase is entirely synchronous. For a concrete example and further discussion, see [issue #43](https://github.com/tc39/proposal-top-level-await/issues/43) and [#47](https://github.com/tc39/proposal-top-level-await/issues/47).
+The goal here is to avoid too much synchronous behavior, which would break if something turns out to be asynchronous in the future, or even alternate between those two depending on runtime conditions ("releasing Zalgo"). Similar considerations led to the decision that `await` should always be asynchronous, even if passed a non-Promise.
+
+There is no observable change here from current ES Module semantics; the Evaluate phase remains entirely synchronous when top-level await, including `import await`, is not used. Previous proposal iterations did make changes here; for further discussion, see [issue #43](https://github.com/tc39/proposal-top-level-await/issues/43) and [#47](https://github.com/tc39/proposal-top-level-await/issues/47).
 
 #### Does top-level `await` increase the risk of deadlocks?
 
@@ -361,6 +390,22 @@ In `b.mjs`, reject the Promise when importing `a.mjs` because that module hasn't
 Both of these strategies fall over when considering that multiple pieces of code may want to dynamically import the same module. Such multiple imports would not ordinarily be any sort of race or deadlock to worry about. However, neither of the above mechanisms would handle the situation well: One would reject the Promise, and the other would fail to wait for the imported module to be initailized.
 
 ###### Conclusion: No feasible strategy for deadlock avoidance
+
+#### Doesn't this proposal lack some kind of symmetry, in terms of `import`/`export` or `async`/`await`?
+
+If there's `await`, the logical thing would be for a corresponding `async`. Or, if you decorate the `import` with `await`, you may expect that there be something corresponding on the `export`.
+
+Unfortunately, neither of these make sense here. The logical unit which is asynchronous here is the module itself. However, there's no syntactic signifier in JavaScript to indicate the module, so noplace to hang the `async` off of. And, it would be strange to declare each export `async` as well--modules with no exports can contain a top-level `await` as well, and multiple `async`s in a file would be redundant.
+
+Therefore, this proposal relies on whether the module contains a top-level `await` to determine whether it's synchronous or asynchronous.
+
+#### Wouldn't `import await` be viral?
+
+Just like `async` functions, modules which contain top-level `await` need to be `await`-ed to use their result. And also like `async` functions, modules containing top-level `await` can be invoked to get their result as a `Promise`, which can be passed around flexibly before `await`-ing it. (In the case of modules, that call is through `import()`.)
+
+`async` functions and top-level `await` can be thought of as being "viral" because they have to be considered all the way up the call stack/dependency chain. You can't just change an ordinary function to an async function without considering its users, who would probably be broken, unless they happen to always `await` the result. It would be quite unusual for them to do such defensive `await`-ing, and we don't seem to see that catching on as an idiom.
+
+The same applies to top-level `await`--their dependencies need to `await` the module when importing, and recursively so. This means that, just like changing a function into an `async` function, it's a semver-major change to add top-level `await` to a module. We will need to document this effect carefully, to avoid potential ecosystem breakage.
 
 ## History
 
