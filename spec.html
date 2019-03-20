@@ -552,14 +552,11 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Append _ee_ to _starExportEntries_.
         1. Else,
           1. Append _ee_ to _indirectExportEntries_.
-      1. <ins>Let _async_ be ContainsAwait of _body_.</ins>
+      1. <ins>Let _async_ be _body_ Contains |AwaitExpression|.</ins>
       1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: *undefined*, [[Namespace]]: *undefined*, <ins>[[EvaluationPromise]]: *undefined*, </ins>[[Status]]: `"uninstantiated"`, [[EvaluationError]]: *undefined*, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: *undefined*, [[DFSAncestorIndex]]: *undefined*, <ins>[[Async]]: _async_, [[ModuleAsync]]: _async_</ins> }.
     </emu-alg>
     <emu-note>
       <p>An implementation may parse module source text and analyse it for Early Error conditions prior to the evaluation of ParseModule for that module source text. However, the reporting of any errors must be deferred until the point where this specification actually performs ParseModule upon that source text.</p>
-    </emu-note>
-    <emu-note type=editor>
-      <p>ContainsAwait needs a formal definition, but the idea is to check whether the code contains a top-level await.</p>
     </emu-note>
   </emu-clause>
 
@@ -588,7 +585,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Return Completion(_result_).
         1. <ins>Otherwise,</ins>
           1. <ins>Assert: _capability_ was provided.</ins>
-          1. <ins>Perform ! AsyncModuleStart(_capability_, _module_.[[ECMAScriptCode]], _moduleCxt_, _module_).</ins>
+          1. <ins>Perform ! AsyncBlockStart(_capability_, _module_.[[ECMAScriptCode]], _moduleCxt_).</ins>
           1. <ins>Return.</ins>
       </emu-alg>
     </emu-clause>
