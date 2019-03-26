@@ -272,9 +272,9 @@ Currently (in a world without top-level `await`), polyfills are synchronous. So,
 
 #### Does the `Promise.all` happen even if none of the imported modules have a top-level `await`?
 
-Yes. In particular, if none of the imported modules have a top-level `await`, there will still be a delay of some turns on the Promise job queue until the module body executes. The goal here is to avoid too much synchronous behavior, which would break if something turns out to be asynchronous in the future, or even alternate between those two depending on runtime conditions ("releasing Zalgo"). Similar considerations led to the decision that `await` should always be asynchronous, even if passed a non-Promise.
+If the module's execution is deterministically synchronous (that is, if it and its dependencies each contain no top-level `await`), there will be no entry in the `Promise.all` for that module. In this case, it will run synchronously.
 
-Note, this is an observable change from current ES Module semantics, where the Evaluate phase is entirely synchronous. For a concrete example and further discussion, see [issue #43](https://github.com/tc39/proposal-top-level-await/issues/43) and [#47](https://github.com/tc39/proposal-top-level-await/issues/47).
+These semantics preserve the current behavior of ES Modules, where, when top-level `await` is not used, the Evaluate phase is entirely synchronous. The semantics are a bit in contrast with uses of Promises elsewhere. For a concrete example and further discussion, see [issue #43](https://github.com/tc39/proposal-top-level-await/issues/43) and [#47](https://github.com/tc39/proposal-top-level-await/issues/47).
 
 #### Does top-level `await` increase the risk of deadlocks?
 
