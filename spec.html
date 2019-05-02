@@ -504,7 +504,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
               1. Perform ! _module_.ExecuteModule(_capability_).
             1. Otherwise,
               1. Let _result_ be _module_.ExecuteModule().
-              1. If _result_ is an abrupt completion, then
+              1. If _result_ is a normal completion, then
                 1. Perform ! Call(_promiseCapability_.[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).
               1. Otherwise,
                 1. Perform ! Call(_promiseCapability_.[[Reject]], *undefined*, &laquo;_result_.[[Value]]&raquo;).
