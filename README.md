@@ -128,9 +128,9 @@ Top-level `await` lets us rely on the module system itself to handle all of thes
 ```mjs
 // awaiting.mjs
 import { process } from "./some-module.mjs";
-const dynamic = await import(computedModuleSpecifier);
-const data = await fetch(url);
-export const output = process(dynamic.default, data);
+const dynamic = import(computedModuleSpecifier);
+const data = fetch(url);
+export const output = process(await dynamic.default, await data);
 ```
 
 ```mjs
