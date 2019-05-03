@@ -470,75 +470,16 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Assert: _stack_ is empty.
         1. <ins>Return _capability_.</ins>
       1. <ins>Otherwise,</ins>
-        1. <ins>Perform ! InnerModuleEvaluationAsync(_module_, _stack_, 0).</ins>
+        1. <ins>Perform ! InnerModuleEvaluation(_module_, _stack_, 0).</ins>
         1. <ins>Assert: _module_.[[Status]] is `"evaluated"`.</ins>
         1. <ins>Assert: _stack_ is empty.</ins>
         1. <ins>Return _module_.[[EvaluationPromise]].</ins>
     </emu-alg>
 
-    <emu-clause id="sec-innermoduleevaluationasync" aoid="InnerModuleEvaluationAsync">
-      <h1><ins>InnerModuleEvaluationAsync( _module_, _stack_, _index_ )</ins></h1>
-
-      <p>The InnerModuleEvaluationAsync abstract operation is used by Evaluate to perform the actual evaluation process for the asynchronous Cyclic Module Record _module_, as well as recursively on all other modules in the dependency graph. The _stack_ and _index_ parameters, as well as _module_'s [[DFSIndex]] and [[DFSAncestoreIndex]] fields, are used the same way as in InnerModuleInstantiation.</p>
-
-      <p>This abstract operation performs the following steps:</p>
-
-      <emu-alg>
-        1. If _module_ is not a Source Text Module Record, then
-          1. Perform _module_.Evaluate().
-          1. Return _index_.
-        1. Assert: _module_.[[Async]] is *true*.
-        1. If _module_.[[Status]] is `"evaluated"`, then
-          1. If _module_.[[EvaluationError]] is *undefined*, return _index_.
-          1. Otherwise return _module_.[[EvaluationError]].
-        1. If _module_.[[Status]] is `"evaluating"`, return _index_.
-        1. Assert: _module_.[[Status]] is `"instantiated"`.
-        1. Set _module_.[[Status]] to `"evaluating"`.
-        1. Set _module_.[[DFSIndex]] to _index_.
-        1. Set _module_.[[DFSAncestorIndex]] to _index_.
-        1. Set _index_ to _index_ + 1.
-        1. Append _module_ to _stack_.
-        1. Let _syncDependencies_ be an empty List.
-        1. Let _asyncDependencies_ be an empty List.
-        1. For each String _required_ that is an element of _module_.[[RequestedModules]], do
-          1. Let _requiredModule_ be ! HostResolveImportedModule(_module_, _required_).
-          1. NOTE: Instantiate must be completed successfully prior to invoking this method, so every requested module is guaranteed to resolve successfully.
-          1. If _requiredModule_.[[Async]] is *true*, then
-            1. Set _index_ to ? InnerModuleEvaluationAsync(_requiredModule_, _stack_, _index_).
-          1. Assert: _requiredModule_.[[Status]] is either `"evaluating"` or `"evaluated"`.
-          1. Assert: _requiredModule_.[[Status]] is `"evaluating"` if and only if _requiredModule_ is in _stack_.
-          1. If _requiredModule_.[[Status]] is `"evaluated"`, then
-            1. If _requiredModule_.[[Async]] is *true*, then
-              1. Append _requiredModule_ to _asyncDependencies_.
-            1. Otherwise,
-              1. Append _requiredModule_ to _syncDependencies_.
-          1. If _requiredModule_.[[Status]] is `"evaluating"`, then
-            1. Assert: _requiredModule_ is a Cyclic Module Record.
-            1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
-        1. Let _completionHandlers_ be a new empty List.
-        1. Set _module_.[[AsyncExecution]] to AsyncExecution { [[Completion]]: *undefined*, [[CompletionHandlers]]: _completionHandlers_ }.
-        1. Perform ! ExecuteModuleWhenImportsReady(_module_, _asyncDependencies_, _syncDependencies_).
-        1. Assert: _module_ occurs exactly once in _stack_.
-        1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
-        1. If _module_.[[DFSAncestorIndex]] equals _module_.[[DFSIndex]], then
-          1. Let _done_ be *false*.
-          1. Repeat, while _done_ is *false*,
-            1. Let _requiredModule_ be the last element in _stack_.
-            1. Remove the last element of _stack_.
-            1. Set _requiredModule_.[[Status]] to `"evaluated"`.
-            1. If _requiredModule_ and _module_ are the same Module Record, set _done_ to *true*.
-            1. Set _requiredModule_.[[AsyncExecution]] to _module_.[[AsyncExecution]].
-        1. Return _index_.
-      </emu-alg>
-      <emu-note>
-        <p>A module is `"evaluating"` while it is being traversed by InnerModuleEvaluation. A module is `"evaluated"` when ModuleExecution has been called, even if that module execution is a promise that has not yet resolved.</p>
-      </emu-note>
-    </emu-clause>
-
     <emu-clause id="sec-innermoduleevaluation" aoid="InnerModuleEvaluation">
       <h1>InnerModuleEvaluation( _module_, _stack_, _index_ )</h1>
 
-      <p>The InnerModuleEvaluation abstract operation is used by Evaluate to perform the actual evaluation process for the <ins>synchronous</ins> Cyclic Module Record _module_, as well as recursively on all other modules in the dependency graph. The _stack_ and _index_ parameters, as well as _module_'s [[DFSIndex]] and [[DFSAncestoreIndex]] fields, are used the same way as in InnerModuleInstantiation.</p>
+      <p>The InnerModuleEvaluation abstract operation is used by Evaluate to perform the actual evaluation process for the Cyclic Module Record _module_, as well as recursively on all other modules in the dependency graph. The _stack_ and _index_ parameters, as well as _module_'s [[DFSIndex]] and [[DFSAncestoreIndex]] fields, are used the same way as in InnerModuleInstantiation.</p>
 
       <p>This abstract operation performs the following steps:</p>
 
@@ -546,7 +487,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. If _module_ is not a Source Text Module Record, then
           1. Perform _module_.Evaluate().
           1. Return _index_.
-        1. <ins>Assert: _module_.[[Async]] is *false*.</ins>
         1. If _module_.[[Status]] is `"evaluated"`, then
           1. If _module_.[[EvaluationError]] is *undefined*, return _index_.
           1. Otherwise return _module_.[[EvaluationError]].
@@ -557,16 +497,30 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Set _module_.[[DFSAncestorIndex]] to _index_.
         1. Set _index_ to _index_ + 1.
         1. Append _module_ to _stack_.
+        1. <ins>Let _syncDependencies_ be an empty List.</ins>
+        1. <ins>Let _asyncDependencies_ be an empty List.</ins>
         1. For each String _required_ that is an element of _module_.[[RequestedModules]], do
           1. Let _requiredModule_ be ! HostResolveImportedModule(_module_, _required_).
           1. NOTE: Instantiate must be completed successfully prior to invoking this method, so every requested module is guaranteed to resolve successfully.
-          1. Set _index_ to ? InnerModuleEvaluation(_requiredModule_, _stack_, _index_).
+          1. <ins>If _module_.[[Async]] is *false* or _requiredModule_.[[Async]] is *true*, then</ins>
+            1. <ins>Note: Synchronous dependencies of async modules have their execution deferred.</ins>
+            1. Set _index_ to ? InnerModuleEvaluation(_requiredModule_, _stack_, _index_).
           1. Assert: _requiredModule_.[[Status]] is either `"evaluating"` or `"evaluated"`.
           1. Assert: _requiredModule_.[[Status]] is `"evaluating"` if and only if _requiredModule_ is in _stack_.
           1. If _requiredModule_.[[Status]] is `"evaluating"`, then
             1. Assert: _requiredModule_ is a Cyclic Module Record.
             1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
-          1. Perform ? _module_.ExecuteModule().
+          1. <ins>If _module_.[[Async]] is *true*, then</ins>
+            1. <ins>If _requiredModule_.[[Async]] is *true*, then</ins>
+              1. <ins>Append _requiredModule_ to _asyncDependencies_.</ins>
+            1. <ins>Otherwise,</ins>
+              1. <ins>Append _requiredModule_ to _syncDependencies_.</ins>
+          1. <ins>Otherwise,</ins>
+            1. Perform ? _module_.ExecuteModule().
+        1. <ins>If _module_.[[Async]] is *true*, then</ins>
+          1. <ins>Let _completionHandlers_ be a new empty List.</ins>
+          1. <ins>Set _module_.[[AsyncExecution]] to AsyncExecution { [[Completion]]: *undefined*, [[CompletionHandlers]]: _completionHandlers_ }.</ins>
+          1. <ins>Perform ! ExecuteModuleWhenImportsReady(_module_, _asyncDependencies_, _syncDependencies_).</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
         1. If _module_.[[DFSAncestorIndex]] equals _module_.[[DFSIndex]], then
@@ -576,6 +530,8 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. Remove the last element of _stack_.
             1. Set _requiredModule_.[[Status]] to `"evaluated"`.
             1. If _requiredModule_ and _module_ are the same Module Record, set _done_ to *true*.
+            1. <ins>Otherwise, if _module_.[[Async]] is *true*, then</ins>
+              1. <ins>Set _requiredModule_.[[AsyncExecution]] to _module_.[[AsyncExecution]].</ins>
         1. Return _index_.
       </emu-alg>
       <emu-note>
