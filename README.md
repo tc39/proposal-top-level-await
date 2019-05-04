@@ -130,7 +130,7 @@ Top-level `await` lets us rely on the module system itself to handle all of thes
 import { process } from "./some-module.mjs";
 const dynamic = import(computedModuleSpecifier);
 const data = fetch(url);
-export const output = process(await dynamic.default, await data);
+export const output = process((await dynamic).default, await data);
 ```
 
 ```mjs
