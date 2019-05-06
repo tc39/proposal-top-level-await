@@ -358,7 +358,7 @@ In `b.mjs`, reject the Promise when importing `a.mjs` because that module hasn't
 
 ###### Case study: Race to `import()` a module
 
-Both of these strategies fall over when considering that multiple pieces of code may want to dynamically import the same module. Such multiple imports would not ordinarily be any sort of race or deadlock to worry about. However, neither of the above mechanisms would handle the situation well: One would reject the Promise, and the other would fail to wait for the imported module to be initailized.
+Both of these strategies fall over when considering that multiple pieces of code may want to dynamically import the same module. Such multiple imports would not ordinarily be any sort of race or deadlock to worry about. However, neither of the above mechanisms would handle the situation well: One would reject the Promise, and the other would fail to wait for the imported module to be initialized.
 
 ###### Conclusion: No feasible strategy for deadlock avoidance
 
