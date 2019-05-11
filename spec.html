@@ -433,9 +433,8 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Set _m_.[[Status]] to `"evaluated"`.
           1. Set _m_.[[EvaluationError]] to _result_.
         1. Assert: _module_.[[Status]] is `"evaluated"` and _module_.[[EvaluationError]] is _result_.
-        1. <del>Return _result_.</del>
         1. <ins>Perform ! Call(_module_.[[TopLevelCapability]].[[Reject]], *undefined*, &laquo;_result_.[[Value]]&raquo;).</ins>
-        1. <ins>Return _capability_.[[Promise]].</ins>
+        1. Return <del>_result_</del><ins>_capability_.[[Promise]]</ins>.
       1. Assert: _module_.[[Status]] is `"evaluated"`<ins> or `"evaluating-async"`</ins><del> and _module_.[[EvaluationError]] is *undefined*</del>.
       1. Assert: _stack_ is empty.
       1. Return <del>*undefined*</del><ins>_capability_.[[Promise]]</ins>.
