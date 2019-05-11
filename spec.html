@@ -128,28 +128,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           Field reserved for use by host environments that need to associate additional information with a module.
         </td>
       </tr>
-      <tr>
-        <td>
-          <ins>[[Async]]</ins>
-        </td>
-        <td>
-          <ins>*true* or *false*</ins>
-        </td>
-        <td>
-          <ins>Indicates whether this module is asynchronous. Abstract Module Record subclasses must not modify this field after the Instantiation phase.</ins>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <ins>[[EvaluationCapability]]</ins>
-        </td>
-        <td>
-          <ins>*undefined* | PromiseCapability</ins>
-        </td>
-        <td>
-          <ins>If [[Async]] is true, and evaluation of this module has begun, this field stores a PromiseCapability that resolves or rejects when evaluation of the module is complete.</ins>
-        </td>
-      </tr>
       </tbody>
     </table>
   </emu-table>
@@ -199,7 +177,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           Evaluate()
         </td>
         <td>
-          <p>If this module has already been evaluated successfully, return *undefined*; if it has already been evaluated unsuccessfully, throw the exception that was produced. Otherwise, Transitively evaluate all module dependencies of this module and then evaluate this module.</p>
+          <p><ins>Returns a promise for the evaluation of this module and its dependencies, resolving on successful evaluation or if it has already been evaluated, and rejecting for an evaluation error or</ins><del>If this module has already been evaluated successfully, return *undefined*; </del>if it has already been evaluated unsuccessfully<del>, throw the exception that was produced. Otherwise, Transitively evaluate all module dependencies of this module and then evaluate this module.</del></p>
           <p>Instantiate must have completed successfully prior to invoking this method.</p>
         </td>
       </tr>
@@ -233,7 +211,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             String
           </td>
           <td>
-            Initially `"uninstantiated"`. Transitions to `"instantiating"`, `"instantiated"`, `"evaluating"`, `"evaluated"` (in that order) as the module progresses throughout its lifecycle.
+            Initially `"uninstantiated"`. Transitions to `"instantiating"`, `"instantiated"`, `"evaluating"`, <ins>`"evaluating-async`" (for async modules and parents of async modules)</ins>, `"evaluated"` (in that order) as the module progresses throughout its lifecycle.
           </td>
         </tr>
         <tr>
@@ -244,7 +222,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             An abrupt completion | *undefined*
           </td>
           <td>
-            A completion of type ~throw~ representing the exception that occurred during evaluation.  *undefined* if no exception occurred, <ins>if the module is [[Async]],</ins> or if [[Status]] is not `"evaluated"`.
+            A completion of type ~throw~ representing the exception that occurred during evaluation. *undefined* if no exception occurred, or if [[Status]] is not `"evaluated"`.
           </td>
         </tr>
         <tr>
@@ -283,24 +261,24 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         </tr>
         <tr>
           <td>
-            <ins>[[ModuleAsync]]</ins>
+            <ins>[[Async]]</ins>
           </td>
           <td>
             <ins>*true* or *false*</ins>
           </td>
           <td>
-            <ins>Whether this module is individually asynchronous. A module may have [[Async]] *true* and [[ModuleAsync]] *false* if dependencies are asynchronous, but this module is not. This field must not change after the module is parsed.</ins>
+            <ins>Indicates whether this module contains top-level await syntax.</ins>
           </td>
         </tr>
         <tr>
           <td>
-            <ins>[[AsyncInitiator]]</ins>
+            <ins>[[TopLevelCapability]]</ins>
           </td>
           <td>
-            <ins>Cyclic Module Record | *undefined*</ins>
+            <ins>Promise Capability | *undefined*</ins>
           </td>
           <td>
-            <ins>If [[Async]] is true and execution has started, this tracks the top-level async job of this module.</ins>
+            <ins>If this module corresponds to a top-level evaluation job, this field contains the promise capability for that entire evaluation.</ins>
           </td>
         </tr>
         <tr>
@@ -311,7 +289,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             <ins>List of Cyclic Module Record | *undefined*</ins>
           </td>
           <td>
-            <ins>If [[Async]] is true and execution has started, this tracks the parent importers of this module for the top-level execution job.</ins>
+            <ins>If this module or a dependency has [[Async]] *true*, and execution is in progress, this tracks the parent importers of this module for the top-level execution job.</ins>
           </td>
         </tr>
         <tr>
@@ -322,7 +300,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             <ins>Integer | *undefined*</ins>
           </td>
           <td>
-            <ins>If [[Async]] is true and execution has started, this tracks the number of async dependency modules remaining to execute for this module.</ins>
+            <ins>This tracks the number of async dependency modules remaining to execute for this module if it has any asynchronous dependencies.</ins>
           </td>
         </tr>
       </tbody>
@@ -353,7 +331,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             ExecuteModule( <ins>[ _promiseCapability_ ]</ins> )
           </td>
           <td>
-            Initialize the execution context of the module and evaluate the module's code within it. <ins>If this module has *true* in [[ModuleAsync]], then a Promise Capability is passed as an argument, and the method is expected to resolve or reject the given capability. In this case, the method must not throw an exception, but instead reject the Promise Capability if necessary.</ins>
+            Initialize the execution context of the module and evaluate the module's code within it. <ins>If this module has *true* in [[Async]], then a Promise Capability is passed as an argument, and the method is expected to resolve or reject the given capability. In this case, the method must not throw an exception, but instead reject the Promise Capability if necessary.</ins>
           </td>
         </tr>
         </tbody>
@@ -414,8 +392,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. If _requiredModule_.[[Status]] is `"instantiating"`, then
             1. Assert: _requiredModule_ is a Cyclic Module Record.
             1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
-          1. <ins>If _requiredModule_.[[Async]] is *true*, then</ins>
-            1. <ins>Set _module_.[[Async]] to *true*.</ins>
         1. Perform ? _module_.InitializeEnvironment().
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
@@ -443,8 +419,13 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
 
     <emu-alg>
       1. Let _module_ be this Source Text Module Record.
-      1. Assert: _module_.[[Status]] is `"instantiated"`, <ins>`"evaluating-async"`</ins> or `"evaluated"`.
+      1. Assert: _module_.[[Status]] is `"instantiated"`<ins>, `"evaluating-async"`</ins> or `"evaluated"`.
+      1. <ins>If _module_.[[Status]] is `"evaluated"` or `"evaluating-async"`, set _module_ to GetAsyncCycleRoot(_module_).</ins>
+      1. <ins>If _module_.[[TopLevelCapability]] is not *undefined*, then</ins>
+        1. <ins>Return _module_.[[TopLevelCapability]].</ins>
       1. Let _stack_ be a new empty List.
+      1. <ins>Let _capability_ be ! NewPromiseCapability(%Promise%).</ins>
+      1. <ins>Set _module_.[[TopLevelCapability]] to _capability_.</ins>
       1. Let _result_ be InnerModuleEvaluation(_module_, _stack_, 0).
       1. If _result_ is an abrupt completion, then
         1. For each module _m_ in _stack_, do
@@ -452,11 +433,12 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Set _m_.[[Status]] to `"evaluated"`.
           1. Set _m_.[[EvaluationError]] to _result_.
         1. Assert: _module_.[[Status]] is `"evaluated"` and _module_.[[EvaluationError]] is _result_.
-        1. Return _result_.
-      1. Assert: _module_.[[Status]] is `"evaluated"`<ins> or `"evaluating-async"`</ins> and _module_.[[EvaluationError]] is *undefined*.
+        1. <del>Return _result_.</del>
+        1. <ins>Perform ! Call(_module_.[[TopLevelCapability]].[[Reject]], *undefined*, &laquo;_result_.[[Value]]&raquo;).</ins>
+        1. <ins>Return _capability_.[[Promise]].</ins>
+      1. Assert: _module_.[[Status]] is `"evaluated"`<ins> or `"evaluating-async"`</ins><del> and _module_.[[EvaluationError]] is *undefined*</del>.
       1. Assert: _stack_ is empty.
-      1. <ins>If _module_.[[Async]] is *true*, return _module_.[[EvaluationPromise]].</ins>
-      1. <ins>Otherwise</ins>, return *undefined*.
+      1. Return <del>*undefined*</del><ins>_capability_.[[Promise]]</ins>.
     </emu-alg>
 
     <emu-clause id="sec-innermoduleevaluation" aoid="InnerModuleEvaluation">
@@ -478,38 +460,25 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Set _module_.[[Status]] to `"evaluating"`.
         1. Set _module_.[[DFSIndex]] to _index_.
         1. Set _module_.[[DFSAncestorIndex]] to _index_.
+        1. <ins>Set _module_.[[PendingAsyncDependencies]] to 0.</ins>
         1. Set _index_ to _index_ + 1.
         1. Append _module_ to _stack_.
-        1. <ins>If _module_.[[Async]] is *true*, then</ins>
-          1. <ins>Set _module_.[[PendingAsyncDependencies]] to 0.</ins>
-          1. <ins>Set _module_.[[AsyncParentModules]] to a new empty List.</ins>
-          1. <ins>Let _capability_ be ! NewPromiseCapability(%Promise%).</ins>
-          1. <ins>Set _module_.[[EvaluationCapability]] to _capability_.</ins>
-          1. <ins>Set _module_.[[AsyncInitiator]] to the first module of _stack_.</ins>
         1. For each String _required_ that is an element of _module_.[[RequestedModules]], do
           1. Let _requiredModule_ be ! HostResolveImportedModule(_module_, _required_).
           1. NOTE: Instantiate must be completed successfully prior to invoking this method, so every requested module is guaranteed to resolve successfully.
           1. Set _index_ to ? InnerModuleEvaluation(_requiredModule_, _stack_, _index_).
-          1. Assert: _requiredModule_.[[Status]] is either `"evaluating"` <ins>`"evaluating-async"`</ins> or `"evaluated"`.
+          1. Assert: _requiredModule_.[[Status]] is either `"evaluating"`<ins>, `"evaluating-async"`</ins> or `"evaluated"`.
           1. Assert: _requiredModule_.[[Status]] is `"evaluating"` if and only if _requiredModule_ is in _stack_.
           1. If _requiredModule_.[[Status]] is `"evaluating"`, then
             1. Assert: _requiredModule_ is a Cyclic Module Record.
             1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
+          1. <ins>Otherwise, set _requiredModule_ to GetAsyncCycleRoot(_requiredModule_).</ins>
           1. <ins>If _requiredModule_.[[Status]] is `"evaluating-async"`, then</ins>
-            1. <ins>If _requiredModule_.[[AsyncInitiator]] is the first module of _stack_, then</ins>
-              1. <ins>Set _module_.[[PendingAsyncDependencies]]_ to _module_.[[PendingAsyncDependencies]]_ + 1.</ins>
-              1. <ins>Append _module_ to _requiredModule.[[AsyncParentModules]]_.</ins>
-            1. <ins>Otherwise,</ins>
-              1. <ins>Assert: This module execution was initiated by another top-level execution job.</ins>
-              1. <ins>Set _module_.[[PendingAsyncDependencies]]_ to _module_.[[PendingAsyncDependencies]]_ + 1.</ins>
-              1. <ins>Let _stepsFulfilled_ be the steps of _AsyncExecutionFulfilled_.</ins>
-              1. <ins>Let _onFulfilled_ be CreateBuiltinFunction(_stepsFulfilled_, &laquo; [[Module]] &raquo;).</ins>
-              1. <ins>Set _onFulfilled_.[[Module]] to _requiredModule_.</ins>
-              1. <ins>Let _stepsRejected_ be the steps of _AsyncExecutionRejected_.</ins>
-              1. <ins>Let _onRejected_ be CreateBuiltinFunction(_stepsRejected_, &laquo; [[Module]] &raquo;).</ins>
-              1. <ins>Set _onRejected_.[[Module]] to _requiredModule_.</ins>
-              1. <ins>Perform ! PerformPromiseThen(_requiredModule_.[[EvaluationCapability]].[[Promise]], _onFulfilled_, _onRejected_).</ins>
-        1. <ins>If _module_.[[Async]] is *false* or the length of _module_.[[PendingAsyncDependencies]] is 0, then</ins>
+            1. <ins>Set _module_.[[PendingAsyncDependencies]] to _module_.[[PendingAsyncDependencies]] + 1.</ins>
+            1. <ins>If _requiredModule_.[[AsyncParentModules]]_ is *undefined*, then</ins>
+              1. <ins>Set _requiredModule_.[[AsyncParentModules]] to a new empty List.</ins>
+            1. <ins>Append _module_ to _requiredModule.[[AsyncParentModules]]_.</ins>
+        1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, then</ins>
           1. Perform ? _module_.ExecuteModule()
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
@@ -518,55 +487,69 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Repeat, while _done_ is *false*,
             1. Let _requiredModule_ be the last element in _stack_.
             1. Remove the last element of _stack_.
-            1. <ins>If _module_.[[Async]] is *true*, set _requiredModule_.[[Status]] to `"evaluating-async"`.</ins>
+            1. <ins>If _module_.[[Async]] is *true* or _module_.[[PendingAsyncDependencies]] is not 0, then</ins>
+              1. <ins>Set _requiredModule_.[[Status]] to `"evaluating-async"`.</ins>
             1. <ins>Otherwise, </ins>set _requiredModule_.[[Status]] to `"evaluated"`.
             1. If _requiredModule_ and _module_ are the same Module Record, set _done_ to *true*.
-            1. <ins>Otherwise, if _module_.[[Async]] is *true*,</ins>
-              1. <ins>Set _requiredModule_.[[EvaluationCapability]] to _module_.[[EvaluationCapability]].</ins>
+            1. Otherwise, if _requiredModule_.[[TopLevelCapability]] is not *undefined*
         1. Return _index_.
       </emu-alg>
       <emu-note>
-        <p>A module is `"evaluating"` while it is being traversed by InnerModuleEvaluation. A module is `"evaluated"` on execution completion, and `"evaluating-async"` during execution if it is an asynchronous module.</p>
+        <p><ins>A module is `"evaluating"` while it is being traversed by InnerModuleEvaluation. A module is `"evaluated"` on execution completion, and `"evaluating-async"` during execution if it is an asynchronous module.</ins></p>
+      </emu-note>
+      <emu-note>
+        <p><ins>Any modules depending on a module of an async cycle when that cycle is not `"evaluating"` will instead depend on the execution of the root of the cycle via GetAsyncCycleRoot. This ensures that the cycle state can be treated as a single strongly connected component through its root module state.</ins></p>
       </emu-note>
     </emu-clause>
 
-    <emu-clause id="sec-executionfulfilled" aoid="AsyncExecutionFulfilled">
-      <h1><ins>AsyncExecutionFulfilled ()</ins></h1>
+    <emu-clause id="sec-getasynccycleroot" aoid="GetAsyncCycleRoot">
+      <h1><ins>GetAsyncCycleRoot ( _module_ )</ins></h1>
       <emu-alg>
-        1. Let _f_ be the active function object.
-        1. Let _module_ be _f_.[[Module]].
+        1. Repeat, while _module_.[[DFSIndex]] is greater than _module_.[[DFSAncestorIndex]],
+          1. Assert: _module_.[[AsyncParentModules]] is a non-empty List.
+          1. Let _nextCycleModule_ be the first element of _module_.[[AsyncParentModules]].
+          1. Assert: _nextCycleModule_.[[DFSAncestorIndex]] is equal to _module_.[[DFSAncestorIndex]].
+          1. Set _module_ to _nextCycleModule_.
+        1. Assert: _module_.[[DFSIndex]] is equal to _module_.[[DFSAncestorIndex]].
+        1. Return _module_.
+      </emu-alg>
+    </emu-clause>
+
+    <emu-clause id="sec-executionfulfilled" aoid="AsyncExecutionFulfilled">
+      <h1><ins>AsyncExecutionFulfilled ( _module_ )</ins></h1>
+      <emu-alg>
         1. Assert: _module_.[[Status]] is `"evaluating-async"`.
+        1. Assert: _module_.[[EvaluationError]] is *undefined*.
         1. Set _module_.[[Status]] to `"evaluated"`.
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
+          1. If _module_.[[DFSIndex]] is not equal to _module_.[[DFSAncestorIndex]], then
+            1. Assert: _m_.[[DFSAncestorIndex]] is equal to _module_.[[DFSAncestorIndex]].
           1. Decrement _m_.[[PendingAsyncDependencies]] by 1.
           1. If _m_.[[PendingAsyncDependencies]] is 0 and _m_.[[EvaluationError]] is *undefined*, then
             1. Assert _m_.[[Status]] is `"evaluating-async"`.
             1. Perform ! _module_.ExecuteModule().
-        1. If _module_.[[DFSAncestorIndex]] equals _module_.[[DFSIndex]], then
-          1. Perform ! Call(_module_.[[EvaluationCapability]].[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).
+        1. If _module_.[[TopLevelCapability]] is not *undefined*, then
+          1. Assert: _module_.[[DFSIndex]] is equal to _module_.[[DFSAncestorIndex]].
+          1. Perform ! Call(_module_.[[TopLevelCapability]].[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).
         1. Return *undefined*.
       </emu-alg>
-      <emu-note>
-        <p>When propagating ExecuteModule calls up the parent stack through multiple AsyncExecutionFulfilled handlers, the execution context should not be changed apart from the direct execution of the modules being executed in the stack.</p>
-      </emu-note>
     </emu-clause>
 
     <emu-clause id="sec-executionrejected" aoid="AsyncExecutionRejected">
-      <h1><ins>AsyncExecutionRejected ( _error_ )</ins></h1>
+      <h1><ins>AsyncExecutionRejected ( _module_, _error_ )</ins></h1>
       <emu-alg>
-        1. Let _f be the active function object.
-        1. Let _module_ be _f_.[[Module]].
         1. Assert: _module_.[[Status]] is `"evaluating-async"`.
         1. Assert: _module_.[[EvaluationError]] is *undefined*.
         1. Set _module_.[[Status]] to `"evaluated"`.
         1. Set _module_.[[EvaluationError]] to ThrowCompletion(_error_).
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
+          1. If _module_.[[DFSIndex]] is not equal to _module_.[[DFSAncestorIndex]], then
+            1. Assert: _m_.[[DFSAncestorIndex]] is equal to _module_.[[DFSAncestorIndex]].
           1. If _m_.[[Status]] is `"evaluating-async"`, then
-            1. Let _stepsRejected_ be the steps of _AsyncExecutionRejected_.
-            1. Let _parentRejected_ be CreateBuiltinFunction(_stepsRejected_, &laquo; [[Module]] &raquo;).
-            1. Set _parentRejected_.[[Module]] to _m_.
-            1. Perform ! Call(_parentRejected_, *undefined*, &laquo; _error_ &raquo;).
-        1. Perform ! Call(_module_.[[EvaluationCapability]].[[Reject]], *undefined*, &laquo;_error_&raquo;).
+            1. Perform ! AsyncExecutionRejected(_m_, _error_).
+        1. If _module_.[[TopLevelCapability]] is not *undefined*, then
+          1. Assert: _module_.[[DFSIndex]] is equal to _module_.[[DFSAncestorIndex]].
+          1. Perform ! Call(_module_.[[TopLevelCapability]].[[Reject]], *undefined*, &laquo;_error_&raquo;).
         1. Return *undefined*.
       </emu-alg>
     </emu-clause>
@@ -606,7 +589,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Else,
           1. Append _ee_ to _indirectExportEntries_.
       1. <ins>Let _async_ be _body_ Contains |AwaitExpression|.</ins>
-      1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: *undefined*, [[Namespace]]: *undefined*, <ins>[[Async]]: _async_, [[EvaluationCapability]]: *undefined*, [[AsyncParentModules]]: *undefined*, [[PendingAsyncDependencies]]: *undefined*, </ins>[[Status]]: `"uninstantiated"`, [[EvaluationError]]: *undefined*, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: *undefined*, [[DFSAncestorIndex]]: *undefined*, <ins>[[ModuleAsync]]: _async_</ins> }.
+      1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: *undefined*, [[Namespace]]: *undefined*, <ins>[[Async]]: _async_, [[TopLevelCapability]]: *undefined*, [[AsyncParentModules]]: *undefined*, [[PendingAsyncDependencies]]: *undefined*, </ins>[[Status]]: `"uninstantiated"`, [[EvaluationError]]: *undefined*, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: *undefined*, [[DFSAncestorIndex]]: *undefined* }.
     </emu-alg>
     <emu-note>
       <p>An implementation may parse module source text and analyse it for Early Error conditions prior to the evaluation of ParseModule for that module source text. However, the reporting of any errors must be deferred until the point where this specification actually performs ParseModule upon that source text.</p>
@@ -629,7 +612,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Set the VariableEnvironment of _moduleCxt_ to _module_.[[Environment]].
         1. Set the LexicalEnvironment of _moduleCxt_ to _module_.[[Environment]].
         1. Suspend the currently running execution context.
-        1. <ins>If _module_.[[ModuleAsync]] is *false*, then</ins>
+        1. <ins>If _module_.[[Async]] is *false*, then</ins>
           1. Push _moduleCxt_ on to the execution context stack; _moduleCxt_ is now the running execution context.
           1. Let _result_ be the result of evaluating _module_.[[ECMAScriptCode]].
           1. Suspend _moduleCxt_ and remove it from the execution context stack.
@@ -638,10 +621,16 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. <ins>Otherwise,</ins>
           1. <ins>Let _capability_ be ! NewPromiseCapability(%Promise%).</ins>
           1. <ins>Perform ! AsyncBlockStart(_capability_, _module_.[[ECMAScriptCode]], _moduleCxt_).</ins>
-          1. <ins>Let _stepsFulfilled_ be the steps of _AsyncExecutionFulfilled_.</ins>
+          1. <ins>Let _stepsFulfilled_ be the following steps</ins>
+            1. <ins>Let _F_ be the active function object.</ins>
+            1. <ins>Let _module_ be _F_.[[Module]].</ins>
+            1. <ins>Perform ! AsyncExecutionFulfilled(_module_).</ins>
           1. <ins>Let _onFulfilled_ be CreateBuiltinFunction(_stepsFulfilled_, &laquo; [[Module]] &raquo;).</ins>
           1. <ins>Set _onFulfilled_.[[Module]] to _module_.</ins>
-          1. <ins>Let _stepsRejected_ be the steps of _AsyncExecutionRejected_.</ins>
+          1. <ins>Let _stepsRejected_ be the following steps with argument _error_</ins>
+            1. <ins>Let _F_ be the active function object.</ins>
+            1. <ins>Let _module_ be _F_.[[Module]].</ins>
+            1. <ins>Perform ! AsyncExecutionRejected(_module_, _error_).</ins>
           1. <ins>Let _onRejected_ be CreateBuiltinFunction(_stepsRejected_, &laquo; [[Module]] &raquo;).</ins>
           1. <ins>Set _onRejected_.[[Module]] to _module_.</ins>
           1. <ins>Perform ! PerformPromiseThen(_capability_.[[Promise]], _onFulfilled_, _onRejected_).</ins>
