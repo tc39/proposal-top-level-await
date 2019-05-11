@@ -461,6 +461,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Set _module_.[[DFSIndex]] to _index_.
         1. Set _module_.[[DFSAncestorIndex]] to _index_.
         1. <ins>Set _module_.[[PendingAsyncDependencies]] to 0.</ins>
+        1. <ins>Set _requiredModule_.[[AsyncParentModules]] to a new empty List.</ins>
         1. Set _index_ to _index_ + 1.
         1. Append _module_ to _stack_.
         1. For each String _required_ that is an element of _module_.[[RequestedModules]], do
@@ -475,8 +476,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. <ins>Otherwise, set _requiredModule_ to GetAsyncCycleRoot(_requiredModule_).</ins>
           1. <ins>If _requiredModule_.[[Status]] is `"evaluating-async"`, then</ins>
             1. <ins>Set _module_.[[PendingAsyncDependencies]] to _module_.[[PendingAsyncDependencies]] + 1.</ins>
-            1. <ins>If _requiredModule_.[[AsyncParentModules]]_ is *undefined*, then</ins>
-              1. <ins>Set _requiredModule_.[[AsyncParentModules]] to a new empty List.</ins>
             1. <ins>Append _module_ to _requiredModule.[[AsyncParentModules]]_.</ins>
         1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, then</ins>
           1. Perform ? _module_.ExecuteModule()
