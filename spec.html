@@ -473,6 +473,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. Assert: _requiredModule_ is a Cyclic Module Record.
             1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
           1. <ins>Otherwise, set _requiredModule_ to GetCycleRoot(_requiredModule_).</ins>
+          1. <ins>If _requiredModule_.[[EvaluationError]] is not *undefined*, return _module_.[[EvaluationError]].</ins>
           1. <ins>If _requiredModule_.[[Status]] is `"evaluating-async"`, then</ins>
             1. <ins>Set _module_.[[PendingAsyncDependencies]] to _module_.[[PendingAsyncDependencies]] + 1.</ins>
             1. <ins>Append _module_ to _requiredModule.[[AsyncParentModules]]_.</ins>
