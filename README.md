@@ -276,6 +276,10 @@ If the module's execution is deterministically synchronous (that is, if it and i
 
 These semantics preserve the current behavior of ES Modules, where, when top-level `await` is not used, the Evaluate phase is entirely synchronous. The semantics are a bit in contrast with uses of Promises elsewhere. For a concrete example and further discussion, see [issue #43](https://github.com/tc39/proposal-top-level-await/issues/43) and [#47](https://github.com/tc39/proposal-top-level-await/issues/47).
 
+#### How exactly are dependencies waited on? Does it really use `Promise.all`?
+
+The semantics of modules without top-level `await` is synchronous: the whole tree executes in postorder, with a module running just after its dependencies have run. The same semantics apply to modules with top-level `await`: Once the module which contains top-level `await` has executed, it will trigger the synchronous execution of dependent modules whose dependencies have all executed. If a module does contain top-level `await`, even if the `await` is not dynamically reached, the whole module will be treated as "asynchronous", as if it were a big async function. Therefore, anything that runs when it's done is in a Promise reaction. However, from there, if there are multiple modules which are dependent on it, and these do not contain top-level await, then they will run synchronously, *without* any Promise work between them.
+
 #### Does top-level `await` increase the risk of deadlocks?
 
 Top-level `await` creates a new mechanism for deadlocks, but the champions of this proposal consider the risk to be worth it, because:
