@@ -267,7 +267,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             <ins>*true* or *false*</ins>
           </td>
           <td>
-            <ins>Indicates whether this module contains top-level await syntax.</ins>
+            <ins>Whether this module is individually asynchronous (for example, if it's a Source Text Module Record containing a top-level await). Having an asynchronous dependency does not make the module asynchronous. This field must not change after the module is parsed.</ins>
           </td>
         </tr>
         <tr>
@@ -278,7 +278,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             <ins>Promise Capability | *undefined*</ins>
           </td>
           <td>
-            <ins>If this module corresponds to a top-level evaluation job, this field contains the promise capability for that entire evaluation.</ins>
+            <ins>If this module was involved in a call of Evaluate(), this field contains the Promise capability for that entire evaluation.</ins>
           </td>
         </tr>
         <tr>
