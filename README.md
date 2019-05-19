@@ -196,7 +196,7 @@ import { c } from './c.mjs';
 console.log(a, b, c);
 ```
 
-would be equivalent to
+would be roughly equivalent to
 
 ```mjs
 import { promise as aPromise, a } from './a.mjs';
@@ -361,6 +361,18 @@ In `b.mjs`, reject the Promise when importing `a.mjs` because that module hasn't
 Both of these strategies fall over when considering that multiple pieces of code may want to dynamically import the same module. Such multiple imports would not ordinarily be any sort of race or deadlock to worry about. However, neither of the above mechanisms would handle the situation well: One would reject the Promise, and the other would fail to wait for the imported module to be initialized.
 
 ###### Conclusion: No feasible strategy for deadlock avoidance
+
+#### Should module loading include microtask checkpoints between modules, or yielding to the event loop after modules load? Should top-level await be a part of this?
+
+Maybe! These module loading questions are part of an exciting research area in loading performance, as well as an interesting discussion on the invariants surrounding microtask checkpoints. This proposal doesn't take an opinion on these questions. Host environments may wrap modules in a way which does these things, and the top-level await specification machinery can be used to coordinate things. A future proposal either in TC39 or in a host environment could add additional microtask checkpoints. For related discussion, see [whatwg/html#4400](https://github.com/whatwg/html/issues/4400).
+
+#### Will top-level await work in transpilers?
+
+The widely deployed CommonJS (CJS) module system does not directly support top-level await, so any transpilation strategy targeting it will need adjustments. However, within this context, we've made several adjustments to the semantics of top-level await based on the feedback and experience of the authors of several JavaScript module systems, including transpiler authors. This proposal aims to be implementable in such contexts.
+
+#### Would top-level await work in web pages?
+
+Yes. The details of the integration into the HTML specification is proposed at [whatwg/html#4352](https://github.com/whatwg/html/pull/4352).
 
 ## History
 
