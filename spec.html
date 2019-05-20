@@ -189,6 +189,8 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
 <emu-clause id="sec-cyclic-module-records">
   <h1>Cyclic Module Records</h1>
 
+  <p>A <dfn id="cyclic-module-record">Cyclic Module Record</dfn> is used to represent information about a module that can participate in dependency cycles with other modules that are subclasses of the Cyclic Module Record type. Module Records that are not subclasses of the Cyclic Module Record type must not participate in dependency cycles with Source Text Module Records.</p>
+
   <emu-table id="table-cyclic-module-fields" caption="Additional Fields of Cyclic Module Records">
     <table>
       <tbody>
@@ -352,7 +354,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       1. Let _stack_ be a new empty List.
       1. Let _result_ be InnerModuleInstantiation(_module_, _stack_, 0).
       1. If _result_ is an abrupt completion, then
-        1. For each module _m_ in _stack_, do
+        1. For each Cyclic Module Record _m_ in _stack_, do
           1. Assert: _m_.[[Status]] is `"instantiating"`.
           1. Set _m_.[[Status]] to `"uninstantiated"`.
           1. Set _m_.[[Environment]] to *undefined*.
@@ -376,7 +378,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. If _module_ is not a Cyclic Module Record, then
           1. Perform ? _module_.Instantiate().
           1. Return _index_.
-        1. If _module_.[[Status]] is `"instantiating"`, `"instantiated"`, <ins>`"evaluating-async"`</ins> or `"evaluated"`, then
+        1. If _module_.[[Status]] is `"instantiating"`, `"instantiated"`, <ins>`"evaluating-async"`,</ins> or `"evaluated"`, then
           1. Return _index_.
         1. Assert: _module_.[[Status]] is `"uninstantiated"`.
         1. Set _module_.[[Status]] to `"instantiating"`.
@@ -387,11 +389,11 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. For each String _required_ that is an element of _module_.[[RequestedModules]], do
           1. Let _requiredModule_ be ? HostResolveImportedModule(_module_, _required_).
           1. Set _index_ to ? InnerModuleInstantiation(_requiredModule_, _stack_, _index_).
-          1. Assert: _requiredModule_.[[Status]] is either `"instantiating"`, `"instantiated"`, <ins>`"evaluating-async"`</ins> or `"evaluated"`.
-          1. Assert: _requiredModule_.[[Status]] is `"instantiating"` if and only if _requiredModule_ is in _stack_.
-          1. If _requiredModule_.[[Status]] is `"instantiating"`, then
-            1. Assert: _requiredModule_ is a Cyclic Module Record.
-            1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
+          1. If _requiredModule_ is a Cyclic Module Record, then
+            1. Assert: _requiredModule_.[[Status]] is either `"instantiating"`, `"instantiated"`, <ins>`"evaluating-async"`,</ins> or `"evaluated"`.
+            1. Assert: _requiredModule_.[[Status]] is `"instantiating"` if and only if _requiredModule_ is in _stack_.
+            1. If _requiredModule_.[[Status]] is `"instantiating"`, then
+              1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
         1. Perform ? _module_.InitializeEnvironment().
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
@@ -400,6 +402,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Repeat, while _done_ is *false*,
             1. Let _requiredModule_ be the last element in _stack_.
             1. Remove the last element of _stack_.
+            1. Assert: _requiredModule_ is a Cyclic Module Record.
             1. Set _requiredModule_.[[Status]] to `"instantiated"`.
             1. If _requiredModule_ and _module_ are the same Module Record, set _done_ to *true*.
         1. Return _index_.
@@ -418,7 +421,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <p>This abstract method performs the following steps (most of the work is done by the auxiliary function InnerModuleEvaluation):</p>
 
     <emu-alg>
-      1. Let _module_ be this Source Text Module Record.
+      1. Let _module_ be this Cyclic Module Record.
       1. Assert: _module_.[[Status]] is `"instantiated"`<ins>, `"evaluating-async"`</ins> or `"evaluated"`.
       1. <ins>If _module_.[[Status]] is `"evaluated"` or `"evaluating-async"`, set _module_ to GetCycleRoot(_module_).</ins>
       1. <ins>If _module_.[[TopLevelCapability]] is not *undefined*, then</ins>
@@ -428,10 +431,11 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       1. <ins>Set _module_.[[TopLevelCapability]] to _capability_.</ins>
       1. Let _result_ be InnerModuleEvaluation(_module_, _stack_, 0).
       1. If _result_ is an abrupt completion, then
-        1. For each module _m_ in _stack_, do
+        1. For each Cyclic Module Record _m_ in _stack_, do
           1. Assert: _m_.[[Status]] is `"evaluating"`.
           1. Set _m_.[[Status]] to `"evaluated"`.
-          1. <del>Set _m_.[[EvaluationError]] to _result_.</del><ins>Perform ! CyclicModuleExecutionRejected(_m_, _result_).</ins>
+          1. <del>Set _m_.[[EvaluationError]] to _result_.</del>
+          1. <ins>Perform ! CyclicModuleExecutionRejected(_m_, _result_).</ins>
         1. Assert: _module_.[[Status]] is `"evaluated"` and _module_.[[EvaluationError]] is _result_.
         1. <del>Return _result_.</del>
       1. <ins>Otherwise,</ins>
@@ -448,8 +452,8 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       <p>This abstract operation performs the following steps:</p>
 
       <emu-alg>
-        1. If _module_ is not a Source Text Module Record, then
-          1. Perform _module_.Evaluate().
+        1. If _module_ is not a Cyclic Module Record, then
+          1. Perform ? _module_.Evaluate().
           1. Return _index_.
         1. If _module_.[[Status]] is `"evaluated"` <ins> or `"evaluating-async"`</ins>, then
           1. If _module_.[[EvaluationError]] is *undefined*, return _index_.
@@ -467,18 +471,19 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Let _requiredModule_ be ! HostResolveImportedModule(_module_, _required_).
           1. NOTE: Instantiate must be completed successfully prior to invoking this method, so every requested module is guaranteed to resolve successfully.
           1. Set _index_ to ? InnerModuleEvaluation(_requiredModule_, _stack_, _index_).
-          1. Assert: _requiredModule_.[[Status]] is either `"evaluating"`<ins>, `"evaluating-async"`</ins> or `"evaluated"`.
-          1. Assert: _requiredModule_.[[Status]] is `"evaluating"` if and only if _requiredModule_ is in _stack_.
-          1. If _requiredModule_.[[Status]] is `"evaluating"`, then
-            1. Assert: _requiredModule_ is a Cyclic Module Record.
-            1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
-          1. <ins>Otherwise, set _requiredModule_ to GetCycleRoot(_requiredModule_).</ins>
-          1. <ins>If _requiredModule_.[[EvaluationError]] is not *undefined*, return _module_.[[EvaluationError]].</ins>
-          1. <ins>If _requiredModule_.[[Status]] is `"evaluating-async"`, then</ins>
-            1. <ins>Set _module_.[[PendingAsyncDependencies]] to _module_.[[PendingAsyncDependencies]] + 1.</ins>
-            1. <ins>Append _module_ to _requiredModule.[[AsyncParentModules]]_.</ins>
+          1. If _requiredModule_ is a Cyclic Module Record, then
+            1. Assert: _requiredModule_.[[Status]] is either `"evaluating"`<ins>, `"evaluating-async"`</ins> or `"evaluated"`.
+            1. Assert: _requiredModule_.[[Status]] is `"evaluating"` if and only if _requiredModule_ is in _stack_.
+            1. If _requiredModule_.[[Status]] is `"evaluating"`, then
+              1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
+            1. <ins>Otherwise, set _requiredModule_ to GetCycleRoot(_requiredModule_).</ins>
+            1. <ins>If _requiredModule_.[[EvaluationError]] is not *undefined*, return _module_.[[EvaluationError]].</ins>
+            1. <ins>If _requiredModule_.[[Status]] is `"evaluating-async"`, then</ins>
+              1. <ins>Set _module_.[[PendingAsyncDependencies]] to _module_.[[PendingAsyncDependencies]] + 1.</ins>
+              1. <ins>Append _module_ to _requiredModule_.[[AsyncParentModules]].</ins>
+        1. <del>Perform ? _module_.ExecuteModule().</del>
         1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, then</ins>
-          1. Perform ! ExecuteCyclicModule(_module_).
+          1. <ins>Perform ! ExecuteCyclicModule(_module_).</ins>
           1. <ins>If _module_.[[EvaluationError]] is not *undefined*, return ThrowCompletion(_module_.[[EvaluationError]]).</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
@@ -487,11 +492,11 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Repeat, while _done_ is *false*,
             1. Let _requiredModule_ be the last element in _stack_.
             1. Remove the last element of _stack_.
+            1. Assert: _requiredModule_ is a Cyclic Module Record.
             1. <ins>If _module_.[[Async]] is *true* or _module_.[[PendingAsyncDependencies]] is not 0, then</ins>
               1. <ins>Set _requiredModule_.[[Status]] to `"evaluating-async"`.</ins>
             1. <ins>Otherwise, </ins>set _requiredModule_.[[Status]] to `"evaluated"`.
             1. If _requiredModule_ and _module_ are the same Module Record, set _done_ to *true*.
-            1. Otherwise, if _requiredModule_.[[TopLevelCapability]] is not *undefined*
         1. Return _index_.
       </emu-alg>
       <emu-note>
@@ -637,11 +642,14 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
 
 
     <emu-clause id="sec-source-text-module-record-execute-module" aoid="ExecuteModule">
-      <h1>ExecuteModule ( [ _capability_ ] )</h1>
+      <h1>ExecuteModule ( <ins>[ _capability_ ]</ins> )</h1>
 
       <p>The ExecuteModule concrete method of a Source Text Module Record implements the corresponding Cyclic Module Record abstract method.</p>
 
+      <p>This abstract method performs the following steps:</p>
+
       <emu-alg>
+        1. Let _module_ be this Source Text Module Record.
         1. Let _moduleCxt_ be a new ECMAScript code execution context.
         1. Set the Function of _moduleCxt_ to *null*.
         1. Assert: _module_.[[Realm]] is not *undefined*.
