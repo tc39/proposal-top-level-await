@@ -479,7 +479,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. <ins>Append _module_ to _requiredModule.[[AsyncParentModules]]_.</ins>
         1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, then</ins>
           1. Perform ! ExecuteCyclicModule(_module_).
-          1. <ins>If _module_.[[EvaluationError]] is not *undefined*, return ThrowCompletion(_module_.[[EvaluationError]].</ins>
+          1. <ins>If _module_.[[EvaluationError]] is not *undefined*, return ThrowCompletion(_module_.[[EvaluationError]]).</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
         1. If _module_.[[DFSAncestorIndex]] equals _module_.[[DFSIndex]], then
@@ -510,7 +510,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. If _result_ is a normal completion,
             1. Perform ! CyclicModuleExecutionFulfilled(_module_).
           1. Otherwise,
-            1. Perform ! CyclicModuleExecutionRejected(_module_, _result_.[[Value]])
+            1. Perform ! CyclicModuleExecutionRejected(_module_, _result_.[[Value]]).
         1. Otherwise,
           1. Let _capability_ be ! NewPromiseCapability(%Promise%).
           1. Let _stepsFulfilled_ be the following steps:
@@ -548,8 +548,11 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       <h1><ins>CyclicModuleExecutionFulfilled ( _module_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[EvaluationError]] is *undefined*.
-        1. If _module_.[[Async]] is *true*,
-          1. Assert: _module_.[[Status]] is `"evaluating-async"`.
+        1. Assert _module_.[[EvaluationError]] is *undefined*.
+        1. If _module_.[[Status]] is `"instantiating"`, then
+          1. Assert: _module_.[[Async]] is *false*.
+          1. Assert: _module_.[[AsyncParentModules]] is an empty List.
+        1. If _module_.[[Status]] is `"evaluating-async"`, then
           1. Set _module_.[[Status]] to `"evaluated"`.
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
           1. If _module_.[[DFSIndex]] is not equal to _module_.[[DFSAncestorIndex]], then
@@ -559,7 +562,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. Assert _m_.[[Status]] is `"evaluating-async"`.
             1. Let _cycleRoot_ be ! GetCycleRoot(_m_).
             1. If _cycleRoot_.[[EvaluationError]] is not *undefined*, return *undefined*.
-            1. Perform ? ExecuteCyclicModule(_module_).
+            1. Perform ! ExecuteCyclicModule(_module_).
         1. If _module_.[[TopLevelCapability]] is not *undefined*, then
           1. Assert: _module_.[[DFSIndex]] is equal to _module_.[[DFSAncestorIndex]].
           1. Perform ! Call(_module_.[[TopLevelCapability]].[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).
@@ -571,8 +574,11 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       <h1><ins>CyclicModuleExecutionRejected ( _module_, _error_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[EvaluationError]] is *undefined*.
-        1. If _module_.[[Async]] is *true*,
-          1. Assert: _module_.[[Status]] is `"evaluating-async"`.
+        1. Assert _module_.[[EvaluationError]] is *undefined*.
+        1. If _module_.[[Status]] is `"instantiating"`, then
+          1. Assert: _module_.[[Async]] is *false*.
+          1. Assert: _module_.[[AsyncParentModules]] is an empty List.
+        1. If _module_.[[Status]] is `"evaluating-async"`, then
           1. Set _module_.[[Status]] to `"evaluated"`.
         1. Set _module_.[[EvaluationError]] to ThrowCompletion(_error_).
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
