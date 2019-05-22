@@ -6,7 +6,7 @@ Status: Stage 2
 
 ## Synopsis
 
-Top-level `await` enables modules to act as big async functions: With top-level `await`, modules can `await` resources, causing other modules who `import` them to wait before they start evaluating their body.
+Top-level `await` enables modules to act as big async functions: With top-level `await`, ESM modules can `await` resources, causing other modules who `import` them to wait before they start evaluating their body.
 
 ## Motivation
 
