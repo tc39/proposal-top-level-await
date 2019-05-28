@@ -366,13 +366,17 @@ Both of these strategies fall over when considering that multiple pieces of code
 
 ###### Conclusion: No feasible strategy for deadlock avoidance
 
-#### Should module loading include microtask checkpoints between modules, or yielding to the event loop after modules load? Should top-level await be a part of this?
-
-Maybe! These module loading questions are part of an exciting research area in loading performance, as well as an interesting discussion on the invariants surrounding microtask checkpoints. This proposal doesn't take an opinion on these questions. Host environments may wrap modules in a way which does these things, and the top-level await specification machinery can be used to coordinate things. A future proposal either in TC39 or in a host environment could add additional microtask checkpoints. For related discussion, see [whatwg/html#4400](https://github.com/whatwg/html/issues/4400).
-
 #### Will top-level await work in transpilers?
 
-The widely deployed CommonJS (CJS) module system does not directly support top-level await, so any transpilation strategy targeting it will need adjustments. However, within this context, we've made several adjustments to the semantics of top-level await based on the feedback and experience of the authors of several JavaScript module systems, including transpiler authors. This proposal aims to be implementable in such contexts.
+To the greatest extent possible. The widely deployed CommonJS (CJS) module system does not directly support top-level await, so any transpilation strategy targeting it will need adjustments. However, within this context, we've made several adjustments to the semantics of top-level await based on the feedback and experience of the authors of several JavaScript module systems, including transpiler authors. This proposal aims to be implementable in such contexts.
+
+#### Without this proposal, module graph execution is synchronous. Does this proposal maintain developer expectations that such loading be synchronous?
+
+To the greatest extent possible. When a module includes a top-level `await` (even if that `await` is not dynamically reached), this is not synchronous, and at the very least takes one trip through the Promise job queue. However, module subgraphs which do not use top-level await continue to run synchronously in exactly the same way as without this proposal. And if several modules which do not use top-level `await` depend on a module which does use it, then those modules will all run when the async module is ready, without yielding to any other work (neither the Promise job queue/microtask queue, nor the host's event loop, etc.). See [#74](https://github.com/tc39/proposal-top-level-await/pull/74) for details on the logic used.
+
+#### Should module loading include microtask checkpoints between modules, or yielding to the event loop after modules load?
+
+Maybe! These module loading questions are part of an exciting research area in loading performance, as well as an interesting discussion on the invariants surrounding microtask checkpoints. This proposal doesn't take an opinion on these questions, leaving the asynchronous behavior for separate proposals. Host environments may wrap modules in a way which does these things, and the top-level await specification machinery can be used to coordinate things. A future proposal either in TC39 or in a host environment could add additional microtask checkpoints. For related discussion, see [whatwg/html#4400](https://github.com/whatwg/html/issues/4400).
 
 #### Would top-level await work in web pages?
 
