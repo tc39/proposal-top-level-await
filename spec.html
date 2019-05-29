@@ -769,3 +769,34 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       </ul>
     </emu-note>
 </emu-clause>
+
+<emu-clause id="sec-imports">
+    <h1>Imports</h1>
+    <h2>Syntax</h2>
+    <emu-grammar type="definition">
+        ImportedBinding :
+          <del>BindingIdentifier[~Yield, ~Await]</del>
+          <ins>BindingIdentifier[~Yield, +Await]</ins>
+    </emu-grammar>
+</emu-clause>
+
+<emu-clause id="sec-exports">
+  <h1>Exports</h1>
+  <h2>Syntax</h2>
+  <emu-grammar type="definition">
+    ExportDeclaration :
+      `export` `*` FromClause `;`
+      `export` ExportClause FromClause `;`
+      `export` ExportClause `;`
+      <del>`export` VariableStatement[~Yield, ~Await]</del>
+      <ins>`export` VariableStatement[~Yield, +Await]</ins>
+      <del>`export` Declaration[~Yield, ~Await]</del>
+      <ins>`export` Declaration[~Yield, +Await]</ins>
+      <del>`export` `default` HoistableDeclaration[~Yield, ~Await, +Default]</del>
+      <ins>`export` `default` HoistableDeclaration[~Yield, +Await, +Default]</ins>
+      <del>`export` `default` ClassDeclaration[~Yield, ~Await, +Default]</del>
+      <ins>`export` `default` ClassDeclaration[~Yield, +Await, +Default]</ins>
+      <del>`export` `default` [lookahead &lt;! {`function`, `async` [no |LineTerminator| here] `function`, `class`}] AssignmentExpression[+In, ~Yield, ~Await] `;`</del>
+      <ins>`export` `default` [lookahead &lt;! {`function`, `async` [no |LineTerminator| here] `function`, `class`}] AssignmentExpression[+In, ~Yield, ~Await] `;`</ins>
+  </emu-grammar>
+</emu-clause>
