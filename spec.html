@@ -788,11 +788,11 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     </emu-grammar>
 
     <emu-note>
-      <p>`await` is parsed as an |AwaitExpression| when the <sub>[Await]</sub> parameter is present. The <sub>[Await]</sub> parameter is present in the following contexts:</p>
+      <p>`await` is parsed as an |AwaitExpression| when the <sub>[Await]</sub> parameter is present. The <sub>[Await]</sub> parameter is present in <ins>the top level of</ins> the following contexts, <ins>although these contexts may also contain nonterminals which disable the parameter, such as |FunctionBody|</ins>:</p>
       <ul>
         <li>In an |AsyncFunctionBody|.</li>
         <li>In the |FormalParameters| of an |AsyncFunctionDeclaration|, |AsyncFunctionExpression|, |AsyncGeneratorDeclaration|, or |AsyncGeneratorExpression|. |AwaitExpression| in this position is a Syntax error via static semantics.</li>
-        <li><ins>When |Module| is the syntactic goal symbol</ins></li>
+        <li><ins>When |Module| is the syntactic goal symbol.</ins></li>
       </ul>
       <p><del>When |Module| is the syntactic goal symbol and the <sub>[Await]</sub> parameter is absent, `await` is parsed as a keyword and will be a Syntax error.</del> When |Script| is the syntactic goal symbol, `await` may be parsed as an identifier when the <sub>[Await]</sub> parameter is absent. This includes the following contexts:</p>
       <ul>
