@@ -484,7 +484,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. <del>Perform ? _module_.ExecuteModule().</del>
         1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, then</ins>
           1. <ins>Perform ! ExecuteCyclicModule(_module_).</ins>
-          1. <ins>If _module_.[[EvaluationError]] is not *undefined*, return ThrowCompletion(_module_.[[EvaluationError]]).</ins>
+          1. <ins>If _module_.[[EvaluationError]] is not *undefined*, return _module_.[[EvaluationError]].</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
         1. If _module_.[[DFSAncestorIndex]] equals _module_.[[DFSIndex]], then
