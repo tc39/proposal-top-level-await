@@ -553,7 +553,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       <h1><ins>CyclicModuleExecutionFulfilled ( _module_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[EvaluationError]] is *undefined*.
-        1. Assert _module_.[[EvaluationError]] is *undefined*.
         1. If _module_.[[Status]] is `"instantiating"`, then
           1. Assert: _module_.[[Async]] is *false*.
           1. Assert: _module_.[[AsyncParentModules]] is an empty List.
@@ -579,7 +578,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       <h1><ins>CyclicModuleExecutionRejected ( _module_, _error_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[EvaluationError]] is *undefined*.
-        1. Assert _module_.[[EvaluationError]] is *undefined*.
         1. If _module_.[[Status]] is `"instantiating"`, then
           1. Assert: _module_.[[Async]] is *false*.
           1. Assert: _module_.[[AsyncParentModules]] is an empty List.
