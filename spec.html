@@ -435,7 +435,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Assert: _m_.[[Status]] is `"evaluating"`.
           1. Set _m_.[[Status]] to `"evaluated"`.
           1. <del>Set _m_.[[EvaluationError]] to _result_.</del>
-          1. <ins>Perform ! CyclicModuleExecutionRejected(_m_, _result_).</ins>
+          1. <ins>If _m_ is not the last element of _stack_, perform ! CyclicModuleExecutionRejected(_m_, _result_).</ins>
         1. Assert: _module_.[[Status]] is `"evaluated"` and _module_.[[EvaluationError]] is _result_.
         1. <del>Return _result_.</del>
       1. <ins>Otherwise,</ins>
