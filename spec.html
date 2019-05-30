@@ -464,7 +464,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Set _module_.[[DFSIndex]] to _index_.
         1. Set _module_.[[DFSAncestorIndex]] to _index_.
         1. <ins>Set _module_.[[PendingAsyncDependencies]] to 0.</ins>
-        1. <ins>Set _requiredModule_.[[AsyncParentModules]] to a new empty List.</ins>
+        1. <ins>Set _module_.[[AsyncParentModules]] to a new empty List.</ins>
         1. Set _index_ to _index_ + 1.
         1. Append _module_ to _stack_.
         1. For each String _required_ that is an element of _module_.[[RequestedModules]], do
