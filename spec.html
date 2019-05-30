@@ -563,10 +563,10 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. Assert: _m_.[[DFSAncestorIndex]] is equal to _module_.[[DFSAncestorIndex]].
           1. Decrement _m_.[[PendingAsyncDependencies]] by 1.
           1. If _m_.[[PendingAsyncDependencies]] is 0 and _m_.[[EvaluationError]] is *undefined*, then
-            1. Assert _m_.[[Status]] is `"evaluating-async"`.
+            1. Assert: _m_.[[Status]] is `"evaluating-async"`.
             1. Let _cycleRoot_ be ! GetCycleRoot(_m_).
             1. If _cycleRoot_.[[EvaluationError]] is not *undefined*, return *undefined*.
-            1. Perform ! ExecuteCyclicModule(_module_).
+            1. Perform ! ExecuteCyclicModule(_m_).
         1. If _module_.[[TopLevelCapability]] is not *undefined*, then
           1. Assert: _module_.[[DFSIndex]] is equal to _module_.[[DFSAncestorIndex]].
           1. Perform ! Call(_module_.[[TopLevelCapability]].[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).
