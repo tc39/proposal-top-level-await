@@ -481,9 +481,13 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. <ins>If _requiredModule_.[[Status]] is `"evaluating-async"`, then</ins>
               1. <ins>Set _module_.[[PendingAsyncDependencies]] to _module_.[[PendingAsyncDependencies]] + 1.</ins>
               1. <ins>Append _module_ to _requiredModule_.[[AsyncParentModules]].</ins>
-        1. <del>Perform ? _module_.ExecuteModule().</del>
         1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, then</ins>
-          1. <ins>Perform ! ExecuteCyclicModule(_module_).</ins>
+          1. <ins>If _module_.[[Async]] is *false*, then</ins>
+            1. Perform ? _module_.ExecuteModule().
+            1. <ins>Perform ! CyclicModuleExecutionFulfilled(module).</ins>
+          1. <ins>Otherwise,
+            1. <ins>Perform ! ExecuteCyclicModule(_module_).</ins>
+            1. <ins>Set _module_.[[Status]] to `"evaluating-async"`.</ins>
           1. <ins>If _module_.[[EvaluationError]] is not *undefined*, return _module_.[[EvaluationError]].</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
@@ -493,9 +497,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. Let _requiredModule_ be the last element in _stack_.
             1. Remove the last element of _stack_.
             1. Assert: _requiredModule_ is a Cyclic Module Record.
-            1. <ins>If _module_.[[Async]] is *true* or _module_.[[PendingAsyncDependencies]] is not 0, then</ins>
-              1. <ins>Set _requiredModule_.[[Status]] to `"evaluating-async"`.</ins>
-            1. <ins>Otherwise, </ins>set _requiredModule_.[[Status]] to `"evaluated"`.
+            1. <ins>If _module_.[[Async]] is *false*, </ins>set _requiredModule_.[[Status]] to `"evaluated"`.
             1. If _requiredModule_ and _module_ are the same Module Record, set _done_ to *true*.
         1. Return _index_.
       </emu-alg>
