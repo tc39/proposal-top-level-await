@@ -487,7 +487,9 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, then</ins>
           1. <ins>If _module_.[[Async]] is *false*, then</ins>
             1. <ins>Perform ? _module_.ExecuteModule().</ins>
-            1. <ins>Perform ! CyclicModuleExecutionFulfilled(module).</ins>
+            1. <ins>1. If _module_.[[TopLevelCapability]] is not *undefined*, then</ins>
+              1. <ins>Assert: _module_.[[DFSIndex]] is equal to _module_.[[DFSAncestorIndex]].</ins>
+              1. <ins>Perform ! Call(_module_.[[TopLevelCapability]].[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).</ins>
           1. <ins>Otherwise,
             1. <ins>Perform ! ExecuteCyclicModule(_module_).</ins>
             1. <ins>Set _module_.[[Status]] to `"evaluating-async"`.</ins>
@@ -558,12 +560,8 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       <h1><ins>CyclicModuleExecutionFulfilled ( _module_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[EvaluationError]] is *undefined*.
-        1. Assert: _module_.[[Status]] is `"evaluating"`, `"evaluating-async"` or `"evaluated"`.
-        1. If _module_.[[Status]] is `"evaluating"`, then
-          1. Assert: _module_.[[Async]] is *false*.
-          1. Assert: _module_.[[AsyncParentModules]] is an empty List.
-        1. If _module_.[[Status]] is `"evaluating-async"`, then
-          1. Set _module_.[[Status]] to `"evaluated"`.
+        1. Assert: _module_.[[Status]] is `"evaluating-async"`.
+        1. Set _module_.[[Status]] to `"evaluated"`.
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
           1. If _module_.[[DFSIndex]] is not equal to _module_.[[DFSAncestorIndex]], then
             1. Assert: _m_.[[DFSAncestorIndex]] is equal to _module_.[[DFSAncestorIndex]].
