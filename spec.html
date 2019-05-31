@@ -487,7 +487,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, then</ins>
           1. <ins>If _module_.[[Async]] is *false*, then</ins>
             1. <ins>Perform ? _module_.ExecuteModule().</ins>
-            1. <ins>1. If _module_.[[TopLevelCapability]] is not *undefined*, then</ins>
+            1. <ins>If _module_.[[TopLevelCapability]] is not *undefined*, then</ins>
               1. <ins>Assert: _module_.[[DFSIndex]] is equal to _module_.[[DFSAncestorIndex]].</ins>
               1. <ins>Perform ! Call(_module_.[[TopLevelCapability]].[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).</ins>
           1. <ins>Otherwise,
