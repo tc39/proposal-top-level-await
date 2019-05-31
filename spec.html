@@ -484,7 +484,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. <del>Perform ? _module_.ExecuteModule().</del>
         1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, then</ins>
           1. <ins>If _module_.[[Async]] is *false*, then</ins>
-            1. <ins></ins>Perform ? _module_.ExecuteModule().
+            1. <ins>Perform ? _module_.ExecuteModule().</ins>
             1. <ins>Perform ! CyclicModuleExecutionFulfilled(module).</ins>
           1. <ins>Otherwise,
             1. <ins>Perform ! ExecuteCyclicModule(_module_).</ins>
