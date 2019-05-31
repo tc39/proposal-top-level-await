@@ -483,7 +483,11 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
               1. <ins>Append _module_ to _requiredModule_.[[AsyncParentModules]].</ins>
         1. <del>Perform ? _module_.ExecuteModule().</del>
         1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, then</ins>
-          1. <ins>Perform ! ExecuteCyclicModule(_module_).</ins>
+          1. <ins>If _module_.[[Async]] is *false*, then</ins>
+            1. <ins>Perform ? _module_.ExecuteModule().</ins>
+            1. <ins>Perform ! CyclicModuleExecutionFulfilled(module).</ins>
+          1. <ins>Otherwise,
+            1. <ins>Perform ! ExecuteCyclicModule(_module_).</ins>
           1. <ins>If _module_.[[EvaluationError]] is not *undefined*, return _module_.[[EvaluationError]].</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
