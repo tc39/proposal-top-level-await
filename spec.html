@@ -512,6 +512,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-execute-cyclic-module" aoid="ExecuteCyclicModule">
       <h1><ins>ExecuteCyclicModule ( _module_ )</ins></h1>
       <emu-alg>
+        1. Assert: _module_.[[Status]] is `"evaluating"` or `"evaluating-async"`.
         1. If _module_.[[Async]] is *false*, then:
           1. Let _result_ be _module_.ExecuteModule().
           1. If _result_ is a normal completion,
@@ -541,6 +542,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-getcycleroot" aoid="GetCycleRoot">
       <h1><ins>GetCycleRoot ( _module_ )</ins></h1>
       <emu-alg>
+        1. Assert: _module_.[[Status]] is `"evaluating-async"` or `"evaluated"`.
         1. Repeat, while _module_.[[DFSIndex]] is greater than _module_.[[DFSAncestorIndex]],
           1. Assert: _module_.[[AsyncParentModules]] is a non-empty List.
           1. Let _nextCycleModule_ be the first element of _module_.[[AsyncParentModules]].
@@ -554,6 +556,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-cyclicmoduleexecutionfulfilled" aoid="CyclicModuleExecutionFulfilled">
       <h1><ins>CyclicModuleExecutionFulfilled ( _module_ )</ins></h1>
       <emu-alg>
+        1. Assert: _module_.[[Status]] is `"evaluating"`, `"evaluating-async"` or `"evaluated"`.
         1. Assert: _module_.[[EvaluationError]] is *undefined*.
         1. If _module_.[[Status]] is `"evaluating"`, then
           1. Assert: _module_.[[Async]] is *false*.
@@ -579,6 +582,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-cyclicmoduleexecutionrejected" aoid="CyclicModuleExecutionRejected">
       <h1><ins>CyclicModuleExecutionRejected ( _module_, _error_ )</ins></h1>
       <emu-alg>
+        1. Assert: _module_.[[Status]] is `"evaluating"`, `"evaluating-async"` or `"evaluated"`.
         1. Assert: _module_.[[EvaluationError]] is *undefined*.
         1. If _module_.[[Status]] is `"evaluating"`, then
           1. Assert: _module_.[[Async]] is *false*.
