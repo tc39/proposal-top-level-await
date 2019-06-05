@@ -132,10 +132,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     </table>
   </emu-table>
 
-  <emu-note type=editor>
-    <p>For all module types defined in this specification, it's statically determined (given the set of parsed modules and the graph connecting them) whether a module will have an [[EvaluationPromise]] which is not *undefined* after Evaluate() is called. A Promise is only present if the module or a dependency has the [[Async]] flag set. As more module types are added, the intention is that this would remain the case. However, concepts like "dependency" are not defined on Abstract Module Records.</p>
-  </emu-note>
-
   <emu-table id="table-37" caption="Abstract Methods of Module Records">
     <table>
       <tbody>
