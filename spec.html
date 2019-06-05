@@ -583,7 +583,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-cyclicmoduleexecutionrejected" aoid="CyclicModuleExecutionRejected">
       <h1><ins>CyclicModuleExecutionRejected ( _module_, _error_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is `"evaluating" or `"evaluating-async"`.
+        1. Assert: _module_.[[Status]] is `"evaluating"` or `"evaluating-async"`.
         1. Assert: _module_.[[EvaluationError]] is *undefined*.
         1. If _module_.[[Status]] is `"evaluating"`, then
           1. Assert: _module_.[[Async]] is *false*.
