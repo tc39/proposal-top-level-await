@@ -359,7 +359,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Set _m_.[[DFSAncestorIndex]] to *undefined*.
         1. Assert: _module_.[[Status]] is `"unlinked"`.
         1. Return _result_.
-      1. Assert: _module_.[[Status]] is `"linked"`<ins>, `"evaluating-async"`</ins> or `"evaluated"`.
+      1. Assert: _module_.[[Status]] is `"linked"`<ins>, `"evaluating-async"`,</ins> or `"evaluated"`.
       1. Assert: _stack_ is empty.
       1. Return *undefined*.
     </emu-alg>
@@ -419,7 +419,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
 
     <emu-alg>
       1. Let _module_ be this Cyclic Module Record.
-      1. Assert: _module_.[[Status]] is `"linked"`<ins>, `"evaluating-async"`</ins> or `"evaluated"`.
+      1. Assert: _module_.[[Status]] is `"linked"`<ins>, `"evaluating-async"`,</ins> or `"evaluated"`.
       1. <ins>If _module_.[[Status]] is `"evaluated"` or `"evaluating-async"`, set _module_ to GetCycleRoot(_module_).</ins>
       1. <ins>If _module_.[[TopLevelCapability]] is not *undefined*, then</ins>
         1. <ins>Return _module_.[[TopLevelCapability]].</ins>
@@ -471,7 +471,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. <ins>Let _cycle_ be *true* if _requiredModule_.[[Status]] is `"evaluating"`, and *false* otherwise.</ins>
           1. Set _index_ to ? InnerModuleEvaluation(_requiredModule_, _stack_, _index_).
           1. If _requiredModule_ is a Cyclic Module Record, then
-            1. Assert: _requiredModule_.[[Status]] is either `"evaluating"`<ins>, `"evaluating-async"`</ins> or `"evaluated"`.
+            1. Assert: _requiredModule_.[[Status]] is either `"evaluating"`<ins>, `"evaluating-async"`,</ins> or `"evaluated"`.
             1. Assert: _requiredModule_.[[Status]] is `"evaluating"` if and only if _requiredModule_ is in _stack_.
             1. If _requiredModule_.[[Status]] is `"evaluating"`, then
               1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
@@ -564,7 +564,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-cyclicmoduleexecutionfulfilled" aoid="CyclicModuleExecutionFulfilled">
       <h1><ins>CyclicModuleExecutionFulfilled ( _module_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is `"evaluating"`, `"evaluating-async"` or `"evaluated"`.
+        1. Assert: _module_.[[Status]] is `"evaluating"`, `"evaluating-async"`, or `"evaluated"`.
         1. Assert: _module_.[[EvaluationError]] is *undefined*.
         1. If _module_.[[Status]] is `"evaluating"`, then
           1. Assert: _module_.[[Async]] is *false*.
@@ -590,7 +590,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-cyclicmoduleexecutionrejected" aoid="CyclicModuleExecutionRejected">
       <h1><ins>CyclicModuleExecutionRejected ( _module_, _error_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is `"evaluating" or `"evaluating-async"`.
+        1. Assert: _module_.[[Status]] is `"evaluating"` or `"evaluating-async"`.
         1. Assert: _module_.[[EvaluationError]] is *undefined*.
         1. If _module_.[[Status]] is `"evaluating"`, then
           1. Assert: _module_.[[Async]] is *false*.
