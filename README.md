@@ -397,7 +397,7 @@ In May 2018, this proposal reached Stage 2 in TC39's process, with many design d
 
 ## Implementations
 
-* none yet
+* webpack (experimental support in [5.0.0-alpha.15](https://github.com/webpack/webpack/pull/9177))
 
 ## References
 
