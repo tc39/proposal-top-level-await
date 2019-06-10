@@ -519,7 +519,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-execute-async-module" aoid="ExecuteAsyncModule">
       <h1><ins>ExecuteAsyncModule ( _module_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is `"evaluating"`.
+        1. Assert: _module_.[[Status]] is `"evaluating"` or `"evaluated"`.
         1. Assert: _module_.[[Async]] is *true*.
         1. Set _module_.[[AsyncEvaluating]] to *true*.
         1. Let _capability_ be ! NewPromiseCapability(%Promise%).
