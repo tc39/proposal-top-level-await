@@ -514,12 +514,13 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-execute-async-module" aoid="ExecuteAsyncModule">
       <h1><ins>ExecuteAsyncModule ( _module_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is `"evaluating"` or `"evaluating-async"`.
+        1. Assert: _module_.[[Status]] is `"evaluating-async"`.
+        1. Assert: _module_.[[Async]] is *true*.
         1. Let _capability_ be ! NewPromiseCapability(%Promise%).
-        1. Let _stepsFulfilled_ be the steps of a CallCyclicModuleFulfilled function as specified below.
+        1. Let _stepsFulfilled_ be the steps of a CallAsyncModuleFulfilled function as specified below.
         1. Let _onFulfilled_ be CreateBuiltinFunction(_stepsFulfilled_, &laquo; [[Module]] &raquo;).
         1. Set _onFulfilled_.[[Module]] to _module_.
-        1. Let _stepsRejected_ be the steps of a CallCyclicModuleRejected function as specified below.
+        1. Let _stepsRejected_ be the steps of a CallAsyncModuleRejected function as specified below.
         1. Let _onRejected_ be CreateBuiltinFunction(_stepsRejected_, &laquo; [[Module]] &raquo;).
         1. Set _onRejected_.[[Module]] to _module_.
         1. Perform ! PerformPromiseThen(_capability_.[[Promise]], _onFulfilled_, _onRejected_).
@@ -527,7 +528,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Return.
       </emu-alg>
 
-      <p>A CallCyclicModuleRejected function is an anonymous built-in function with a [[Module]] internal slot. When a CallCyclicModuleRejeced function is called that expects no arguments it performs the following steps:</p>
+      <p>A CallAsyncModuleRejected function is an anonymous built-in function with a [[Module]] internal slot. When a CallAsyncModuleRejeced function is called that expects no arguments it performs the following steps:</p>
       <emu-alg>
         1. Let _f_ be the active function object.
         1. Let _module_ be _f_.[[Module]].
@@ -535,7 +536,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Return.
       </emu-alg>
 
-      <p>A CallCyclicModuleFulfilled function is an anonymous built-in function with a [[Module]] internal slot. When a CallCyclicModuleFulfilled function is called with argument _error_ it performs the following steps:</p>
+      <p>A CallAsyncModuleFulfilled function is an anonymous built-in function with a [[Module]] internal slot. When a CallAsyncModuleFulfilled function is called with argument _error_ it performs the following steps:</p>
       <emu-alg>
         1. Let _f_ be the active function object.
         1. Let _module_ be _f_.[[Module]].
