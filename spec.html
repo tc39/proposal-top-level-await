@@ -494,7 +494,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
               1. <ins>Append _module_ to _requiredModule_.[[AsyncParentModules]].</ins>
         1. <del>Perform ? _module_.ExecuteModule().</del>
         1. <ins>If _module_.[[PendingAsyncDependencies]] is &gt; 0, set _module_.[[AsyncEvaluating]] to *true*.</ins>
-        1. <ins>Otherwise, if _module_.[[Async]] is *true*, Perform ! ExecuteAsyncModule(_module_).</ins>
+        1. <ins>Otherwise, if _module_.[[Async]] is *true*, perform ! ExecuteAsyncModule(_module_).</ins>
         1. <ins>Otherwise, perform ? _module_.ExecuteModule().</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
@@ -653,7 +653,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Else,
           1. Append _ee_ to _indirectExportEntries_.
       1. <ins>Let _async_ be _body_ Contains |AwaitExpression|.</ins>
-      1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: *undefined*, [[Namespace]]: *undefined*, <ins>[[Async]]: _async_, [[ExecStarted]]: *false*, [[TopLevelCapability]]: *undefined*, [[AsyncParentModules]]: *undefined*, [[PendingAsyncDependencies]]: *undefined*, </ins>[[Status]]: `"unlinked"`, [[EvaluationError]]: *undefined*, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: *undefined*, [[DFSAncestorIndex]]: *undefined* }.
+      1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: *undefined*, [[Namespace]]: *undefined*, <ins>[[Async]]: _async_, [[AsyncEvaluating]]: *false*, [[TopLevelCapability]]: *undefined*, [[AsyncParentModules]]: *undefined*, [[PendingAsyncDependencies]]: *undefined*, </ins>[[Status]]: `"unlinked"`, [[EvaluationError]]: *undefined*, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: *undefined*, [[DFSAncestorIndex]]: *undefined* }.
     </emu-alg>
     <emu-note>
       <p>An implementation may parse module source text and analyse it for Early Error conditions prior to the evaluation of ParseModule for that module source text. However, the reporting of any errors must be deferred until the point where this specification actually performs ParseModule upon that source text.</p>
