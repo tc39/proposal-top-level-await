@@ -439,7 +439,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       1. <ins>Otherwise,</ins>
         1. Assert: _module_.[[Status]] is `"evaluated"`<ins> or `"evaluating-async"`</ins> and _module_.[[EvaluationError]] is *undefined*.
         1. <ins>If _module_.[[Status]] is `"evaluated"`, then</ins>
-          1. <ins>Perform ! Call(_module_.[[TopLevelCapability]].[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).</ins>
+          1. <ins>Perform ! Call(_capability_.[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).</ins>
         1. Assert: _stack_ is empty.
       1. Return <del>*undefined*</del><ins>_capability_.[[Promise]]</ins>.
     </emu-alg>
@@ -528,19 +528,19 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Return.
       </emu-alg>
 
-      <p>A CallAsyncModuleRejected function is an anonymous built-in function with a [[Module]] internal slot. When a CallAsyncModuleRejeced function is called that expects no arguments it performs the following steps:</p>
+      <p>A CallAsyncModuleFulfilled function is an anonymous built-in function with a [[Module]] internal slot. When a CallAsyncModuleFulfilled function is called that expects no arguments it performs the following steps:</p>
       <emu-alg>
         1. Let _f_ be the active function object.
         1. Let _module_ be _f_.[[Module]].
-        1. Perform ! CyclicModuleExecutionFulfilled(_module_).
+        1. Perform ! AsyncModuleExecutionFulfilled(_module_).
         1. Return.
       </emu-alg>
 
-      <p>A CallAsyncModuleFulfilled function is an anonymous built-in function with a [[Module]] internal slot. When a CallAsyncModuleFulfilled function is called with argument _error_ it performs the following steps:</p>
+      <p>A CallAsyncModuleRejected function is an anonymous built-in function with a [[Module]] internal slot. When a CallAsyncModuleRejected function is called with argument _error_ it performs the following steps:</p>
       <emu-alg>
         1. Let _f_ be the active function object.
         1. Let _module_ be _f_.[[Module]].
-        1. Perform ! CyclicModuleExecutionFulfilled(_module_, _error_).
+        1. Perform ! AsyncModuleExecutionRejected(_module_, _error_).
         1. Return.
       </emu-alg>
     </emu-clause>
@@ -562,7 +562,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-asyncmodulexecutionfulfilled" aoid="AsyncModuleExecutionFulfilled">
       <h1><ins>AsyncModuleExecutionFulfilled ( _module_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is `"evaluated"`.
+        1. Assert: _module_.[[Status]] is `"evaluating-async"`.
         1. Assert: _module_.[[EvaluationError]] is *undefined*.
         1. Set _module_.[[Status]] to `"evaluated"`.
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
@@ -573,14 +573,14 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. Assert: _m_.[[Status]] is `"evaluating-async"`.
             1. Let _cycleRoot_ be ! GetCycleRoot(_m_).
             1. If _cycleRoot_.[[EvaluationError]] is not *undefined*, return *undefined*.
-            1. If _module_.[[Async]] is *true*, then
+            1. If _m_.[[Async]] is *true*, then
               1. Perform ! ExecuteAsyncModule(_m_).
             1. Otherwise,
-              1. Let _result_ be _module_.ExecuteModule().
+              1. Let _result_ be _m_.ExecuteModule().
               1. If _result_ is a normal completion,
-                1. Perform ! AsyncModuleExecutionFulfilled(_module_).
+                1. Perform ! AsyncModuleExecutionFulfilled(_m_).
               1. Otherwise,
-                1. Perform ! AsyncModuleExecutionRejected(_module_, _result_.[[Value]]).
+                1. Perform ! AsyncModuleExecutionRejected(_m_, _result_.[[Value]]).
         1. If _module_.[[TopLevelCapability]] is not *undefined*, then
           1. Assert: _module_.[[DFSIndex]] is equal to _module_.[[DFSAncestorIndex]].
           1. Perform ! Call(_module_.[[TopLevelCapability]].[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).
@@ -591,7 +591,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-AsyncModuleExecutionRejected" aoid="AsyncModuleExecutionRejected">
       <h1><ins>AsyncModuleExecutionRejected ( _module_, _error_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is `"evaluated"`.
+        1. Assert: _module_.[[Status]] is `"evaluating-async"` or `"evaluated"`.
         1. Assert: _module_.[[EvaluationError]] is *undefined*.
         1. Set _module_.[[Status]] to `"evaluated"`.
         1. Set _module_.[[EvaluationError]] to ThrowCompletion(_error_).
