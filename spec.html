@@ -174,7 +174,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           Evaluate()
         </td>
         <td>
-          <p><ins>Returns a promise for the evaluation of this module and its dependencies, resolving on successful evaluation or if it has already been evaluated, and rejecting for an evaluation error or</ins><del>If this module has already been evaluated successfully, return *undefined*; </del>if it has already been evaluated unsuccessfully<del>, throw the exception that was produced. Otherwise, Transitively evaluate all module dependencies of this module and then evaluate this module.</del></p>
+          <p><ins>Returns a promise for the evaluation of this module and its dependencies, resolving on successful evaluation or if it has already been evaluated successfully, and rejecting for an evaluation error or </ins><del>If this module has already been evaluated successfully, return *undefined*; </del>if it has already been evaluated unsuccessfully<del>, throw the exception that was produced. Otherwise, Transitively evaluate all module dependencies of this module and then evaluate this module.</del></p>
           <p>Link must have completed successfully prior to invoking this method.</p>
         </td>
       </tr>
@@ -233,7 +233,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           </td>
           <td>
             Auxiliary field used during Link and Evaluate only.
-            If [[Status]] is `"linking"` or `"evaluating"`, this nonnegative number records the point at which the module was first visited during the ongoing depth-first traversal of the dependency graph.
+            If [[Status]] is `"linking"`<del> or</del><ins>,</ins> `"evaluating"`<ins>, or `"evaluated"`</ins>, this nonnegative number records the point at which the module was first visited during the depth-first traversal of the dependency graph.
           </td>
         </tr>
         <tr>
@@ -244,7 +244,8 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             Integer | *undefined*
           </td>
           <td>
-            Auxiliary field used during Link and Evaluate only. If [[Status]] is `"linking"` or `"evaluating"`, this is either the module's own [[DFSIndex]] or that of an "earlier" module in the same strongly connected component.
+            Auxiliary field used during Link and Evaluate only.
+            If [[Status]] is `"linking"`<del> or</del><ins>,</ins> `"evaluating"`<ins>, or `"evaluated"`</ins>, this is either the module's own [[DFSIndex]] or that of an "earlier" module in the same strongly connected component.
           </td>
         </tr>
         <tr>
@@ -287,7 +288,11 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             <ins>Promise Capability | *undefined*</ins>
           </td>
           <td>
-            <ins>If this module was involved in a call of Evaluate(), this field contains the Promise capability for that entire evaluation.</ins>
+            <ins>
+              If Evaluate() was called on this module, this field contains the Promise capability for that entire evaluation.
+              It is used to settle the Promise object that is returned from the Evaluate() abstract method.
+              This field will be *undefined* for any dependencies of that module, unless a top-level Evaluate() has been initiated for any of those dependencies.
+            </ins>
           </td>
         </tr>
         <tr>
@@ -298,7 +303,10 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             <ins>List of Cyclic Module Record | *undefined*</ins>
           </td>
           <td>
-            <ins>If this module or a dependency has [[Async]] *true*, and execution is in progress, this tracks the parent importers of this module for the top-level execution job.</ins>
+            <ins>
+              If this module or a dependency has [[Async]] *true*, and execution is in progress, this tracks the parent importers of this module for the top-level execution job.
+              These parent modules will not start executing before this module has successfully completed execution.
+            </ins>
           </td>
         </tr>
         <tr>
@@ -309,7 +317,10 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             <ins>Integer | *undefined*</ins>
           </td>
           <td>
-            <ins>This tracks the number of async dependency modules remaining to execute for this module if it has any asynchronous dependencies.</ins>
+            <ins>
+              This tracks the number of async dependency modules remaining to execute for this module if it has any asynchronous dependencies.
+              A module with async dependencies will be executed when this field reaches 0, which will only happen if there are no dependency execution errors.
+            </ins>
           </td>
         </tr>
       </tbody>
