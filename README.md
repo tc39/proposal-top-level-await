@@ -54,7 +54,7 @@ setTimeout(() => console.log(outputPlusValue(100), 1000);
 
 ### Workaround: Export a Promise to represent initialization
 
-In the absense of this feature, it's possible to export a Promise from a module, and wait on that to know when its exports are ready. For example, the above module could be written as:
+In the absence of this feature, it's possible to export a Promise from a module, and wait on that to know when its exports are ready. For example, the above module could be written as:
 
 ```mjs
 // awaiting.mjs
