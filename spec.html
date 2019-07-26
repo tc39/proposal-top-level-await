@@ -566,8 +566,9 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       <h1><ins>GetAsyncCycleRoot ( _module_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[Status]] is `"evaluated"`.
+        1. If _module_.[[AsyncParentModules]] is an empty List, return _module_.
         1. Repeat, while _module_.[[DFSIndex]] is greater than _module_.[[DFSAncestorIndex]],
-          1. If _module_.[[AsyncParentModules]] is an empty List, return _module_.
+          1. Assert: _module_.[[AsyncParentModules]] is a non-empty List.
           1. Let _nextCycleModule_ be the first element of _module_.[[AsyncParentModules]].
           1. Assert: _nextCycleModule_.[[DFSAncestorIndex]] is equal to _module_.[[DFSAncestorIndex]].
           1. Set _module_ to _nextCycleModule_.
