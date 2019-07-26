@@ -441,7 +441,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-alg>
       1. Let _module_ be this Cyclic Module Record.
       1. Assert: _module_.[[Status]] is `"linked"` or `"evaluated"`.
-      1. <ins>If _module_.[[Status]] is `"evaluated"`, set _module_ to GetCycleRoot(_module_).</ins>
+      1. <ins>If _module_.[[Status]] is `"evaluated"`, set _module_ to GetAsyncCycleRoot(_module_).</ins>
       1. <ins>If _module_.[[TopLevelCapability]] is not *undefined*, then</ins>
         1. <ins>Return _module_.[[TopLevelCapability]].</ins>
       1. Let _stack_ be a new empty List.
@@ -497,7 +497,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. If _requiredModule_.[[Status]] is `"evaluating"`, then
               1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
             1. <ins>Otherwise,</ins>
-              1. <ins>Set _requiredModule_ to GetCycleRoot(_requiredModule_).</ins>
+              1. <ins>Set _requiredModule_ to GetAsyncCycleRoot(_requiredModule_).</ins>
               1. <ins>Assert: _requiredModule_.[[Status]] is `"evaluated"`.</ins>
               1. <ins>If _requiredModule_.[[EvaluationError]] is not *undefined*, return _module_.[[EvaluationError]].</ins>
             1. <ins>If _requiredModule_.[[AsyncEvaluating]] is *true*, then</ins>
@@ -523,7 +523,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         <p><ins>A module is `"evaluating"` while it is being traversed by InnerModuleEvaluation. A module is `"evaluated"` on execution completion and during execution if it is an asynchronous module.</ins></p>
       </emu-note>
       <emu-note>
-        <p><ins>Any modules depending on a module of an async cycle when that cycle is not `"evaluating"` will instead depend on the execution of the root of the cycle via GetCycleRoot. This ensures that the cycle state can be treated as a single strongly connected component through its root module state.</ins></p>
+        <p><ins>Any modules depending on a module of an async cycle when that cycle is not `"evaluating"` will instead depend on the execution of the root of the cycle via GetAsyncCycleRoot. This ensures that the cycle state can be treated as a single strongly connected component through its root module state.</ins></p>
       </emu-note>
     </emu-clause>
 
@@ -562,12 +562,12 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       </emu-alg>
     </emu-clause>
 
-    <emu-clause id="sec-getcycleroot" aoid="GetCycleRoot">
-      <h1><ins>GetCycleRoot ( _module_ )</ins></h1>
+    <emu-clause id="sec-getAsynccycleroot" aoid="GetAsyncCycleRoot">
+      <h1><ins>GetAsyncCycleRoot ( _module_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[Status]] is `"evaluated"`.
         1. Repeat, while _module_.[[DFSIndex]] is greater than _module_.[[DFSAncestorIndex]],
-          1. Assert: _module_.[[AsyncParentModules]] is a non-empty List.
+          1. If _module_.[[AsyncParentModules]] is an empty List, return _module_.
           1. Let _nextCycleModule_ be the first element of _module_.[[AsyncParentModules]].
           1. Assert: _nextCycleModule_.[[DFSAncestorIndex]] is equal to _module_.[[DFSAncestorIndex]].
           1. Set _module_ to _nextCycleModule_.
@@ -591,7 +591,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Decrement _m_.[[PendingAsyncDependencies]] by 1.
           1. If _m_.[[PendingAsyncDependencies]] is 0 and _m_.[[EvaluationError]] is *undefined*, then
             1. Assert: _m_.[[AsyncEvaluating]] is *true*.
-            1. Let _cycleRoot_ be ! GetCycleRoot(_m_).
+            1. Let _cycleRoot_ be ! GetAsyncCycleRoot(_m_).
             1. If _cycleRoot_.[[EvaluationError]] is not *undefined*, return *undefined*.
             1. If _m_.[[Async]] is *true*, then
               1. Perform ! ExecuteAsyncModule(_m_).
