@@ -443,7 +443,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       1. Assert: _module_.[[Status]] is `"linked"` or `"evaluated"`.
       1. <ins>If _module_.[[Status]] is `"evaluated"`, set _module_ to GetCycleRoot(_module_).</ins>
       1. <ins>If _module_.[[TopLevelCapability]] is not *undefined*, then</ins>
-        1. <ins>Return _module_.[[TopLevelCapability]].</ins>
+        1. <ins>Return _module_.[[TopLevelCapability]].[[Promise]].</ins>
       1. Let _stack_ be a new empty List.
       1. <ins>Let _capability_ be ! NewPromiseCapability(%Promise%).</ins>
       1. <ins>Set _module_.[[TopLevelCapability]] to _capability_.</ins>
