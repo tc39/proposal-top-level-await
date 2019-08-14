@@ -440,7 +440,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
 
     <emu-alg>
       1. Let _module_ be this Cyclic Module Record.
-      1. Assert: _module_.[[Status]] is `"linked"` or `"evaluated"`.
+      1. Assert: _module_.[[Status]] is `"linked"`, `"evaluating"`, or `"evaluated"`.
       1. <ins>If _module_.[[Status]] is `"evaluated"`, set _module_ to GetCycleRoot(_module_).</ins>
       1. <ins>If _module_.[[TopLevelCapability]] is not *undefined*, then</ins>
         1. <ins>Return _module_.[[TopLevelCapability]].[[Promise]].</ins>
