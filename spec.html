@@ -588,7 +588,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Set _module_.[[AsyncEvaluating]] to *false*.
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
           1. If _module_.[[DFSIndex]] is not equal to _module_.[[DFSAncestorIndex]], then
-            1. Assert: _m_.[[DFSAncestorIndex]] is equal to _module_.[[DFSAncestorIndex]].
+            1. Assert: _m_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSAncestorIndex]].
           1. Decrement _m_.[[PendingAsyncDependencies]] by 1.
           1. If _m_.[[PendingAsyncDependencies]] is 0 and _m_.[[EvaluationError]] is *undefined*, then
             1. Assert: _m_.[[AsyncEvaluating]] is *true*.
