@@ -636,11 +636,12 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <h1>Source Text Module Records</h1>
 
   <emu-clause id="sec-parsemodule" aoid="ParseModule">
-    <h1>ParseModule ( _sourceText_, _realm_, _hostDefined_ )</h1>
-    <p>The abstract operation ParseModule with arguments _sourceText_, _realm_, and _hostDefined_ creates a Source Text Module Record based upon the result of parsing _sourceText_ as a |Module|. ParseModule performs the following steps:</p>
+    <h1>ParseModule ( _sourceText_, _realm_, <ins>_allowAwait_,</ins> _hostDefined_)</h1>
+    <p>The abstract operation ParseModule with arguments _sourceText_, _realm_, <ins>_allowAwait_,</ins> and _hostDefined_ creates a Source Text Module Record based upon the result of parsing _sourceText_ as a |Module|. ParseModule performs the following steps:</p>
     <emu-alg>
       1. Assert: _sourceText_ is an ECMAScript source text (see clause <emu-xref href="#sec-ecmascript-language-source-code"></emu-xref>).
-      1. Parse _sourceText_ using |Module| as the goal symbol and analyse the parse result for any Early Error conditions. If the parse was successful and no early errors were found, let _body_ be the resulting parse tree. Otherwise, let _body_ be a List of one or more *SyntaxError* or *ReferenceError* objects representing the parsing errors and/or early errors. Parsing and early error detection may be interweaved in an implementation-dependent manner. If more than one parsing error or early error is present, the number and ordering of error objects in the list is implementation-dependent, but at least one must be present.
+      1. <ins>Let _goalSymbol_ be |Module[+Await]| if _allowAwait_ is *true*, and |Module[~Await]| otherwise.</ins>
+      1. Parse _sourceText_ using <del>|Module|</del><ins>_goalSymbol_</ins> as the goal symbol and analyse the parse result for any Early Error conditions. If the parse was successful and no early errors were found, let _body_ be the resulting parse tree. Otherwise, let _body_ be a List of one or more *SyntaxError* or *ReferenceError* objects representing the parsing errors and/or early errors. Parsing and early error detection may be interweaved in an implementation-dependent manner. If more than one parsing error or early error is present, the number and ordering of error objects in the list is implementation-dependent, but at least one must be present.
       1. If _body_ is a List of errors, return _body_.
       1. Let _requestedModules_ be the ModuleRequests of _body_.
       1. Let _importEntries_ be ImportEntries of _body_.
@@ -1032,7 +1033,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-alg>
       1. Assert: _sourceText_ is an ECMAScript source text (see clause <emu-xref href="#sec-ecmascript-language-source-code"></emu-xref>).
       1. Let _realm_ be the current Realm Record.
-      1. Let _m_ be ParseModule(_sourceText_, _realm_, _hostDefined_).
+      1. Let _m_ be ParseModule(_sourceText_, _realm_, <ins>*true*,</ins> _hostDefined_).
       1. If _m_ is a List of errors, then
         1. Perform HostReportErrors(_m_).
         1. Return NormalCompletion(*undefined*).
@@ -1062,21 +1063,51 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <h1>Modules</h1>
     <h2>Syntax</h2>
     <emu-grammar type="definition">
+      <del>
       Module :
         ModuleBody?
+      </del>
 
+      <ins>
+      Module[Await] :
+        ModuleBody[?Await]?
+      </ins>
+
+      <del>
       ModuleBody :
         ModuleItemList
+      </del>
 
+      <ins>
+      ModuleBody[Await] :
+        ModuleItemList[?Await]
+      </ins>
+
+      <del>
       ModuleItemList :
         ModuleItem
         ModuleItemList ModuleItem
+      </del>
 
+      <ins>
+      ModuleItemList[Await] :
+        ModuleItem[?Await]
+        ModuleItemList[?Await] ModuleItem[?Await]
+      </ins>
+
+      <del>
       ModuleItem :
         ImportDeclaration
         ExportDeclaration
-        <del>StatementListItem[~Yield, ~Await, ~Return]</del>
-        <ins>StatementListItem[~Yield, +Await, ~Return]</ins>
+        StatementListItem[~Yield, ~Await, ~Return]
+      </del>
+
+      <ins>
+      ModuleItem[Await] :
+        ImportDeclaration
+        ExportDeclaration[?Await]
+        StatementListItem[~Yield, ?Await, ~Return]
+      </ins>
     </emu-grammar>
 </emu-clause>
 
@@ -1134,19 +1165,27 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
   <h1>Exports</h1>
   <h2>Syntax</h2>
   <emu-grammar type="definition">
+    <del>
     ExportDeclaration :
       `export` `*` FromClause `;`
       `export` ExportClause FromClause `;`
       `export` ExportClause `;`
-      <del>`export` VariableStatement[~Yield, ~Await]</del>
-      <ins>`export` VariableStatement[~Yield, +Await]</ins>
-      <del>`export` Declaration[~Yield, ~Await]</del>
-      <ins>`export` Declaration[~Yield, +Await]</ins>
-      <del>`export` `default` HoistableDeclaration[~Yield, ~Await, +Default]</del>
-      <ins>`export` `default` HoistableDeclaration[~Yield, +Await, +Default]</ins>
-      <del>`export` `default` ClassDeclaration[~Yield, ~Await, +Default]</del>
-      <ins>`export` `default` ClassDeclaration[~Yield, +Await, +Default]</ins>
-      <del>`export` `default` [lookahead &lt;! {`function`, `async` [no |LineTerminator| here] `function`, `class`}] AssignmentExpression[+In, ~Yield, ~Await] `;`</del>
-      <ins>`export` `default` [lookahead &lt;! {`function`, `async` [no |LineTerminator| here] `function`, `class`}] AssignmentExpression[+In, ~Yield, +Await] `;`</ins>
+      `export` VariableStatement[~Yield, ~Await]
+      `export` Declaration[~Yield, ~Await]
+      `export` `default` HoistableDeclaration[~Yield, ~Await, +Default]
+      `export` `default` ClassDeclaration[~Yield, ~Await, +Default]
+      `export` `default` [lookahead &lt;! {`function`, `async` [no |LineTerminator| here] `function`, `class`}] AssignmentExpression[+In, ~Yield, ~Await] `;`
+    </del>
+    <ins>
+    ExportDeclaration[Await] :
+      `export` `*` FromClause `;`
+      `export` ExportClause FromClause `;`
+      `export` ExportClause `;`
+      `export` VariableStatement[~Yield, ?Await]
+      `export` Declaration[~Yield, ?Await]
+      `export` `default` HoistableDeclaration[~Yield, ?Await, +Default]
+      `export` `default` ClassDeclaration[~Yield, ?Await, +Default]
+      `export` `default` [lookahead &lt;! {`function`, `async` [no |LineTerminator| here] `function`, `class`}] AssignmentExpression[+In, ~Yield, ?Await] `;`
+    </ins>
   </emu-grammar>
 </emu-clause>
