@@ -397,6 +397,7 @@ In May 2018, this proposal reached Stage 2 in TC39's process, with many design d
 
 ## Implementations
 
+* V8 [via --js-flags="--harmony-optional-chaining" flag](https://github.com/v8/v8/commit/0ceee9ad28c21bc4971fb237cf87eb742fc787b8)
 * webpack (experimental support in [5.0.0-alpha.15](https://github.com/webpack/webpack/pull/9177))
 
 ## References
