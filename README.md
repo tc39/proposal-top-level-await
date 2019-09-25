@@ -397,7 +397,7 @@ In May 2018, this proposal reached Stage 2 in TC39's process, with many design d
 
 ## Implementations
 
-* V8 [via --js-flags="--harmony-top-level-await" flag](https://github.com/v8/v8/commit/0ceee9ad28c21bc4971fb237cf87eb742fc787b8)
+* V8 [via `--js-flags="--harmony-top-level-await"` flag](https://bugs.chromium.org/p/v8/issues/detail?id=9344)
 * webpack (experimental support in [5.0.0-alpha.15](https://github.com/webpack/webpack/pull/9177))
 
 ## References
