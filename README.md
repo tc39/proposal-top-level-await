@@ -142,7 +142,7 @@ console.log(outputPlusValue(100));
 setTimeout(() => console.log(outputPlusValue(100), 1000);
 ```
 
-None of the statements in `usage.mjs` will execute until the `await`s in `awaiting.mjs` have had their Promises resolve, so the race condition is avoided by design. This is an extension of how, if `awaiting.mjs` didn't use top-level `await`, none of the statements in `usage.mjs` will execute until `awaiting.mjs` is loaded and all of its statements have executed.
+None of the statements in `usage.mjs` will execute until the `await`s in `awaiting.mjs` have had their Promises resolved, so the race condition is avoided by design. This is an extension of how, if `awaiting.mjs` didn't use top-level `await`, none of the statements in `usage.mjs` will execute until `awaiting.mjs` is loaded and all of its statements have executed.
 
 ## Use cases
 
