@@ -178,8 +178,6 @@ try {
 }
 ```
 
-Some kinds of dependency fallbacks may be handled by [import maps](https://github.com/wicg/import-maps), but even with the support of import maps, [some scenarios](https://github.com/WICG/import-maps/blob/master/README.md#alternating-logic-based-on-the-presence-of-a-built-in-module) which are outside of the declaratively handled set would still benefit from top-level `await`.
-
 ### WebAssembly Modules
 
 WebAssembly Modules are "compiled" and "instantiated" in a logically asynchronous way, based on their imports: Some WebAssembly implementations do nontrivial work at either phase, which is important to be able to shunt off into another thread. To integrate with the JavaScript module system, they will need to do the equivalent of a top-level await. See the [WebAssembly ESM integration proposal](https://github.com/webassembly/esm-integration) for more details.
