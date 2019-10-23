@@ -664,7 +664,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Append _ee_ to _starExportEntries_.
         1. Else,
           1. Append _ee_ to _indirectExportEntries_.
-      1. <ins>Let _async_ be _body_ Contains |AwaitExpression|.</ins>
+      1. <ins>Let _async_ be _body_ Contains `await`.</ins>
       1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: *undefined*, [[Namespace]]: *undefined*, <ins>[[Async]]: _async_, [[AsyncEvaluating]]: *false*, [[TopLevelCapability]]: *undefined*, [[AsyncParentModules]]: *undefined*, [[PendingAsyncDependencies]]: *undefined*, </ins>[[Status]]: `"unlinked"`, [[EvaluationError]]: *undefined*, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: *undefined*, [[DFSAncestorIndex]]: *undefined* }.
     </emu-alg>
     <emu-note>
