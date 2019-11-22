@@ -1,0 +1,914 @@
+<!doctype html>
+<head><meta charset="utf-8">
+<title>Top-Level Await</title><script type="application/json" id="menu-search-biblio">[{"type":"clause","id":"introduction","aoid":null,"title":"Introduction","titleHTML":"Introduction","number":"","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":[],"key":"Introduction"},{"type":"op","aoid":"AsyncFunctionStart","refId":"sec-async-functions-abstract-operations-async-function-start","location":"","referencingIds":[],"key":"AsyncFunctionStart"},{"type":"clause","id":"sec-async-functions-abstract-operations-async-function-start","aoid":"AsyncFunctionStart","title":"AsyncFunctionStart ( promiseCapability, asyncFunctionBody )","titleHTML":"AsyncFunctionStart ( <var>promiseCapability</var>, <var>asyncFunctionBody</var> )","number":"1","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":[],"key":"AsyncFunctionStart ( promiseCapability, asyncFunctionBody )"},{"type":"op","aoid":"AsyncBlockStart","refId":"sec-asyncblockstart","location":"","referencingIds":[],"key":"AsyncBlockStart"},{"type":"clause","id":"sec-asyncblockstart","aoid":"AsyncBlockStart","title":"AsyncBlockStart ( promiseCapability, asyncBody, asyncContext )","titleHTML":"<ins>AsyncBlockStart ( <var>promiseCapability</var>, <var>asyncBody</var>, <var>asyncContext</var> )</ins>","number":"2","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":["_ref_8","_ref_80"],"key":"AsyncBlockStart ( promiseCapability, asyncBody, asyncContext )"},{"type":"table","id":"table-36","number":1,"caption":"Table 1: Module Record Fields","referencingIds":[],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Table 1: Module Record Fields"},{"type":"table","id":"table-37","number":2,"caption":"Table 2: Abstract Methods of Module Records","referencingIds":["_ref_0"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Table 2: Abstract Methods of Module Records"},{"type":"term","term":"ResolvedBinding Record","refId":"sec-abstract-module-records","referencingIds":[],"id":"resolvedbinding-record","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"ResolvedBinding Record"},{"type":"clause","id":"sec-abstract-module-records","aoid":null,"title":"Abstract Module Records","titleHTML":"Abstract Module Records","number":"3","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":["_ref_15","_ref_16","_ref_23","_ref_34","_ref_36","_ref_56","_ref_83"],"key":"Abstract Module Records"},{"type":"term","term":"Cyclic Module Record","refId":"sec-cyclic-module-records","referencingIds":["_ref_17","_ref_18","_ref_20","_ref_22","_ref_25","_ref_27","_ref_28","_ref_29","_ref_32","_ref_33","_ref_35","_ref_38","_ref_42","_ref_45","_ref_47","_ref_50","_ref_55","_ref_77"],"id":"cyclic-module-record","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Cyclic Module Record"},{"type":"table","id":"table-cyclic-module-fields","number":3,"caption":"Table 3: Additional Fields of Cyclic Module Records","referencingIds":[],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Table 3: Additional Fields of Cyclic Module Records"},{"type":"table","id":"table-cyclic-module-methods","number":4,"caption":"Table 4: Additional Abstract Methods of Cyclic Module Records","referencingIds":["_ref_1"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Table 4: Additional Abstract Methods of Cyclic Module Records"},{"type":"op","aoid":"InnerModuleLinking","refId":"sec-InnerModuleLinking","location":"","referencingIds":[],"key":"InnerModuleLinking"},{"type":"clause","id":"sec-InnerModuleLinking","aoid":"InnerModuleLinking","title":"InnerModuleLinking ( module, stack, index )","titleHTML":"InnerModuleLinking ( <var>module</var>, <var>stack</var>, <var>index</var> )","number":"4.1.1","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":["_ref_24","_ref_26","_ref_31","_ref_46","_ref_81","_ref_87","_ref_88","_ref_89","_ref_90","_ref_91","_ref_92"],"key":"InnerModuleLinking ( module, stack, index )"},{"type":"clause","id":"sec-moduledeclarationlinking","aoid":null,"title":"Link ( ) Concrete Method","titleHTML":"Link ( ) Concrete Method","number":"4.1","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":[],"key":"Link ( ) Concrete Method"},{"type":"op","aoid":"InnerModuleEvaluation","refId":"sec-innermoduleevaluation","location":"","referencingIds":[],"key":"InnerModuleEvaluation"},{"type":"clause","id":"sec-innermoduleevaluation","aoid":"InnerModuleEvaluation","title":"InnerModuleEvaluation( module, stack, index )","titleHTML":"InnerModuleEvaluation( <var>module</var>, <var>stack</var>, <var>index</var> )","number":"4.2.1","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":["_ref_37","_ref_41","_ref_49","_ref_82","_ref_93","_ref_94","_ref_96","_ref_97","_ref_99","_ref_100","_ref_102"],"key":"InnerModuleEvaluation( module, stack, index )"},{"type":"op","aoid":"ExecuteAsyncModule","refId":"sec-execute-async-module","location":"","referencingIds":[],"key":"ExecuteAsyncModule"},{"type":"clause","id":"sec-execute-async-module","aoid":"ExecuteAsyncModule","title":"ExecuteAsyncModule ( module )","titleHTML":"<ins>ExecuteAsyncModule ( <var>module</var> )</ins>","number":"4.2.2","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":["_ref_53","_ref_66","_ref_98","_ref_101","_ref_105","_ref_108"],"key":"ExecuteAsyncModule ( module )"},{"type":"op","aoid":"GetAsyncCycleRoot","refId":"sec-getasynccycleroot","location":"","referencingIds":[],"key":"GetAsyncCycleRoot"},{"type":"clause","id":"sec-getasynccycleroot","aoid":"GetAsyncCycleRoot","title":"GetAsyncCycleRoot ( module )","titleHTML":"<ins>GetAsyncCycleRoot ( <var>module</var> )</ins>","number":"4.2.3","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":["_ref_39","_ref_51","_ref_57","_ref_65"],"key":"GetAsyncCycleRoot ( module )"},{"type":"op","aoid":"AsyncModuleExecutionFulfilled","refId":"sec-asyncmodulexecutionfulfilled","location":"","referencingIds":[],"key":"AsyncModuleExecutionFulfilled"},{"type":"clause","id":"sec-asyncmodulexecutionfulfilled","aoid":"AsyncModuleExecutionFulfilled","title":"AsyncModuleExecutionFulfilled ( module )","titleHTML":"<ins>AsyncModuleExecutionFulfilled ( <var>module</var> )</ins>","number":"4.2.4","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":["_ref_63","_ref_68","_ref_103","_ref_104","_ref_106","_ref_107","_ref_109"],"key":"AsyncModuleExecutionFulfilled ( module )"},{"type":"op","aoid":"AsyncModuleExecutionRejected","refId":"sec-AsyncModuleExecutionRejected","location":"","referencingIds":[],"key":"AsyncModuleExecutionRejected"},{"type":"clause","id":"sec-AsyncModuleExecutionRejected","aoid":"AsyncModuleExecutionRejected","title":"AsyncModuleExecutionRejected ( module, error )","titleHTML":"<ins>AsyncModuleExecutionRejected ( <var>module</var>, <var>error</var> )</ins>","number":"4.2.5","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":["_ref_64","_ref_69","_ref_71","_ref_95"],"key":"AsyncModuleExecutionRejected ( module, error )"},{"type":"clause","id":"sec-moduleevaluation","aoid":null,"title":"Evaluate ( ) Concrete Method","titleHTML":"Evaluate ( ) Concrete Method","number":"4.2","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":[],"key":"Evaluate ( ) Concrete Method"},{"type":"clause","id":"sec-cyclic-module-records","aoid":null,"title":"Cyclic Module Records","titleHTML":"Cyclic Module Records","number":"4","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":[],"key":"Cyclic Module Records"},{"type":"op","aoid":"ParseModule","refId":"sec-parsemodule","location":"","referencingIds":[],"key":"ParseModule"},{"type":"clause","id":"sec-parsemodule","aoid":"ParseModule","title":"ParseModule ( sourceText, realm, hostDefined )","titleHTML":"ParseModule ( <var>sourceText</var>, <var>realm</var>, <var>hostDefined</var> )","number":"5.1","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":["_ref_85","_ref_110"],"key":"ParseModule ( sourceText, realm, hostDefined )"},{"type":"op","aoid":"ExecuteModule","refId":"sec-source-text-module-record-execute-module","location":"","referencingIds":[],"key":"ExecuteModule"},{"type":"clause","id":"sec-source-text-module-record-execute-module","aoid":"ExecuteModule","title":"ExecuteModule (  [ capability ] )","titleHTML":"ExecuteModule (  <ins>[ <var>capability</var> ]</ins> )","number":"5.2","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":["_ref_21","_ref_52","_ref_54","_ref_62","_ref_67"],"key":"ExecuteModule (  [ capability ] )"},{"type":"clause","id":"sec-source-text-module-records","aoid":null,"title":"Source Text Module Records","titleHTML":"Source Text Module Records","number":"5","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":["_ref_19","_ref_73","_ref_75","_ref_76","_ref_78"],"key":"Source Text Module Records"},{"type":"figure","id":"figure-module-graph-simple","number":1,"caption":"Figure 1: A simple module graph","referencingIds":[],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Figure 1: A simple module graph"},{"type":"figure","id":"figure-module-graph-missing","number":2,"caption":"Figure 2: A module graph with an unresolvable module","referencingIds":[],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Figure 2: A module graph with an unresolvable module"},{"type":"figure","id":"figure-module-graph-cycle","number":3,"caption":"Figure 3: A cyclic module graph","referencingIds":[],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Figure 3: A cyclic module graph"},{"type":"figure","id":"figure-module-graph-cycle-async","number":4,"caption":"Figure 4: An asynchronous cyclic module graph","referencingIds":[],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Figure 4: An asynchronous cyclic module graph"},{"type":"table","id":"table-module-graph-cycle-async-fields-1","number":5,"caption":"Table 5: Module fields after the initial Evaluate() call","referencingIds":["_ref_2"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Table 5: Module fields after the initial Evaluate() call"},{"type":"table","id":"table-module-graph-cycle-async-fields-2","number":6,"caption":"Table 6: Module fields after module _E_ finishes executing","referencingIds":["_ref_3"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Table 6: Module fields after module _E_ finishes executing"},{"type":"table","id":"table-module-graph-cycle-async-fields-3","number":7,"caption":"Table 7: Module fields after module _D_ finishes executing","referencingIds":["_ref_4"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Table 7: Module fields after module _D_ finishes executing"},{"type":"table","id":"table-module-graph-cycle-async-fields-4","number":8,"caption":"Table 8: Module fields after module _C_ finishes executing","referencingIds":["_ref_5"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Table 8: Module fields after module _C_ finishes executing"},{"type":"table","id":"table-module-graph-cycle-async-fields-5","number":9,"caption":"Table 9: Module fields after module _B_ finishes executing","referencingIds":["_ref_6"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Table 9: Module fields after module _B_ finishes executing"},{"type":"table","id":"table-module-graph-cycle-async-fields-6","number":10,"caption":"Table 10: Module fields after module _A_ finishes executing","referencingIds":["_ref_7"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Table 10: Module fields after module _A_ finishes executing"},{"type":"clause","id":"sec-example-source-text-module-record-graphs","aoid":null,"title":"Example Source Text Module Record Graphs","titleHTML":"Example Source Text Module Record Graphs","number":"6","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":[],"key":"Example Source Text Module Record Graphs"},{"type":"op","aoid":"TopLevelModuleEvaluationJob","refId":"sec-toplevelmoduleevaluationjob","location":"","referencingIds":[],"key":"TopLevelModuleEvaluationJob"},{"type":"clause","id":"sec-toplevelmoduleevaluationjob","aoid":"TopLevelModuleEvaluationJob","title":"Runtime Semantics: TopLevelModuleEvaluationJob ( sourceText, hostDefined )","titleHTML":"Runtime Semantics: TopLevelModuleEvaluationJob ( <var>sourceText</var>, <var>hostDefined</var> )","number":"7","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":[],"key":"Runtime Semantics: TopLevelModuleEvaluationJob ( sourceText, hostDefined )"},{"type":"production","id":"prod-Module","name":"Module","referencingIds":["_ref_116","_ref_117","_ref_118","_ref_119","_ref_136","_ref_137"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"Module"},{"type":"production","id":"prod-ModuleBody","name":"ModuleBody","referencingIds":["_ref_120"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"ModuleBody"},{"type":"production","id":"prod-ModuleItemList","name":"ModuleItemList","referencingIds":["_ref_121","_ref_123"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"ModuleItemList"},{"type":"production","id":"prod-ModuleItem","name":"ModuleItem","referencingIds":["_ref_122","_ref_124"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"ModuleItem"},{"type":"clause","id":"sec-modules","aoid":null,"title":"Modules","titleHTML":"Modules","number":"8","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":[],"key":"Modules"},{"type":"production","id":"prod-AsyncFunctionDeclaration","name":"AsyncFunctionDeclaration","referencingIds":["_ref_133","_ref_139"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"AsyncFunctionDeclaration"},{"type":"production","id":"prod-AsyncFunctionExpression","name":"AsyncFunctionExpression","referencingIds":["_ref_134","_ref_140"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"AsyncFunctionExpression"},{"type":"production","id":"prod-AsyncMethod","name":"AsyncMethod","referencingIds":[],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"AsyncMethod"},{"type":"production","id":"prod-AsyncFunctionBody","name":"AsyncFunctionBody","referencingIds":["_ref_126","_ref_127","_ref_128","_ref_129","_ref_130","_ref_132","_ref_138"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"AsyncFunctionBody"},{"type":"production","id":"prod-AwaitExpression","name":"AwaitExpression","referencingIds":["_ref_131","_ref_135"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"AwaitExpression"},{"type":"clause","id":"sec-async-function-definitions","aoid":null,"title":"Async Function Definitions","titleHTML":"Async Function Definitions","number":"9.1","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":[],"key":"Async Function Definitions"},{"type":"production","id":"prod-ImportedBinding","name":"ImportedBinding","referencingIds":[],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"ImportedBinding"},{"type":"clause","id":"sec-imports","aoid":null,"title":"Imports","titleHTML":"Imports","number":"9.2","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":[],"key":"Imports"},{"type":"production","id":"prod-ExportDeclaration","name":"ExportDeclaration","referencingIds":["_ref_125"],"namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","key":"ExportDeclaration"},{"type":"clause","id":"sec-exports","aoid":null,"title":"Exports","titleHTML":"Exports","number":"9.3","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":[],"key":"Exports"},{"type":"clause","id":"sec-async-function-definitions","aoid":null,"title":"Async Function Definitions","titleHTML":"Async Function Definitions","number":"9","namespace":"https://tc39.github.io/proposal-top-level-await/","location":"","referencingIds":[],"key":"Async Function Definitions"}]</script></head><body><div id="menu-toggle">☰</div><div id="menu-spacer"></div><div id="menu"><div id="menu-search"><input type="text" id="menu-search-box" placeholder="Search..."><div id="menu-search-results" class="inactive"></div></div><div id="menu-pins"><div class="menu-pane-header">Pins</div><ul id="menu-pins-list"></ul></div><div class="menu-pane-header">Table of Contents</div><div id="menu-toc"><ol class="toc"><li><span class="item-toggle-none"></span><a href="#introduction" title="Introduction">Introduction</a></li><li><span class="item-toggle-none"></span><a href="#sec-async-functions-abstract-operations-async-function-start" title="AsyncFunctionStart ( promiseCapability, asyncFunctionBody )"><span class="secnum">1</span> AsyncFunctionStart ( <var>promiseCapability</var>, <var>asyncFunctionBody</var> )</a></li><li><span class="item-toggle-none"></span><a href="#sec-asyncblockstart" title="AsyncBlockStart ( promiseCapability, asyncBody, asyncContext )"><span class="secnum">2</span> <ins>AsyncBlockStart ( <var>promiseCapability</var>, <var>asyncBody</var>, <var>asyncContext</var> )</ins></a></li><li><span class="item-toggle-none"></span><a href="#sec-abstract-module-records" title="Abstract Module Records"><span class="secnum">3</span> Abstract Module Records</a></li><li><span class="item-toggle">◢</span><a href="#sec-cyclic-module-records" title="Cyclic Module Records"><span class="secnum">4</span> Cyclic Module Records</a><ol class="toc"><li><span class="item-toggle">◢</span><a href="#sec-moduledeclarationlinking" title="Link ( ) Concrete Method"><span class="secnum">4.1</span> Link ( ) Concrete Method</a><ol class="toc"><li><span class="item-toggle-none"></span><a href="#sec-InnerModuleLinking" title="InnerModuleLinking ( module, stack, index )"><span class="secnum">4.1.1</span> InnerModuleLinking ( <var>module</var>, <var>stack</var>, <var>index</var> )</a></li></ol></li><li><span class="item-toggle">◢</span><a href="#sec-moduleevaluation" title="Evaluate ( ) Concrete Method"><span class="secnum">4.2</span> Evaluate ( ) Concrete Method</a><ol class="toc"><li><span class="item-toggle-none"></span><a href="#sec-innermoduleevaluation" title="InnerModuleEvaluation( module, stack, index )"><span class="secnum">4.2.1</span> InnerModuleEvaluation( <var>module</var>, <var>stack</var>, <var>index</var> )</a></li><li><span class="item-toggle-none"></span><a href="#sec-execute-async-module" title="ExecuteAsyncModule ( module )"><span class="secnum">4.2.2</span> <ins>ExecuteAsyncModule ( <var>module</var> )</ins></a></li><li><span class="item-toggle-none"></span><a href="#sec-getasynccycleroot" title="GetAsyncCycleRoot ( module )"><span class="secnum">4.2.3</span> <ins>GetAsyncCycleRoot ( <var>module</var> )</ins></a></li><li><span class="item-toggle-none"></span><a href="#sec-asyncmodulexecutionfulfilled" title="AsyncModuleExecutionFulfilled ( module )"><span class="secnum">4.2.4</span> <ins>AsyncModuleExecutionFulfilled ( <var>module</var> )</ins></a></li><li><span class="item-toggle-none"></span><a href="#sec-AsyncModuleExecutionRejected" title="AsyncModuleExecutionRejected ( module, error )"><span class="secnum">4.2.5</span> <ins>AsyncModuleExecutionRejected ( <var>module</var>, <var>error</var> )</ins></a></li></ol></li></ol></li><li><span class="item-toggle">◢</span><a href="#sec-source-text-module-records" title="Source Text Module Records"><span class="secnum">5</span> Source Text Module Records</a><ol class="toc"><li><span class="item-toggle-none"></span><a href="#sec-parsemodule" title="ParseModule ( sourceText, realm, hostDefined )"><span class="secnum">5.1</span> ParseModule ( <var>sourceText</var>, <var>realm</var>, <var>hostDefined</var> )</a></li><li><span class="item-toggle-none"></span><a href="#sec-source-text-module-record-execute-module" title="ExecuteModule (  [ capability ] )"><span class="secnum">5.2</span> ExecuteModule (  <ins>[ <var>capability</var> ]</ins> )</a></li></ol></li><li><span class="item-toggle-none"></span><a href="#sec-example-source-text-module-record-graphs" title="Example Source Text Module Record Graphs"><span class="secnum">6</span> Example Source Text Module Record Graphs</a></li><li><span class="item-toggle-none"></span><a href="#sec-toplevelmoduleevaluationjob" title="Runtime Semantics: TopLevelModuleEvaluationJob ( sourceText, hostDefined )"><span class="secnum">7</span> RS: TopLevelModuleEvaluationJob ( <var>sourceText</var>, <var>hostDefined</var> )</a></li><li><span class="item-toggle-none"></span><a href="#sec-modules" title="Modules"><span class="secnum">8</span> Modules</a></li><li><span class="item-toggle">◢</span><a href="#sec-async-function-definitions" title="Async Function Definitions"><span class="secnum">9</span> Async Function Definitions</a><ol class="toc"><li><span class="item-toggle-none"></span><a href="#sec-async-function-definitions" title="Async Function Definitions"><span class="secnum">9.1</span> Async Function Definitions</a></li><li><span class="item-toggle-none"></span><a href="#sec-imports" title="Imports"><span class="secnum">9.2</span> Imports</a></li><li><span class="item-toggle-none"></span><a href="#sec-exports" title="Exports"><span class="secnum">9.3</span> Exports</a></li></ol></li></ol></div></div><div id="spec-container"><h1 class="version first">Stage 3 Draft / November 22, 2019</h1><h1 class="title">Top-Level Await</h1>
+<script src="ecmarkup.js" defer=""></script>
+<link rel="stylesheet" href="ecmarkup.css">
+
+<emu-intro id="introduction">
+  <h1>Introduction</h1>
+
+    <p>Top-Level Await allows the <code>await</code> keyword to be used at the top level of the module goal. See  <a href="https://github.com/tc39/proposal-top-level-await/blob/master/README.md">the explainer</a> for the motivation, context, and high-level semantics.</p>
+</emu-intro>
+
+<emu-clause id="sec-async-functions-abstract-operations-async-function-start" aoid="AsyncFunctionStart">
+  <h1><span class="secnum">1</span>AsyncFunctionStart ( <var>promiseCapability</var>, <var>asyncFunctionBody</var> )</h1>
+  <emu-alg><ol><li>Let <var>runningContext</var> be the <emu-xref href="#running-execution-context"><a href="https://tc39.github.io/ecma262/#running-execution-context">running execution context</a></emu-xref>.</li><li>Let <var>asyncContext</var> be a copy of <var>runningContext</var>.</li><li><ins>Perform !&nbsp;<emu-xref aoid="AsyncBlockStart" id="_ref_8"><a href="#sec-asyncblockstart">AsyncBlockStart</a></emu-xref>(<var>promiseCapability</var>, <var>asyncFunctionBody</var>, <var>asyncContext</var>).</ins></li><li><del>Set the code evaluation state of <var>asyncContext</var> such that when evaluation is resumed for that <emu-xref href="#sec-execution-contexts"><a href="https://tc39.github.io/ecma262/#sec-execution-contexts">execution context</a></emu-xref> the following steps will be performed:</del><ol><li><del>Let <var>result</var> be the result of evaluating <var>asyncFunctionBody</var>.</del></li><li><del>Assert: If we return here, the async function either threw an exception or performed an implicit or explicit return; all awaiting is done.</del></li><li><del>Remove <var>asyncContext</var> from the <emu-xref href="#execution-context-stack"><a href="https://tc39.github.io/ecma262/#execution-context-stack">execution context stack</a></emu-xref> and restore the <emu-xref href="#sec-execution-contexts"><a href="https://tc39.github.io/ecma262/#sec-execution-contexts">execution context</a></emu-xref> that is at the top of the <emu-xref href="#execution-context-stack"><a href="https://tc39.github.io/ecma262/#execution-context-stack">execution context stack</a></emu-xref> as the <emu-xref href="#running-execution-context"><a href="https://tc39.github.io/ecma262/#running-execution-context">running execution context</a></emu-xref>.</del></li><li><del>If <var>result</var>.[[Type]] is <emu-const>normal</emu-const>, then</del><ol><li><del>Perform !&nbsp;<emu-xref aoid="Call" id="_ref_9"><a href="https://tc39.github.io/ecma262/#sec-call">Call</a></emu-xref>(<var>promiseCapability</var>.[[Resolve]], <emu-val>undefined</emu-val>, «<emu-val>undefined</emu-val>»).</del></li></ol></li><li><del>Else if <var>result</var>.[[Type]] is <emu-const>return</emu-const>, then</del><ol><li><del>Perform !&nbsp;<emu-xref aoid="Call" id="_ref_10"><a href="https://tc39.github.io/ecma262/#sec-call">Call</a></emu-xref>(<var>promiseCapability</var>.[[Resolve]], <emu-val>undefined</emu-val>, «<var>result</var>.[[Value]]»).</del></li></ol></li><li><del>Else,</del><ol><li><del>Assert: <var>result</var>.[[Type]] is <emu-const>throw</emu-const>.</del></li><li><del>Perform !&nbsp;<emu-xref aoid="Call" id="_ref_11"><a href="https://tc39.github.io/ecma262/#sec-call">Call</a></emu-xref>(<var>promiseCapability</var>.[[Reject]], <emu-val>undefined</emu-val>, «<var>result</var>.[[Value]]»).</del></li></ol></li><li><del>Return.</del></li></ol></li><li><del>Push <var>asyncContext</var> onto the <emu-xref href="#execution-context-stack"><a href="https://tc39.github.io/ecma262/#execution-context-stack">execution context stack</a></emu-xref>; <var>asyncContext</var> is now the <emu-xref href="#running-execution-context"><a href="https://tc39.github.io/ecma262/#running-execution-context">running execution context</a></emu-xref>.</del></li><li><del>Resume the suspended evaluation of <var>asyncContext</var>. Let <var>result</var> be the value returned by the resumed computation.</del></li><li><del>Assert: When we return here, <var>asyncContext</var> has already been removed from the <emu-xref href="#execution-context-stack"><a href="https://tc39.github.io/ecma262/#execution-context-stack">execution context stack</a></emu-xref> and <var>runningContext</var> is the currently <emu-xref href="#running-execution-context"><a href="https://tc39.github.io/ecma262/#running-execution-context">running execution context</a></emu-xref>.</del></li><li><del>Assert: <var>result</var> is a normal completion with a value of <emu-val>undefined</emu-val>. The possible sources of completion values are Await or, if the async function doesn't await anything, the step 3.g above.</del></li><li>Return.
+  </li></ol></emu-alg>
+</emu-clause>
+
+<emu-clause id="sec-asyncblockstart" aoid="AsyncBlockStart">
+  <h1><span class="secnum">2</span><ins>AsyncBlockStart ( <var>promiseCapability</var>, <var>asyncBody</var>, <var>asyncContext</var> )</ins></h1>
+  <emu-alg><ol><li>Assert: <var>promiseCapability</var> is a PromiseCapability <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">Record</a></emu-xref>.</li><li>Let <var>runningContext</var> be the <emu-xref href="#running-execution-context"><a href="https://tc39.github.io/ecma262/#running-execution-context">running execution context</a></emu-xref>.</li><li>Set the code evaluation state of <var>asyncContext</var> such that when evaluation is resumed for that <emu-xref href="#sec-execution-contexts"><a href="https://tc39.github.io/ecma262/#sec-execution-contexts">execution context</a></emu-xref> the following steps will be performed:<ol><li>Let <var>result</var> be the result of evaluating <var>asyncBody</var>.</li><li>Assert: If we return here, the async function either threw an exception or performed an implicit or explicit return; all awaiting is done.</li><li>Remove <var>asyncContext</var> from the <emu-xref href="#execution-context-stack"><a href="https://tc39.github.io/ecma262/#execution-context-stack">execution context stack</a></emu-xref> and restore the <emu-xref href="#sec-execution-contexts"><a href="https://tc39.github.io/ecma262/#sec-execution-contexts">execution context</a></emu-xref> that is at the top of the <emu-xref href="#execution-context-stack"><a href="https://tc39.github.io/ecma262/#execution-context-stack">execution context stack</a></emu-xref> as the <emu-xref href="#running-execution-context"><a href="https://tc39.github.io/ecma262/#running-execution-context">running execution context</a></emu-xref>.</li><li>If <var>result</var>.[[Type]] is <emu-const>normal</emu-const>, then<ol><li>Perform !&nbsp;<emu-xref aoid="Call" id="_ref_12"><a href="https://tc39.github.io/ecma262/#sec-call">Call</a></emu-xref>(<var>promiseCapability</var>.[[Resolve]], <emu-val>undefined</emu-val>, «<emu-val>undefined</emu-val>»).</li></ol></li><li>Else if <var>result</var>.[[Type]] is <emu-const>return</emu-const>, then<ol><li>Perform !&nbsp;<emu-xref aoid="Call" id="_ref_13"><a href="https://tc39.github.io/ecma262/#sec-call">Call</a></emu-xref>(<var>promiseCapability</var>.[[Resolve]], <emu-val>undefined</emu-val>, «<var>result</var>.[[Value]]»).</li></ol></li><li>Else,<ol><li>Assert: <var>result</var>.[[Type]] is <emu-const>throw</emu-const>.</li><li>Perform !&nbsp;<emu-xref aoid="Call" id="_ref_14"><a href="https://tc39.github.io/ecma262/#sec-call">Call</a></emu-xref>(<var>promiseCapability</var>.[[Reject]], <emu-val>undefined</emu-val>, «<var>result</var>.[[Value]]»).</li></ol></li><li>Return.</li></ol></li><li>Push <var>asyncContext</var> onto the <emu-xref href="#execution-context-stack"><a href="https://tc39.github.io/ecma262/#execution-context-stack">execution context stack</a></emu-xref>; <var>asyncContext</var> is now the <emu-xref href="#running-execution-context"><a href="https://tc39.github.io/ecma262/#running-execution-context">running execution context</a></emu-xref>.</li><li>Resume the suspended evaluation of <var>asyncContext</var>. Let <var>result</var> be the value returned by the resumed computation.</li><li>Assert: When we return here, <var>asyncContext</var> has already been removed from the <emu-xref href="#execution-context-stack"><a href="https://tc39.github.io/ecma262/#execution-context-stack">execution context stack</a></emu-xref> and <var>runningContext</var> is the currently <emu-xref href="#running-execution-context"><a href="https://tc39.github.io/ecma262/#running-execution-context">running execution context</a></emu-xref>.</li><li>Assert: <var>result</var> is a normal completion with a value of <emu-val>undefined</emu-val>. The possible sources of completion values are Await or, if the async function doesn't await anything, the step 2.g above.
+  </li></ol></emu-alg>
+</emu-clause>
+
+<emu-clause id="sec-abstract-module-records">
+  <h1><span class="secnum">3</span>Abstract Module Records</h1>
+  <emu-table id="table-36" caption="Module Record Fields"><figure><figcaption>Table 1: <emu-xref href="#sec-abstract-module-records" id="_ref_15"><a href="#sec-abstract-module-records">Module Record</a></emu-xref> Fields</figcaption>
+    <table>
+      <thead>
+      <tr>
+        <th>
+          Field Name
+        
+        </th>
+        <th>
+          Value Type
+        
+        </th>
+        <th>
+          Meaning
+        
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>
+          [[Realm]]
+        
+        </td>
+        <td>
+          <emu-xref href="#realm-record"><a href="https://tc39.github.io/ecma262/#realm-record">Realm Record</a></emu-xref> | <emu-val>undefined</emu-val>
+        
+        </td>
+        <td>
+          The <emu-xref href="#realm"><a href="https://tc39.github.io/ecma262/#realm">Realm</a></emu-xref> within which this module was created. <emu-val>undefined</emu-val> if not yet assigned.
+        
+        </td>
+      </tr>
+      <tr>
+        <td>
+          [[Environment]]
+        
+        </td>
+        <td>
+          <emu-xref href="#sec-lexical-environments"><a href="https://tc39.github.io/ecma262/#sec-lexical-environments">Lexical Environment</a></emu-xref> | <emu-val>undefined</emu-val>
+        
+        </td>
+        <td>
+          The <emu-xref href="#sec-lexical-environments"><a href="https://tc39.github.io/ecma262/#sec-lexical-environments">Lexical Environment</a></emu-xref> containing the top level bindings for this module. This field is set when the module is linked.
+        
+        </td>
+      </tr>
+      <tr>
+        <td>
+          [[Namespace]]
+        
+        </td>
+        <td>
+          Object | <emu-val>undefined</emu-val>
+        
+        </td>
+        <td>
+          The Module Namespace Object (<emu-xref href="#sec-module-namespace-objects"><a href="https://tc39.github.io/ecma262/#sec-module-namespace-objects">26.3</a></emu-xref>) if one has been created for this module. Otherwise <emu-val>undefined</emu-val>.
+        
+        </td>
+      </tr>
+      <tr>
+        <td>
+          [[HostDefined]]
+        
+        </td>
+        <td>
+          Any, default value is <emu-val>undefined</emu-val>.
+        
+        </td>
+        <td>
+          Field reserved for use by host environments that need to associate additional information with a module.
+        
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </figure></emu-table>
+
+  <emu-table id="table-37" caption="Abstract Methods of Module Records"><figure><figcaption>Table 2: Abstract Methods of Module Records</figcaption>
+    <table>
+      <tbody>
+      <tr>
+        <th>
+          Method
+        
+        </th>
+        <th>
+          Purpose
+        
+        </th>
+      </tr>
+      <tr>
+        <td>
+          GetExportedNames(<var>exportStarSet</var>)
+        
+        </td>
+        <td>
+          Return a list of all names that are either directly or indirectly exported from this module.
+        
+        </td>
+      </tr>
+      <tr>
+        <td>
+          ResolveExport(<var>exportName</var>, <var>resolveSet</var>)
+        
+        </td>
+        <td>
+          <p>Return the binding of a name exported by this module. Bindings are represented by a  <dfn id="resolvedbinding-record">ResolvedBinding Record</dfn>, of the form { [[Module]]: <emu-xref href="#sec-abstract-module-records" id="_ref_16"><a href="#sec-abstract-module-records">Module Record</a></emu-xref>, [[BindingName]]: String }. Return <emu-val>null</emu-val> if the name cannot be resolved, or <code>"ambiguous"</code> if multiple bindings were found.</p>
+          <p>This operation must be idempotent if it completes normally. Each time it is called with a specific <var>exportName</var>, <var>resolveSet</var> pair as arguments it must return the same result.</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Link()
+        
+        </td>
+        <td>
+          <p>Prepare the module for evaluation by transitively resolving all module dependencies and creating a module <emu-xref href="#sec-environment-records"><a href="https://tc39.github.io/ecma262/#sec-environment-records">Environment Record</a></emu-xref>.</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Evaluate()
+        
+        </td>
+        <td>
+          <p><ins>Returns a promise for the evaluation of this module and its dependencies, resolving on successful evaluation or if it has already been evaluated successfully, and rejecting for an evaluation error or  </ins><del>If this module has already been evaluated successfully, return <emu-val>undefined</emu-val>;  </del>if it has already been evaluated unsuccessfully<del>, throw the exception that was produced. Otherwise, Transitively evaluate all module dependencies of this module and then evaluate this module.</del></p>
+          <p>Link must have completed successfully prior to invoking this method.</p>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </figure></emu-table>
+</emu-clause>
+
+<emu-clause id="sec-cyclic-module-records">
+  <h1><span class="secnum">4</span>Cyclic Module Records</h1>
+
+  <p>A  <dfn id="cyclic-module-record">Cyclic Module Record</dfn> is used to represent information about a module that can participate in dependency cycles with other modules that are subclasses of the <emu-xref href="#cyclic-module-record" id="_ref_17"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref> type. Module Records that are not subclasses of the <emu-xref href="#cyclic-module-record" id="_ref_18"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref> type must not participate in dependency cycles with Source Text Module Records.</p>
+
+  <emu-table id="table-cyclic-module-fields" caption="Additional Fields of Cyclic Module Records"><figure><figcaption>Table 3: Additional Fields of Cyclic Module Records</figcaption>
+    <table>
+      <tbody>
+        <tr>
+          <th>
+            Field Name
+          
+          </th>
+          <th>
+            Value Type
+          
+          </th>
+          <th>
+            Meaning
+          
+          </th>
+        </tr>
+        <tr>
+          <td>
+            [[Status]]
+          
+          </td>
+          <td>
+            String
+          
+          </td>
+          <td>
+            Initially <code>"unlinked"</code>. Transitions to <code>"linking"</code>, <code>"linked"</code>, <code>"evaluating"</code>, <code>"evaluated"</code> (in that order) as the module progresses throughout its lifecycle.
+          
+          </td>
+        </tr>
+        <tr>
+          <td>
+            [[EvaluationError]]
+          
+          </td>
+          <td>
+            An <emu-xref href="#sec-completion-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-completion-record-specification-type">abrupt completion</a></emu-xref> | <emu-val>undefined</emu-val>
+          
+          </td>
+          <td>
+            A completion of type <emu-const>throw</emu-const> representing the exception that occurred during evaluation. <emu-val>undefined</emu-val> if no exception occurred, or if [[Status]] is not <code>"evaluated"</code>.
+          
+          </td>
+        </tr>
+        <tr>
+          <td>
+            [[DFSIndex]]
+          
+          </td>
+          <td>
+            Integer | <emu-val>undefined</emu-val>
+          
+          </td>
+          <td>
+            Auxiliary field used during Link and Evaluate only.
+            If [[Status]] is <code>"linking"</code><del> or</del><ins>,</ins> <code>"evaluating"</code><ins>, or <code>"evaluated"</code></ins>, this nonnegative number records the point at which the module was first visited during the depth-first traversal of the dependency graph.
+          
+          </td>
+        </tr>
+        <tr>
+          <td>
+            [[DFSAncestorIndex]]
+          
+          </td>
+          <td>
+            Integer | <emu-val>undefined</emu-val>
+          
+          </td>
+          <td>
+            Auxiliary field used during Link and Evaluate only.
+            If [[Status]] is <code>"linking"</code><del> or</del><ins>,</ins> <code>"evaluating"</code><ins>, or <code>"evaluated"</code></ins>, this is either the module's own [[DFSIndex]] or that of an "earlier" module in the same strongly connected component.
+          
+          </td>
+        </tr>
+        <tr>
+          <td>
+            [[RequestedModules]]
+          
+          </td>
+          <td>
+            <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref> of String
+          
+          </td>
+          <td>
+            A <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref> of all the <emu-nt><a href="https://tc39.github.io/ecma262/#prod-ModuleSpecifier">ModuleSpecifier</a></emu-nt> strings used by the module represented by this record to request the importation of a module. The <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref> is source code occurrence ordered.
+          
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <ins>[[Async]]</ins>
+          </td>
+          <td>
+            <ins><emu-val>true</emu-val> or <emu-val>false</emu-val></ins>
+          </td>
+          <td>
+            <ins>Whether this module is individually asynchronous (for example, if it's a <emu-xref href="#sec-source-text-module-records" id="_ref_19"><a href="#sec-source-text-module-records">Source Text Module Record</a></emu-xref> containing a top-level await). Having an asynchronous dependency does not make the module asynchronous. This field must not change after the module is parsed.</ins>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <ins>[[AsyncEvaluating]]</ins>
+          </td>
+          <td>
+            <ins><emu-val>true</emu-val> or <emu-val>false</emu-val></ins>
+          </td>
+          <td>
+            <ins>Whether this module is currently awaiting async fulfillment.</ins>
+          </td>
+        </tr><tr>
+          <td>
+            <ins>[[TopLevelCapability]]</ins>
+          </td>
+          <td>
+            <ins>Promise Capability | <emu-val>undefined</emu-val></ins>
+          </td>
+          <td>
+            <ins>
+              If Evaluate() was called on this module, this field contains the Promise capability for that entire evaluation.
+              It is used to settle the Promise object that is returned from the Evaluate() abstract method.
+              This field will be <emu-val>undefined</emu-val> for any dependencies of that module, unless a top-level Evaluate() has been initiated for any of those dependencies.
+            
+            </ins>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <ins>[[AsyncParentModules]]</ins>
+          </td>
+          <td>
+            <ins><emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref> of <emu-xref href="#cyclic-module-record" id="_ref_20"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref> | <emu-val>undefined</emu-val></ins>
+          </td>
+          <td>
+            <ins>
+              If this module or a dependency has [[Async]] <emu-val>true</emu-val>, and execution is in progress, this tracks the parent importers of this module for the top-level execution job.
+              These parent modules will not start executing before this module has successfully completed execution.
+            
+            </ins>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <ins>[[PendingAsyncDependencies]]</ins>
+          </td>
+          <td>
+            <ins>Integer | <emu-val>undefined</emu-val></ins>
+          </td>
+          <td>
+            <ins>
+              This tracks the number of async dependency modules remaining to execute for this module if it has any asynchronous dependencies.
+              A module with async dependencies will be executed when this field reaches 0, which will only happen if there are no dependency execution errors.
+            
+            </ins>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </figure></emu-table>
+  <p>In addition to the methods defined in  <emu-xref href="#table-37" id="_ref_0"><a href="#table-37">Table 2</a></emu-xref> Cyclic Module Records have the additional methods listed in  <emu-xref href="#table-cyclic-module-methods" id="_ref_1"><a href="#table-cyclic-module-methods">Table 4</a></emu-xref></p>
+  <emu-table id="table-cyclic-module-methods" caption="Additional Abstract Methods of Cyclic Module Records"><figure><figcaption>Table 4: Additional Abstract Methods of Cyclic Module Records</figcaption>
+    <table>
+      <tbody>
+        <tr>
+          <th>
+            Method
+          
+          </th>
+          <th>
+            Purpose
+          
+          </th>
+        </tr>
+        <tr>
+          <td>
+            InitializeEnvironment()
+          
+          </td>
+          <td>
+            Initialize the <emu-xref href="#sec-lexical-environments"><a href="https://tc39.github.io/ecma262/#sec-lexical-environments">Lexical Environment</a></emu-xref> of the module, including resolving all imported bindings.
+          
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <emu-xref aoid="ExecuteModule" id="_ref_21"><a href="#sec-source-text-module-record-execute-module">ExecuteModule</a></emu-xref>(  <ins>[ <var>promiseCapability</var> ]</ins> )
+          
+          </td>
+          <td>
+            Initialize the <emu-xref href="#sec-execution-contexts"><a href="https://tc39.github.io/ecma262/#sec-execution-contexts">execution context</a></emu-xref> of the module and evaluate the module's code within it.  <ins>If this module has <emu-val>true</emu-val> in [[Async]], then a Promise Capability is passed as an argument, and the method is expected to resolve or reject the given capability. In this case, the method must not throw an exception, but instead reject the Promise Capability if necessary.</ins>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </figure></emu-table>
+
+  <emu-clause id="sec-moduledeclarationlinking" oldids="sec-moduledeclarationinstantiation">
+    <span id="sec-moduledeclarationinstantiation"></span><h1><span class="secnum">4.1</span>Link ( ) Concrete Method</h1>
+
+    <p>The Link concrete method of a <emu-xref href="#cyclic-module-record" id="_ref_22"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref> implements the corresponding <emu-xref href="#sec-abstract-module-records" id="_ref_23"><a href="#sec-abstract-module-records">Module Record</a></emu-xref> abstract method.</p>
+    <p>On success, Link transitions this module's [[Status]] from <code>"unlinked"</code> to <code>"linked"</code>. On failure, an exception is thrown and this module's [[Status]] remains <code>"unlinked"</code>.</p>
+
+    <p>This abstract method performs the following steps (most of the work is done by the auxiliary function <emu-xref aoid="InnerModuleLinking" id="_ref_24"><a href="#sec-InnerModuleLinking">InnerModuleLinking</a></emu-xref>):</p>
+
+    <emu-alg><ol><li>Let <var>module</var> be this <emu-xref href="#cyclic-module-record" id="_ref_25"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref>.</li><li>Assert: <var>module</var>.[[Status]] is not <code>"linking"</code> or <code>"evaluating"</code>.</li><li>Let <var>stack</var> be a new empty <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref>.</li><li>Let <var>result</var> be <emu-xref aoid="InnerModuleLinking" id="_ref_26"><a href="#sec-InnerModuleLinking">InnerModuleLinking</a></emu-xref>(<var>module</var>, <var>stack</var>, 0).</li><li>If <var>result</var> is an <emu-xref href="#sec-completion-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-completion-record-specification-type">abrupt completion</a></emu-xref>, then<ol><li>For each <emu-xref href="#cyclic-module-record" id="_ref_27"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref> <var>m</var> in <var>stack</var>, do<ol><li>Assert: <var>m</var>.[[Status]] is <code>"linking"</code>.</li><li>Set <var>m</var>.[[Status]] to <code>"unlinked"</code>.</li><li>Set <var>m</var>.[[Environment]] to <emu-val>undefined</emu-val>.</li><li>Set <var>m</var>.[[DFSIndex]] to <emu-val>undefined</emu-val>.</li><li>Set <var>m</var>.[[DFSAncestorIndex]] to <emu-val>undefined</emu-val>.</li></ol></li><li>Assert: <var>module</var>.[[Status]] is <code>"unlinked"</code>.</li><li>Return <var>result</var>.</li></ol></li><li>Assert: <var>module</var>.[[Status]] is <code>"linked"</code> or <code>"evaluated"</code>.</li><li>Assert: <var>stack</var> is empty.</li><li>Return <emu-val>undefined</emu-val>.
+    </li></ol></emu-alg>
+
+    <emu-clause id="sec-InnerModuleLinking" oldids="sec-innermoduleinstantiation" aoid="InnerModuleLinking">
+      <span id="sec-innermoduleinstantiation"></span><h1><span class="secnum">4.1.1</span>InnerModuleLinking ( <var>module</var>, <var>stack</var>, <var>index</var> )</h1>
+
+      <p>The InnerModuleLinking abstract operation is used by Link to perform the actual linking process for the <emu-xref href="#cyclic-module-record" id="_ref_28"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref> <var>module</var>, as well as recursively on all other modules in the dependency graph. The <var>stack</var> and <var>index</var> parameters, as well as a module's [[DFSIndex]] and [[DFSAncestorIndex]] fields, keep track of the depth-first search (DFS) traversal. In particular, [[DFSAncestorIndex]] is used to discover strongly connected components (SCCs), such that all modules in an SCC transition to <code>"linked"</code> together.</p>
+
+      <p>This abstract operation performs the following steps:</p>
+
+      <emu-alg><ol><li>If <var>module</var> is not a <emu-xref href="#cyclic-module-record" id="_ref_29"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref>, then<ol><li>Perform ? <var>module</var>.Link().</li><li>Return <var>index</var>.</li></ol></li><li>If <var>module</var>.[[Status]] is <code>"linking"</code>, <code>"linked"</code>, or <code>"evaluated"</code>, then<ol><li>Return <var>index</var>.</li></ol></li><li>Assert: <var>module</var>.[[Status]] is <code>"unlinked"</code>.</li><li>Set <var>module</var>.[[Status]] to <code>"linking"</code>.</li><li>Set <var>module</var>.[[DFSIndex]] to <var>index</var>.</li><li>Set <var>module</var>.[[DFSAncestorIndex]] to <var>index</var>.</li><li>Increase <var>index</var> by 1.</li><li>Append <var>module</var> to <var>stack</var>.</li><li>For each String <var>required</var> that is an element of <var>module</var>.[[RequestedModules]], do<ol><li>Let <var>requiredModule</var> be ?&nbsp;<emu-xref aoid="HostResolveImportedModule" id="_ref_30"><a href="https://tc39.github.io/ecma262/#sec-hostresolveimportedmodule">HostResolveImportedModule</a></emu-xref>(<var>module</var>, <var>required</var>).</li><li>Set <var>index</var> to ?&nbsp;<emu-xref aoid="InnerModuleLinking" id="_ref_31"><a href="#sec-InnerModuleLinking">InnerModuleLinking</a></emu-xref>(<var>requiredModule</var>, <var>stack</var>, <var>index</var>).</li><li>If <var>requiredModule</var> is a <emu-xref href="#cyclic-module-record" id="_ref_32"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref>, then<ol><li>Assert: <var>requiredModule</var>.[[Status]] is either <code>"linking"</code>, <code>"linked"</code>, or <code>"evaluated"</code>.</li><li>Assert: <var>requiredModule</var>.[[Status]] is <code>"linking"</code> if and only if <var>requiredModule</var> is in <var>stack</var>.</li><li>If <var>requiredModule</var>.[[Status]] is <code>"linking"</code>, then<ol><li>Set <var>module</var>.[[DFSAncestorIndex]] to <emu-xref aoid="min"><a href="https://tc39.github.io/ecma262/#sec-algorithm-conventions">min</a></emu-xref>(<var>module</var>.[[DFSAncestorIndex]], <var>requiredModule</var>.[[DFSAncestorIndex]]).</li></ol></li></ol></li></ol></li><li>Perform ? <var>module</var>.InitializeEnvironment().</li><li>Assert: <var>module</var> occurs exactly once in <var>stack</var>.</li><li>Assert: <var>module</var>.[[DFSAncestorIndex]] is less than or equal to <var>module</var>.[[DFSIndex]].</li><li>If <var>module</var>.[[DFSAncestorIndex]] equals <var>module</var>.[[DFSIndex]], then<ol><li>Let <var>done</var> be <emu-val>false</emu-val>.</li><li>Repeat, while <var>done</var> is <emu-val>false</emu-val>,<ol><li>Let <var>requiredModule</var> be the last element in <var>stack</var>.</li><li>Remove the last element of <var>stack</var>.</li><li>Assert: <var>requiredModule</var> is a <emu-xref href="#cyclic-module-record" id="_ref_33"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref>.</li><li>Set <var>requiredModule</var>.[[Status]] to <code>"linked"</code>.</li><li>If <var>requiredModule</var> and <var>module</var> are the same <emu-xref href="#sec-abstract-module-records" id="_ref_34"><a href="#sec-abstract-module-records">Module Record</a></emu-xref>, set <var>done</var> to <emu-val>true</emu-val>.</li></ol></li></ol></li><li>Return <var>index</var>.
+      </li></ol></emu-alg>
+    </emu-clause>
+  </emu-clause>
+
+  <emu-clause id="sec-moduleevaluation">
+    <h1><span class="secnum">4.2</span>Evaluate ( ) Concrete Method</h1>
+
+    <p>The Evaluate concrete method of a <emu-xref href="#cyclic-module-record" id="_ref_35"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref> implements the corresponding <emu-xref href="#sec-abstract-module-records" id="_ref_36"><a href="#sec-abstract-module-records">Module Record</a></emu-xref> abstract method.</p>
+    <p>Evaluate transitions this module's [[Status]] from <code>"linked"</code> to <code>"evaluated"</code>.</p>
+
+    <p><del>If execution results in a exception, that exception is recorded in the [[EvaluationError]] field and rethrown by future invocations of Evaluate.</del></p>
+
+    <p><ins>The Promise returned by Evaluate is allocated by the first invocation of Evaluate, and its capability is stored in the [[TopLevelCapability]] field. If execution results in an exception, the Promise is rejected. Future invocations of Evaluate return the same Promise.</ins></p>
+
+    <p>This abstract method performs the following steps (most of the work is done by the auxiliary function <emu-xref aoid="InnerModuleEvaluation" id="_ref_37"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref>):</p>
+
+    <emu-alg><ol><li>Let <var>module</var> be this <emu-xref href="#cyclic-module-record" id="_ref_38"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref>.</li><li>Assert: <var>module</var>.[[Status]] is <code>"linked"</code> or <code>"evaluated"</code>.</li><li><ins>If <var>module</var>.[[Status]] is <code>"evaluated"</code>, set <var>module</var> to <emu-xref aoid="GetAsyncCycleRoot" id="_ref_39"><a href="#sec-getasynccycleroot">GetAsyncCycleRoot</a></emu-xref>(<var>module</var>).</ins></li><li><ins>If <var>module</var>.[[TopLevelCapability]] is not <emu-val>undefined</emu-val>, then</ins><ol><li><ins>Return <var>module</var>.[[TopLevelCapability]].[[Promise]].</ins></li></ol></li><li>Let <var>stack</var> be a new empty <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref>.</li><li><ins>Let <var>capability</var> be !&nbsp;<emu-xref aoid="NewPromiseCapability" id="_ref_40"><a href="https://tc39.github.io/ecma262/#sec-newpromisecapability">NewPromiseCapability</a></emu-xref>(<emu-xref href="#sec-promise-constructor"><a href="https://tc39.github.io/ecma262/#sec-promise-constructor">%Promise%</a></emu-xref>).</ins></li><li><ins>Set <var>module</var>.[[TopLevelCapability]] to <var>capability</var>.</ins></li><li>Let <var>result</var> be <emu-xref aoid="InnerModuleEvaluation" id="_ref_41"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref>(<var>module</var>, <var>stack</var>, 0).</li><li>If <var>result</var> is an <emu-xref href="#sec-completion-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-completion-record-specification-type">abrupt completion</a></emu-xref>, then<ol><li>For each <emu-xref href="#cyclic-module-record" id="_ref_42"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref> <var>m</var> in <var>stack</var>, do<ol><li>Assert: <var>m</var>.[[Status]] is <code>"evaluating"</code>.</li><li>Set <var>m</var>.[[Status]] to <code>"evaluated"</code>.</li><li>Set <var>m</var>.[[EvaluationError]] to <var>result</var>.</li></ol></li><li>Assert: <var>module</var>.[[Status]] is <code>"evaluated"</code> and <var>module</var>.[[EvaluationError]] is <var>result</var>.</li><li><del>Return <var>result</var>.</del></li><li><ins>Perform !&nbsp;<emu-xref aoid="Call" id="_ref_43"><a href="https://tc39.github.io/ecma262/#sec-call">Call</a></emu-xref>(<var>capability</var>.[[Reject]], <emu-val>undefined</emu-val>, «<var>result</var>.[[Value]]»).</ins></li></ol></li><li><ins>Otherwise,</ins><ol><li>Assert: <var>module</var>.[[Status]] is <code>"evaluated"</code> and <var>module</var>.[[EvaluationError]] is <emu-val>undefined</emu-val>.</li><li><ins>If <var>module</var>.[[AsyncEvaluating]] is <emu-val>false</emu-val>, then</ins><ol><li><ins>Perform !&nbsp;<emu-xref aoid="Call" id="_ref_44"><a href="https://tc39.github.io/ecma262/#sec-call">Call</a></emu-xref>(<var>capability</var>.[[Resolve]], <emu-val>undefined</emu-val>, «<emu-val>undefined</emu-val>»).</ins></li></ol></li><li>Assert: <var>stack</var> is empty.</li></ol></li><li>Return <del><emu-val>undefined</emu-val></del><ins><var>capability</var>.[[Promise]]</ins>.
+    </li></ol></emu-alg>
+
+    <emu-clause id="sec-innermoduleevaluation" aoid="InnerModuleEvaluation">
+      <h1><span class="secnum">4.2.1</span>InnerModuleEvaluation( <var>module</var>, <var>stack</var>, <var>index</var> )</h1>
+
+      <p>The InnerModuleEvaluation abstract operation is used by Evaluate to perform the actual evaluation process for the <emu-xref href="#cyclic-module-record" id="_ref_45"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref> <var>module</var>, as well as recursively on all other modules in the dependency graph. The <var>stack</var> and <var>index</var> parameters, as well as <var>module</var>'s [[DFSIndex]] and [[DFSAncestoreIndex]] fields, are used the same way as in <emu-xref aoid="InnerModuleLinking" id="_ref_46"><a href="#sec-InnerModuleLinking">InnerModuleLinking</a></emu-xref>.</p>
+
+      <p>This abstract operation performs the following steps:</p>
+
+      <emu-alg><ol><li>If <var>module</var> is not a <emu-xref href="#cyclic-module-record" id="_ref_47"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref>, then<ol><li>Perform ? <var>module</var>.Evaluate().</li><li>Return <var>index</var>.</li></ol></li><li>If <var>module</var>.[[Status]] is <code>"evaluated"</code>, then<ol><li>If <var>module</var>.[[EvaluationError]] is <emu-val>undefined</emu-val>, return <var>index</var>.</li><li>Otherwise return <var>module</var>.[[EvaluationError]].</li></ol></li><li>If <var>module</var>.[[Status]] is <code>"evaluating"</code>, return <var>index</var>.</li><li>Assert: <var>module</var>.[[Status]] is <code>"linked"</code>.</li><li>Set <var>module</var>.[[Status]] to <code>"evaluating"</code>.</li><li>Set <var>module</var>.[[DFSIndex]] to <var>index</var>.</li><li>Set <var>module</var>.[[DFSAncestorIndex]] to <var>index</var>.</li><li><ins>Set <var>module</var>.[[PendingAsyncDependencies]] to 0.</ins></li><li><ins>Set <var>module</var>.[[AsyncParentModules]] to a new empty <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref>.</ins></li><li>Set <var>index</var> to <var>index</var> + 1.</li><li>Append <var>module</var> to <var>stack</var>.</li><li>For each String <var>required</var> that is an element of <var>module</var>.[[RequestedModules]], do<ol><li>Let <var>requiredModule</var> be !&nbsp;<emu-xref aoid="HostResolveImportedModule" id="_ref_48"><a href="https://tc39.github.io/ecma262/#sec-hostresolveimportedmodule">HostResolveImportedModule</a></emu-xref>(<var>module</var>, <var>required</var>).</li><li>NOTE: Link must be completed successfully prior to invoking this method, so every requested module is guaranteed to resolve successfully.</li><li>Set <var>index</var> to ?&nbsp;<emu-xref aoid="InnerModuleEvaluation" id="_ref_49"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref>(<var>requiredModule</var>, <var>stack</var>, <var>index</var>).</li><li>If <var>requiredModule</var> is a <emu-xref href="#cyclic-module-record" id="_ref_50"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref>, then<ol><li>Assert: <var>requiredModule</var>.[[Status]] is either <code>"evaluating"</code> or <code>"evaluated"</code>.</li><li>Assert: <var>requiredModule</var>.[[Status]] is <code>"evaluating"</code> if and only if <var>requiredModule</var> is in <var>stack</var>.</li><li>If <var>requiredModule</var>.[[Status]] is <code>"evaluating"</code>, then<ol><li>Set <var>module</var>.[[DFSAncestorIndex]] to <emu-xref aoid="min"><a href="https://tc39.github.io/ecma262/#sec-algorithm-conventions">min</a></emu-xref>(<var>module</var>.[[DFSAncestorIndex]], <var>requiredModule</var>.[[DFSAncestorIndex]]).</li></ol></li><li><ins>Otherwise,</ins><ol><li><ins>Set <var>requiredModule</var> to <emu-xref aoid="GetAsyncCycleRoot" id="_ref_51"><a href="#sec-getasynccycleroot">GetAsyncCycleRoot</a></emu-xref>(<var>requiredModule</var>).</ins></li><li><ins>Assert: <var>requiredModule</var>.[[Status]] is <code>"evaluated"</code>.</ins></li><li><ins>If <var>requiredModule</var>.[[EvaluationError]] is not <emu-val>undefined</emu-val>, return <var>module</var>.[[EvaluationError]].</ins></li></ol></li><li><ins>If <var>requiredModule</var>.[[AsyncEvaluating]] is <emu-val>true</emu-val>, then</ins><ol><li><ins>Set <var>module</var>.[[PendingAsyncDependencies]] to <var>module</var>.[[PendingAsyncDependencies]] + 1.</ins></li><li><ins>Append <var>module</var> to <var>requiredModule</var>.[[AsyncParentModules]].</ins></li></ol></li></ol></li></ol></li><li><del>Perform ? <var>module</var>.<emu-xref aoid="ExecuteModule" id="_ref_52"><a href="#sec-source-text-module-record-execute-module">ExecuteModule</a></emu-xref>().</del></li><li><ins>If <var>module</var>.[[PendingAsyncDependencies]] is &gt; 0, set <var>module</var>.[[AsyncEvaluating]] to <emu-val>true</emu-val>.</ins></li><li><ins>Otherwise, if <var>module</var>.[[Async]] is <emu-val>true</emu-val>, perform !&nbsp;<emu-xref aoid="ExecuteAsyncModule" id="_ref_53"><a href="#sec-execute-async-module">ExecuteAsyncModule</a></emu-xref>(<var>module</var>).</ins></li><li><ins>Otherwise, perform ? <var>module</var>.<emu-xref aoid="ExecuteModule" id="_ref_54"><a href="#sec-source-text-module-record-execute-module">ExecuteModule</a></emu-xref>().</ins></li><li>Assert: <var>module</var> occurs exactly once in <var>stack</var>.</li><li>Assert: <var>module</var>.[[DFSAncestorIndex]] is less than or equal to <var>module</var>.[[DFSIndex]].</li><li>If <var>module</var>.[[DFSAncestorIndex]] equals <var>module</var>.[[DFSIndex]], then<ol><li>Let <var>done</var> be <emu-val>false</emu-val>.</li><li>Repeat, while <var>done</var> is <emu-val>false</emu-val>,<ol><li>Let <var>requiredModule</var> be the last element in <var>stack</var>.</li><li>Remove the last element of <var>stack</var>.</li><li>Assert: <var>requiredModule</var> is a <emu-xref href="#cyclic-module-record" id="_ref_55"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref>.</li><li>Set <var>requiredModule</var>.[[Status]] to <code>"evaluated"</code>.</li><li>If <var>requiredModule</var> and <var>module</var> are the same <emu-xref href="#sec-abstract-module-records" id="_ref_56"><a href="#sec-abstract-module-records">Module Record</a></emu-xref>, set <var>done</var> to <emu-val>true</emu-val>.</li></ol></li></ol></li><li>Return <var>index</var>.
+      </li></ol></emu-alg>
+      <emu-note><span class="note">Note 1</span><div class="note-contents">
+        <p><ins>A module is <code>"evaluating"</code> while it is being traversed by InnerModuleEvaluation. A module is <code>"evaluated"</code> on execution completion and during execution if it is an asynchronous module.</ins></p>
+      </div></emu-note>
+      <emu-note><span class="note">Note 2</span><div class="note-contents">
+        <p><ins>Any modules depending on a module of an async cycle when that cycle is not <code>"evaluating"</code> will instead depend on the execution of the root of the cycle via <emu-xref aoid="GetAsyncCycleRoot" id="_ref_57"><a href="#sec-getasynccycleroot">GetAsyncCycleRoot</a></emu-xref>. This ensures that the cycle state can be treated as a single strongly connected component through its root module state.</ins></p>
+      </div></emu-note>
+    </emu-clause>
+
+    <emu-clause id="sec-execute-async-module" aoid="ExecuteAsyncModule">
+      <h1><span class="secnum">4.2.2</span><ins>ExecuteAsyncModule ( <var>module</var> )</ins></h1>
+      <emu-alg><ol><li>Assert: <var>module</var>.[[Status]] is <code>"evaluating"</code> or <code>"evaluated"</code>.</li><li>Assert: <var>module</var>.[[Async]] is <emu-val>true</emu-val>.</li><li>Set <var>module</var>.[[AsyncEvaluating]] to <emu-val>true</emu-val>.</li><li>Let <var>capability</var> be !&nbsp;<emu-xref aoid="NewPromiseCapability" id="_ref_58"><a href="https://tc39.github.io/ecma262/#sec-newpromisecapability">NewPromiseCapability</a></emu-xref>(<emu-xref href="#sec-promise-constructor"><a href="https://tc39.github.io/ecma262/#sec-promise-constructor">%Promise%</a></emu-xref>).</li><li>Let <var>stepsFulfilled</var> be the steps of a CallAsyncModuleFulfilled function as specified below.</li><li>Let <var>onFulfilled</var> be <emu-xref aoid="CreateBuiltinFunction" id="_ref_59"><a href="https://tc39.github.io/ecma262/#sec-createbuiltinfunction">CreateBuiltinFunction</a></emu-xref>(<var>stepsFulfilled</var>, « [[Module]] »).</li><li>Set <var>onFulfilled</var>.[[Module]] to <var>module</var>.</li><li>Let <var>stepsRejected</var> be the steps of a CallAsyncModuleRejected function as specified below.</li><li>Let <var>onRejected</var> be <emu-xref aoid="CreateBuiltinFunction" id="_ref_60"><a href="https://tc39.github.io/ecma262/#sec-createbuiltinfunction">CreateBuiltinFunction</a></emu-xref>(<var>stepsRejected</var>, « [[Module]] »).</li><li>Set <var>onRejected</var>.[[Module]] to <var>module</var>.</li><li>Perform !&nbsp;<emu-xref aoid="PerformPromiseThen" id="_ref_61"><a href="https://tc39.github.io/ecma262/#sec-performpromisethen">PerformPromiseThen</a></emu-xref>(<var>capability</var>.[[Promise]], <var>onFulfilled</var>, <var>onRejected</var>).</li><li>Perform ! <var>module</var>.<emu-xref aoid="ExecuteModule" id="_ref_62"><a href="#sec-source-text-module-record-execute-module">ExecuteModule</a></emu-xref>(<var>capability</var>).</li><li>Return.
+      </li></ol></emu-alg>
+
+      <p>A CallAsyncModuleFulfilled function is an anonymous built-in function with a [[Module]] internal slot. When a CallAsyncModuleFulfilled function is called that expects no arguments it performs the following steps:</p>
+      <emu-alg><ol><li>Let <var>f</var> be the <emu-xref href="#active-function-object"><a href="https://tc39.github.io/ecma262/#active-function-object">active function object</a></emu-xref>.</li><li>Let <var>module</var> be <var>f</var>.[[Module]].</li><li>Perform !&nbsp;<emu-xref aoid="AsyncModuleExecutionFulfilled" id="_ref_63"><a href="#sec-asyncmodulexecutionfulfilled">AsyncModuleExecutionFulfilled</a></emu-xref>(<var>module</var>).</li><li>Return.
+      </li></ol></emu-alg>
+
+      <p>A CallAsyncModuleRejected function is an anonymous built-in function with a [[Module]] internal slot. When a CallAsyncModuleRejected function is called with argument <var>error</var> it performs the following steps:</p>
+      <emu-alg><ol><li>Let <var>f</var> be the <emu-xref href="#active-function-object"><a href="https://tc39.github.io/ecma262/#active-function-object">active function object</a></emu-xref>.</li><li>Let <var>module</var> be <var>f</var>.[[Module]].</li><li>Perform !&nbsp;<emu-xref aoid="AsyncModuleExecutionRejected" id="_ref_64"><a href="#sec-AsyncModuleExecutionRejected">AsyncModuleExecutionRejected</a></emu-xref>(<var>module</var>, <var>error</var>).</li><li>Return.
+      </li></ol></emu-alg>
+    </emu-clause>
+
+    <emu-clause id="sec-getasynccycleroot" aoid="GetAsyncCycleRoot">
+      <h1><span class="secnum">4.2.3</span><ins>GetAsyncCycleRoot ( <var>module</var> )</ins></h1>
+      <emu-alg><ol><li>Assert: <var>module</var>.[[Status]] is <code>"evaluated"</code>.</li><li>If <var>module</var>.[[AsyncParentModules]] is an empty <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref>, return <var>module</var>.</li><li>Repeat, while <var>module</var>.[[DFSIndex]] is greater than <var>module</var>.[[DFSAncestorIndex]],<ol><li>Assert: <var>module</var>.[[AsyncParentModules]] is a non-empty <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref>.</li><li>Let <var>nextCycleModule</var> be the first element of <var>module</var>.[[AsyncParentModules]].</li><li>Assert: <var>nextCycleModule</var>.[[DFSAncestorIndex]] is less than or equal to <var>module</var>.[[DFSAncestorIndex]].</li><li>Set <var>module</var> to <var>nextCycleModule</var>.</li></ol></li><li>Assert: <var>module</var>.[[DFSIndex]] is equal to <var>module</var>.[[DFSAncestorIndex]].</li><li>Return <var>module</var>.
+      </li></ol></emu-alg>
+    </emu-clause>
+
+    <emu-clause id="sec-asyncmodulexecutionfulfilled" aoid="AsyncModuleExecutionFulfilled">
+      <h1><span class="secnum">4.2.4</span><ins>AsyncModuleExecutionFulfilled ( <var>module</var> )</ins></h1>
+      <emu-alg><ol><li>Assert: <var>module</var>.[[Status]] is <code>"evaluated"</code>.</li><li>If <var>module</var>.[[AsyncEvaluating]] is <emu-val>false</emu-val>,<ol><li>Assert: <var>module</var>.[[EvaluationError]] is not <emu-val>undefined</emu-val>.</li><li>Return <emu-val>undefined</emu-val>.</li></ol></li><li>Assert: <var>module</var>.[[EvaluationError]] is <emu-val>undefined</emu-val>.</li><li>Set <var>module</var>.[[AsyncEvaluating]] to <emu-val>false</emu-val>.</li><li>For each Module <var>m</var> of <var>module</var>.[[AsyncParentModules]], do<ol><li>If <var>module</var>.[[DFSIndex]] is not equal to <var>module</var>.[[DFSAncestorIndex]], then<ol><li>Assert: <var>m</var>.[[DFSAncestorIndex]] is less than or equal to <var>module</var>.[[DFSAncestorIndex]].</li></ol></li><li>Decrement <var>m</var>.[[PendingAsyncDependencies]] by 1.</li><li>If <var>m</var>.[[PendingAsyncDependencies]] is 0 and <var>m</var>.[[EvaluationError]] is <emu-val>undefined</emu-val>, then<ol><li>Assert: <var>m</var>.[[AsyncEvaluating]] is <emu-val>true</emu-val>.</li><li>Let <var>cycleRoot</var> be !&nbsp;<emu-xref aoid="GetAsyncCycleRoot" id="_ref_65"><a href="#sec-getasynccycleroot">GetAsyncCycleRoot</a></emu-xref>(<var>m</var>).</li><li>If <var>cycleRoot</var>.[[EvaluationError]] is not <emu-val>undefined</emu-val>, return <emu-val>undefined</emu-val>.</li><li>If <var>m</var>.[[Async]] is <emu-val>true</emu-val>, then<ol><li>Perform !&nbsp;<emu-xref aoid="ExecuteAsyncModule" id="_ref_66"><a href="#sec-execute-async-module">ExecuteAsyncModule</a></emu-xref>(<var>m</var>).</li></ol></li><li>Otherwise,<ol><li>Let <var>result</var> be <var>m</var>.<emu-xref aoid="ExecuteModule" id="_ref_67"><a href="#sec-source-text-module-record-execute-module">ExecuteModule</a></emu-xref>().</li><li>If <var>result</var> is a normal completion,<ol><li>Perform !&nbsp;<emu-xref aoid="AsyncModuleExecutionFulfilled" id="_ref_68"><a href="#sec-asyncmodulexecutionfulfilled">AsyncModuleExecutionFulfilled</a></emu-xref>(<var>m</var>).</li></ol></li><li>Otherwise,<ol><li>Perform !&nbsp;<emu-xref aoid="AsyncModuleExecutionRejected" id="_ref_69"><a href="#sec-AsyncModuleExecutionRejected">AsyncModuleExecutionRejected</a></emu-xref>(<var>m</var>, <var>result</var>.[[Value]]).</li></ol></li></ol></li></ol></li></ol></li><li>If <var>module</var>.[[TopLevelCapability]] is not <emu-val>undefined</emu-val>, then<ol><li>Assert: <var>module</var>.[[DFSIndex]] is equal to <var>module</var>.[[DFSAncestorIndex]].</li><li>Perform !&nbsp;<emu-xref aoid="Call" id="_ref_70"><a href="https://tc39.github.io/ecma262/#sec-call">Call</a></emu-xref>(<var>module</var>.[[TopLevelCapability]].[[Resolve]], <emu-val>undefined</emu-val>, «<emu-val>undefined</emu-val>»).</li></ol></li><li>Return <emu-val>undefined</emu-val>.
+      </li></ol></emu-alg>
+    </emu-clause>
+
+    <emu-clause id="sec-AsyncModuleExecutionRejected" aoid="AsyncModuleExecutionRejected">
+      <h1><span class="secnum">4.2.5</span><ins>AsyncModuleExecutionRejected ( <var>module</var>, <var>error</var> )</ins></h1>
+      <emu-alg><ol><li>Assert: <var>module</var>.[[Status]] is <code>"evaluated"</code>.</li><li>If <var>module</var>.[[AsyncEvaluating]] is <emu-val>false</emu-val>,<ol><li>Assert: <var>module</var>.[[EvaluationError]] is not <emu-val>undefined</emu-val>.</li><li>Return <emu-val>undefined</emu-val>.</li></ol></li><li>Assert: <var>module</var>.[[EvaluationError]] is <emu-val>undefined</emu-val>.</li><li>Set <var>module</var>.[[EvaluationError]] to ThrowCompletion(<var>error</var>).</li><li>Set <var>module</var>.[[AsyncEvaluating]] to <emu-val>false</emu-val>.</li><li>For each Module <var>m</var> of <var>module</var>.[[AsyncParentModules]], do<ol><li>If <var>module</var>.[[DFSIndex]] is not equal to <var>module</var>.[[DFSAncestorIndex]], then<ol><li>Assert: <var>m</var>.[[DFSAncestorIndex]] is equal to <var>module</var>.[[DFSAncestorIndex]].</li></ol></li><li>Perform !&nbsp;<emu-xref aoid="AsyncModuleExecutionRejected" id="_ref_71"><a href="#sec-AsyncModuleExecutionRejected">AsyncModuleExecutionRejected</a></emu-xref>(<var>m</var>, <var>error</var>).</li></ol></li><li>If <var>module</var>.[[TopLevelCapability]] is not <emu-val>undefined</emu-val>, then<ol><li>Assert: <var>module</var>.[[DFSIndex]] is equal to <var>module</var>.[[DFSAncestorIndex]].</li><li>Perform !&nbsp;<emu-xref aoid="Call" id="_ref_72"><a href="https://tc39.github.io/ecma262/#sec-call">Call</a></emu-xref>(<var>module</var>.[[TopLevelCapability]].[[Reject]], <emu-val>undefined</emu-val>, «<var>error</var>»).</li></ol></li><li>Return <emu-val>undefined</emu-val>.
+      </li></ol></emu-alg>
+    </emu-clause>
+  </emu-clause>
+</emu-clause>
+
+<emu-clause id="sec-source-text-module-records">
+    <h1><span class="secnum">5</span>Source Text Module Records</h1>
+
+  <emu-clause id="sec-parsemodule" aoid="ParseModule">
+    <h1><span class="secnum">5.1</span>ParseModule ( <var>sourceText</var>, <var>realm</var>, <var>hostDefined</var> )</h1>
+    <p>The abstract operation ParseModule with arguments <var>sourceText</var>, <var>realm</var>, and <var>hostDefined</var> creates a <emu-xref href="#sec-source-text-module-records" id="_ref_73"><a href="#sec-source-text-module-records">Source Text Module Record</a></emu-xref> based upon the result of parsing <var>sourceText</var> as a <emu-nt id="_ref_116"><a href="#prod-Module">Module</a></emu-nt>. ParseModule performs the following steps:</p>
+    <emu-alg><ol><li>Assert: <var>sourceText</var> is an ECMAScript source text (see clause <emu-xref href="#sec-ecmascript-language-source-code"><a href="https://tc39.github.io/ecma262/#sec-ecmascript-language-source-code">10</a></emu-xref>).</li><li>Parse <var>sourceText</var> using <emu-nt id="_ref_117"><a href="#prod-Module">Module</a></emu-nt> as the <emu-xref href="#sec-context-free-grammars"><a href="https://tc39.github.io/ecma262/#sec-context-free-grammars">goal symbol</a></emu-xref> and analyse the parse result for any Early Error conditions. If the parse was successful and no early errors were found, let <var>body</var> be the resulting parse tree. Otherwise, let <var>body</var> be a <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref> of one or more <emu-val>SyntaxError</emu-val> or <emu-val>ReferenceError</emu-val> objects representing the parsing errors and/or early errors. Parsing and <emu-xref href="#early-error"><a href="https://tc39.github.io/ecma262/#early-error">early error</a></emu-xref> detection may be interweaved in an implementation-dependent manner. If more than one parsing error or <emu-xref href="#early-error"><a href="https://tc39.github.io/ecma262/#early-error">early error</a></emu-xref> is present, the number and ordering of error objects in the list is implementation-dependent, but at least one must be present.</li><li>If <var>body</var> is a <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref> of errors, return <var>body</var>.</li><li>Let <var>requestedModules</var> be the ModuleRequests of <var>body</var>.</li><li>Let <var>importEntries</var> be ImportEntries of <var>body</var>.</li><li>Let <var>importedBoundNames</var> be <emu-xref aoid="ImportedLocalNames" id="_ref_74"><a href="https://tc39.github.io/ecma262/#sec-importedlocalnames">ImportedLocalNames</a></emu-xref>(<var>importEntries</var>).</li><li>Let <var>indirectExportEntries</var> be a new empty <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref>.</li><li>Let <var>localExportEntries</var> be a new empty <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref>.</li><li>Let <var>starExportEntries</var> be a new empty <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref>.</li><li>Let <var>exportEntries</var> be ExportEntries of <var>body</var>.</li><li>For each ExportEntry <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">Record</a></emu-xref> <var>ee</var> in <var>exportEntries</var>, do<ol><li>If <var>ee</var>.[[ModuleRequest]] is <emu-val>null</emu-val>, then<ol><li>If <var>ee</var>.[[LocalName]] is not an element of <var>importedBoundNames</var>, then<ol><li>Append <var>ee</var> to <var>localExportEntries</var>.</li></ol></li><li>Else,<ol><li>Let <var>ie</var> be the element of <var>importEntries</var> whose [[LocalName]] is the same as <var>ee</var>.[[LocalName]].</li><li>If <var>ie</var>.[[ImportName]] is <code>"*"</code>, then<ol><li>Assert: This is a re-export of an imported module namespace object.</li><li>Append <var>ee</var> to <var>localExportEntries</var>.</li></ol></li><li>Else this is a re-export of a single name,<ol><li>Append the ExportEntry <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">Record</a></emu-xref> { [[ModuleRequest]]: <var>ie</var>.[[ModuleRequest]], [[ImportName]]: <var>ie</var>.[[ImportName]], [[LocalName]]: <emu-val>null</emu-val>, [[ExportName]]: <var>ee</var>.[[ExportName]] } to <var>indirectExportEntries</var>.</li></ol></li></ol></li></ol></li><li>Else if <var>ee</var>.[[ImportName]] is <code>"*"</code>, then<ol><li>Append <var>ee</var> to <var>starExportEntries</var>.</li></ol></li><li>Else,<ol><li>Append <var>ee</var> to <var>indirectExportEntries</var>.</li></ol></li></ol></li><li><ins>Let <var>async</var> be <var>body</var> Contains <code>await</code>.</ins></li><li>Return <emu-xref href="#sec-source-text-module-records" id="_ref_75"><a href="#sec-source-text-module-records">Source Text Module Record</a></emu-xref> { [[Realm]]: <var>realm</var>, [[Environment]]: <emu-val>undefined</emu-val>, [[Namespace]]: <emu-val>undefined</emu-val>, <ins>[[Async]]: <var>async</var>, [[AsyncEvaluating]]: <emu-val>false</emu-val>, [[TopLevelCapability]]: <emu-val>undefined</emu-val>, [[AsyncParentModules]]: <emu-val>undefined</emu-val>, [[PendingAsyncDependencies]]: <emu-val>undefined</emu-val>, </ins>[[Status]]: <code>"unlinked"</code>, [[EvaluationError]]: <emu-val>undefined</emu-val>, [[HostDefined]]: <var>hostDefined</var>, [[ECMAScriptCode]]: <var>body</var>, [[RequestedModules]]: <var>requestedModules</var>, [[ImportEntries]]: <var>importEntries</var>, [[LocalExportEntries]]: <var>localExportEntries</var>, [[IndirectExportEntries]]: <var>indirectExportEntries</var>, [[StarExportEntries]]: <var>starExportEntries</var>, [[DFSIndex]]: <emu-val>undefined</emu-val>, [[DFSAncestorIndex]]: <emu-val>undefined</emu-val> }.
+    </li></ol></emu-alg>
+    <emu-note><span class="note">Note</span><div class="note-contents">
+      <p>An implementation may parse module source text and analyse it for Early Error conditions prior to the evaluation of ParseModule for that module source text. However, the reporting of any errors must be deferred until the point where this specification actually performs ParseModule upon that source text.</p>
+    </div></emu-note>
+  </emu-clause>
+
+
+    <emu-clause id="sec-source-text-module-record-execute-module" aoid="ExecuteModule">
+      <h1><span class="secnum">5.2</span>ExecuteModule (  <ins>[ <var>capability</var> ]</ins> )</h1>
+
+      <p>The ExecuteModule concrete method of a <emu-xref href="#sec-source-text-module-records" id="_ref_76"><a href="#sec-source-text-module-records">Source Text Module Record</a></emu-xref> implements the corresponding <emu-xref href="#cyclic-module-record" id="_ref_77"><a href="#cyclic-module-record">Cyclic Module Record</a></emu-xref> abstract method.</p>
+
+      <p>This abstract method performs the following steps:</p>
+
+      <emu-alg><ol><li>Let <var>module</var> be this <emu-xref href="#sec-source-text-module-records" id="_ref_78"><a href="#sec-source-text-module-records">Source Text Module Record</a></emu-xref>.</li><li>Let <var>moduleCxt</var> be a new ECMAScript code <emu-xref href="#sec-execution-contexts"><a href="https://tc39.github.io/ecma262/#sec-execution-contexts">execution context</a></emu-xref>.</li><li>Set the Function of <var>moduleCxt</var> to <emu-val>null</emu-val>.</li><li>Assert: <var>module</var>.[[Realm]] is not <emu-val>undefined</emu-val>.</li><li>Set the <emu-xref href="#realm"><a href="https://tc39.github.io/ecma262/#realm">Realm</a></emu-xref> of <var>moduleCxt</var> to <var>module</var>.[[Realm]].</li><li>Set the ScriptOrModule of <var>moduleCxt</var> to <var>module</var>.</li><li>Assert: <var>module</var> has been linked and declarations in its <emu-xref href="#module-environment"><a href="https://tc39.github.io/ecma262/#module-environment">module environment</a></emu-xref> have been linked.</li><li>Set the VariableEnvironment of <var>moduleCxt</var> to <var>module</var>.[[Environment]].</li><li>Set the LexicalEnvironment of <var>moduleCxt</var> to <var>module</var>.[[Environment]].</li><li>Suspend the currently <emu-xref href="#running-execution-context"><a href="https://tc39.github.io/ecma262/#running-execution-context">running execution context</a></emu-xref>.</li><li><ins>If <var>module</var>.[[Async]] is <emu-val>false</emu-val>, then</ins><ol><li><ins>Assert: <var>capability</var> was not provided.</ins></li><li>Push <var>moduleCxt</var> on to the <emu-xref href="#execution-context-stack"><a href="https://tc39.github.io/ecma262/#execution-context-stack">execution context stack</a></emu-xref>; <var>moduleCxt</var> is now the <emu-xref href="#running-execution-context"><a href="https://tc39.github.io/ecma262/#running-execution-context">running execution context</a></emu-xref>.</li><li>Let <var>result</var> be the result of evaluating <var>module</var>.[[ECMAScriptCode]].</li><li>Suspend <var>moduleCxt</var> and remove it from the <emu-xref href="#execution-context-stack"><a href="https://tc39.github.io/ecma262/#execution-context-stack">execution context stack</a></emu-xref>.</li><li>Resume the context that is now on the top of the <emu-xref href="#execution-context-stack"><a href="https://tc39.github.io/ecma262/#execution-context-stack">execution context stack</a></emu-xref> as the <emu-xref href="#running-execution-context"><a href="https://tc39.github.io/ecma262/#running-execution-context">running execution context</a></emu-xref>.</li><li>Return <emu-xref aoid="Completion" id="_ref_79"><a href="https://tc39.github.io/ecma262/#sec-completion-record-specification-type">Completion</a></emu-xref>(<var>result</var>).</li></ol></li><li><ins>Otherwise,</ins><ol><li><ins>Assert: <var>capability</var> is a PromiseCapability <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">Record</a></emu-xref>.</ins></li><li><ins>Perform !&nbsp;<emu-xref aoid="AsyncBlockStart" id="_ref_80"><a href="#sec-asyncblockstart">AsyncBlockStart</a></emu-xref>(<var>capability</var>, <var>module</var>.[[ECMAScriptCode]], <var>moduleCxt</var>).</ins></li><li><ins>Return.</ins>
+      </li></ol></li></ol></emu-alg>
+    </emu-clause>
+  </emu-clause>
+
+  <emu-clause id="sec-example-source-text-module-record-graphs">
+    <h1><span class="secnum">6</span>Example Source Text Module Record Graphs</h1>
+
+    <p>This non-normative section gives a series of examples of the linking and evaluation of a few common module graphs, with a specific focus on how errors can occur.</p>
+
+    <p>First consider the following simple module graph:</p>
+
+    <emu-figure id="figure-module-graph-simple" caption="A simple module graph"><figure><figcaption>Figure 1: A simple module graph</figcaption>
+      <img alt="A module graph in which module A depends on module B" width="121" height="211" src="img/module-graph-simple.svg">
+    </figure></emu-figure>
+
+    <p>Let's first assume that there are no error conditions. When a host first calls <var>A</var>.Link(), this will complete successfully by assumption, and recursively link modules <var>B</var> and <var>C</var> as well, such that <var>A</var>.[[Status]] = <var>B</var>.[[Status]] = <var>C</var>.[[Status]] = <code>"linked"</code>. This preparatory step can be performed at any time. Later, when the host is ready to incur any possible side effects of the modules, it can call <var>A</var>.Evaluate(), which will complete successfully<ins>, returning a Promise resolving to <emu-val>undefined</emu-val></ins> (again by assumption), recursively having evaluated first <var>C</var> and then <var>B</var>. Each module's [[Status]] at this point will be <code>"evaluated</code>".</p>
+
+    <p>Consider then cases involving linking errors. If <emu-xref aoid="InnerModuleLinking" id="_ref_81"><a href="#sec-InnerModuleLinking">InnerModuleLinking</a></emu-xref> of <var>C</var> succeeds but, thereafter, fails for <var>B</var>, for example because it imports something that <var>C</var> does not provide, then the original <var>A</var>.Link() will fail, and both <var>A</var> and <var>B</var>'s [[Status]] remain <code>"unlinked"</code>. <var>C</var>'s [[Status]] has become <code>"linked"</code>, though.</p>
+
+    <p>Finally, consider a case involving evaluation errors. If <emu-xref aoid="InnerModuleEvaluation" id="_ref_82"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref> of <var>C</var> succeeds but, thereafter, fails for <var>B</var>, for example because <var>B</var> contains code that throws an exception, then the original <var>A</var>.Evaluate() will fail<ins>, returning a rejected Promise</ins>. The resulting exception will be recorded in both <var>A</var> and <var>B</var>'s [[EvaluationError]] fields, and their [[Status]] will become <code>"evaluated"</code>. <var>C</var> will also become <code>"evaluated"</code> but, in contrast to <var>A</var> and <var>B</var>, will remain without an [[EvaluationError]], as it successfully completed evaluation. Storing the exception ensures that any time a host tries to reuse <var>A</var> or <var>B</var> by calling their Evaluate() method, it will encounter the same exception. (Hosts are not required to reuse Source Text Module Records; similarly, hosts are not required to expose the exception objects thrown by these  methods. However, the specification enables such uses.)</p>
+
+    <p>The difference here between linking and evaluation errors is due to how evaluation must be only performed once, as it can cause side effects; it is thus important to remember whether evaluation has already been performed, even if unsuccessfully. (In the error case, it makes sense to also remember the exception because otherwise subsequent Evaluate() calls would have to synthesize a new one.) Linking, on the other hand, is side-effect-free, and thus even if it fails, it can be retried at a later time with no issues.</p>
+
+    <p>Now consider a different type of error condition:</p>
+
+    <emu-figure id="figure-module-graph-missing" caption="A module graph with an unresolvable module"><figure><figcaption>Figure 2: A module graph with an unresolvable module</figcaption>
+      <img alt="A module graph in which module A depends on a missing (unresolvable) module, represented by ???" width="121" height="121" src="img/module-graph-missing.svg">
+    </figure></emu-figure>
+
+    <p>In this scenario, module <var>A</var> declares a dependency on some other module, but no <emu-xref href="#sec-abstract-module-records" id="_ref_83"><a href="#sec-abstract-module-records">Module Record</a></emu-xref> exists for that module, i.e. <emu-xref aoid="HostResolveImportedModule" id="_ref_84"><a href="https://tc39.github.io/ecma262/#sec-hostresolveimportedmodule">HostResolveImportedModule</a></emu-xref> throws an exception when asked for it. This could occur for a variety of reasons, such as the corresponding resource not existing, or the resource existing but <emu-xref aoid="ParseModule" id="_ref_85"><a href="#sec-parsemodule">ParseModule</a></emu-xref> throwing an exception when trying to parse the resulting source text. Hosts can choose to expose the cause of failure via the exception they throw from <emu-xref aoid="HostResolveImportedModule" id="_ref_86"><a href="https://tc39.github.io/ecma262/#sec-hostresolveimportedmodule">HostResolveImportedModule</a></emu-xref>. In any case, this exception causes an linking failure, which as before results in <var>A</var>'s [[Status]] remaining <code>"unlinked"</code>.</p>
+
+    <p>Now consider a module graph with a cycle:</p>
+
+    <emu-figure id="figure-module-graph-cycle" caption="A cyclic module graph"><figure><figcaption>Figure 3: A cyclic module graph</figcaption>
+      <img alt="A module graph in which module A depends on module B and C, but module B also depends on module A" width="181" height="121" src="img/module-graph-cycle.svg">
+    </figure></emu-figure>
+
+    <p>Here we assume that the entry point is module <var>A</var>, so that the host proceeds by calling <var>A</var>.Link(), which performs <emu-xref aoid="InnerModuleLinking" id="_ref_87"><a href="#sec-InnerModuleLinking">InnerModuleLinking</a></emu-xref> on <var>A</var>. This in turn calls <emu-xref aoid="InnerModuleLinking" id="_ref_88"><a href="#sec-InnerModuleLinking">InnerModuleLinking</a></emu-xref> on <var>B</var>. Because of the cycle, this again triggers <emu-xref aoid="InnerModuleLinking" id="_ref_89"><a href="#sec-InnerModuleLinking">InnerModuleLinking</a></emu-xref> on <var>A</var>, but at this point it is a no-op since <var>A</var>.[[Status]] is already <code>"linking"</code>. <var>B</var>.[[Status]] itself remains <code>"linking"</code> when control gets back to <var>A</var> and <emu-xref aoid="InnerModuleLinking" id="_ref_90"><a href="#sec-InnerModuleLinking">InnerModuleLinking</a></emu-xref> is triggered on <var>C</var>. After this returns with <var>C</var>.[[Status]] being <code>"linked"</code> , both <var>A</var> and <var>B</var> transition from <code>"linking"</code> to <code>"linked"</code> together; this is by design, since they form a strongly connected component.</p>
+
+    <p>An analogous story occurs for the evaluation phase of a cyclic module graph, in the success case.</p>
+
+    <p>Now consider a case where <var>A</var> has an linking error; for example, it tries to import a binding from <var>C</var> that does not exist. In that case, the above steps still occur, including the early return from the second call to <emu-xref aoid="InnerModuleLinking" id="_ref_91"><a href="#sec-InnerModuleLinking">InnerModuleLinking</a></emu-xref> on <var>A</var>. However, once we unwind back to the original <emu-xref aoid="InnerModuleLinking" id="_ref_92"><a href="#sec-InnerModuleLinking">InnerModuleLinking</a></emu-xref> on <var>A</var>, it fails during ModuleDeclarationEnvironmentSetup, namely right after <var>C</var>.ResolveExport(). The thrown <emu-val>SyntaxError</emu-val> exception propagates up to <var>A</var>.Link, which resets all modules that are currently on its <var>stack</var> (these are always exactly the modules that are still <code>"linking"</code>). Hence both <var>A</var> and <var>B</var> become <code>"unlinked"</code>. Note that <var>C</var> is left as <code>"linked"</code>.</p>
+
+    <p>Finally, consider a case where <var>A</var> has an evaluation error; for example, its source code throws an exception. In that case, the evaluation-time analog of the above steps still occurs, including the early return from the second call to <emu-xref aoid="InnerModuleEvaluation" id="_ref_93"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref> on <var>A</var>. However, once we unwind back to the original <emu-xref aoid="InnerModuleEvaluation" id="_ref_94"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref> on <var>A</var>, it fails by assumption. The exception thrown propagates up to <var>A</var>.Evaluate(), which records the error in all modules that are currently on its <var>stack</var> (i.e., the modules that are still <code>"evaluating"</code>)  <ins>as well as via [[AsyncParentModules]], which form a chain for modules which contain or depend on top-level <code>await</code> through the whole dependency graph through the <emu-xref aoid="AsyncModuleExecutionRejected" id="_ref_95"><a href="#sec-AsyncModuleExecutionRejected">AsyncModuleExecutionRejected</a></emu-xref> algorithm</ins>. Hence both <var>A</var> and <var>B</var> become <code>"evaluated"</code> and the exception is recorded in both <var>A</var> and <var>B</var>'s [[EvaluationError]] fields, while <var>C</var> is left as <code>"evaluated"</code> with no [[EvaluationError]].</p>
+
+    <p>Lastly, consider a module graph with a cycle, where all modules complete asynchronously:</p>
+
+    <emu-figure id="figure-module-graph-cycle-async" caption="An asynchronous cyclic module graph"><figure><figcaption>Figure 4: An asynchronous cyclic module graph</figcaption>
+      <img alt="A module graph in which module A depends on module B and C, module B depends on module D, module C depends on module D and E, and module D depends on module A" width="241" height="211" src="img/module-graph-cycle-async.svg">
+    </figure></emu-figure>
+
+    <p>Linking happens as before, and all modules end up with [[Status]] set to <code>"linked"</code>.</p>
+
+    <p>
+      Calling <var>A</var>.Evaluate() triggers <emu-xref aoid="InnerModuleEvaluation" id="_ref_96"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref> on <var>A</var>, <var>B</var>, and <var>D</var>, which all transition to <code>"evaluating"</code>.
+      Then <emu-xref aoid="InnerModuleEvaluation" id="_ref_97"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref> is called on <var>A</var> again, which is a no-op because it is already <code>"evaluating"</code>.
+      At this point, <var>D</var>.[[PendingAsyncDependencies]] is 0, so <emu-xref aoid="ExecuteAsyncModule" id="_ref_98"><a href="#sec-execute-async-module">ExecuteAsyncModule</a></emu-xref>(<var>D</var>) is called, which sets <var>D</var>.[[AsyncEvaluating]] to <emu-val>true</emu-val> and executes <var>D</var> (up until the first <code>await</code>).
+      We unwind back to the original <emu-xref aoid="InnerModuleEvaluation" id="_ref_99"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref> on <var>A</var>, setting <var>B</var>.[[AsyncEvaluating]] to <emu-val>true</emu-val>.
+      In the next iteration of the loop over <var>A</var>'s dependencies, we call <emu-xref aoid="InnerModuleEvaluation" id="_ref_100"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref> on <var>C</var> and thus on <var>D</var> (again a no-op) and <var>E</var>.
+      As <var>E</var> has no dependencies, <emu-xref aoid="ExecuteAsyncModule" id="_ref_101"><a href="#sec-execute-async-module">ExecuteAsyncModule</a></emu-xref>(<var>E</var>) is called, which sets <var>E</var>.[[AsyncEvaluating]] to <emu-val>true</emu-val> and starts executing.
+      Because <var>E</var> is not part of a cycle, it is immediately removed from the stack and transitions to <code>"evaluated"</code>.
+      We unwind once more to the original <emu-xref aoid="InnerModuleEvaluation" id="_ref_102"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref> on <var>A</var>, setting <var>C</var>.[[AsyncEvaluating]] to <emu-val>true</emu-val>.
+      Now we finish the loop over <var>A</var>'s dependencies, set <var>A</var>.[[AsyncEvaluating]] to <emu-val>true</emu-val>, and remove the entire strongly connected component from the stack, transitioning all of the modules to <code>"evaluated"</code> at once.
+      At this point, the fields of the modules are as given in  <emu-xref href="#table-module-graph-cycle-async-fields-1" id="_ref_2"><a href="#table-module-graph-cycle-async-fields-1">Table 5</a></emu-xref>.
+    
+    </p>
+
+    <emu-table id="table-module-graph-cycle-async-fields-1" caption="Module fields after the initial Evaluate() call"><figure><figcaption>Table 5: Module fields after the initial Evaluate() call</figcaption>
+      <table>
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>[[DFSIndex]]</th>
+            <th>[[DFSAncestorIndex]]</th>
+            <th>[[AsyncEvaluating]]</th>
+            <th>[[AsyncParentModules]]</th>
+            <th>[[PendingAsyncDependencies]]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><var>A</var></th>
+            <td>0</td>
+            <td>0</td>
+            <td><emu-val>true</emu-val></td>
+            <td>« »</td>
+            <td>2 (<var>B</var> and <var>C</var>)</td>
+          </tr>
+          <tr>
+            <th><var>B</var></th>
+            <td>1</td>
+            <td>0</td>
+            <td><emu-val>true</emu-val></td>
+            <td>« <var>A</var> »</td>
+            <td>1 (<var>D</var>)</td>
+          </tr>
+          <tr>
+            <th><var>C</var></th>
+            <td>2</td>
+            <td>0</td>
+            <td><emu-val>true</emu-val></td>
+            <td>« <var>A</var> »</td>
+            <td>2 (<var>D</var> and <var>E</var>)</td>
+          </tr>
+          <tr>
+            <th><var>D</var></th>
+            <td>3</td>
+            <td>0</td>
+            <td><emu-val>true</emu-val></td>
+            <td>« <var>B</var>, <var>C</var> »</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <th><var>E</var></th>
+            <td>4</td>
+            <td>4</td>
+            <td><emu-val>true</emu-val></td>
+            <td>« <var>C</var> »</td>
+            <td>0</td>
+          </tr>
+        </tbody>
+      </table>
+    </figure></emu-table>
+
+    <p>
+      Let us assume that <var>E</var> finishes executing first.
+      When that happens, <emu-xref aoid="AsyncModuleExecutionFulfilled" id="_ref_103"><a href="#sec-asyncmodulexecutionfulfilled">AsyncModuleExecutionFulfilled</a></emu-xref> is called, <var>E</var>.[[AsyncEvaluating]] is set to <emu-val>false</emu-val> and <var>C</var>.[[PendingAsyncDependencies]] is decremented to become 1.
+      The fields of the updated modules are as given in  <emu-xref href="#table-module-graph-cycle-async-fields-2" id="_ref_3"><a href="#table-module-graph-cycle-async-fields-2">Table 6</a></emu-xref>.
+    
+    </p>
+
+    <emu-table id="table-module-graph-cycle-async-fields-2" caption="Module fields after module _E_ finishes executing"><figure><figcaption>Table 6: Module fields after module <var>E</var> finishes executing</figcaption>
+      <table>
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>[[DFSIndex]]</th>
+            <th>[[DFSAncestorIndex]]</th>
+            <th>[[AsyncEvaluating]]</th>
+            <th>[[AsyncParentModules]]</th>
+            <th>[[PendingAsyncDependencies]]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><var>C</var></th>
+            <td>2</td>
+            <td>0</td>
+            <td><emu-val>true</emu-val></td>
+            <td>« <var>A</var> »</td>
+            <td>1 (<var>D</var>)</td>
+          </tr>
+          <tr>
+            <th><var>E</var></th>
+            <td>4</td>
+            <td>4</td>
+            <td><emu-val>false</emu-val></td>
+            <td>« <var>C</var> »</td>
+            <td>0</td>
+          </tr>
+        </tbody>
+      </table>
+    </figure></emu-table>
+
+    <p>
+      <var>D</var> is next to finish (as it was the only module that was still executing).
+      When that happens, <emu-xref aoid="AsyncModuleExecutionFulfilled" id="_ref_104"><a href="#sec-asyncmodulexecutionfulfilled">AsyncModuleExecutionFulfilled</a></emu-xref> is called again and <var>D</var>.[[AsyncEvaluating]] is set to <emu-val>false</emu-val>.
+      Then <var>B</var>.[[PendingAsyncDependencies]] is decremented to become 0, <emu-xref aoid="ExecuteAsyncModule" id="_ref_105"><a href="#sec-execute-async-module">ExecuteAsyncModule</a></emu-xref> is called on <var>B</var>, and it starts executing.
+      Once the synchronous part of <var>B</var>'s execution has finished, <var>C</var>.[[PendingAsyncDependencies]] is also decremented to become 0, and <var>C</var> starts executing.
+      The fields of the updated modules are as given in  <emu-xref href="#table-module-graph-cycle-async-fields-3" id="_ref_4"><a href="#table-module-graph-cycle-async-fields-3">Table 7</a></emu-xref>.
+    
+    </p>
+
+    <emu-table id="table-module-graph-cycle-async-fields-3" caption="Module fields after module _D_ finishes executing"><figure><figcaption>Table 7: Module fields after module <var>D</var> finishes executing</figcaption>
+      <table>
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>[[DFSIndex]]</th>
+            <th>[[DFSAncestorIndex]]</th>
+            <th>[[AsyncEvaluating]]</th>
+            <th>[[AsyncParentModules]]</th>
+            <th>[[PendingAsyncDependencies]]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><var>B</var></th>
+            <td>1</td>
+            <td>0</td>
+            <td><emu-val>true</emu-val></td>
+            <td>« <var>A</var> »</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <th><var>C</var></th>
+            <td>2</td>
+            <td>0</td>
+            <td><emu-val>true</emu-val></td>
+            <td>« <var>A</var> »</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <th><var>D</var></th>
+            <td>3</td>
+            <td>0</td>
+            <td><emu-val>false</emu-val></td>
+            <td>« <var>B</var>, <var>C</var> »</td>
+            <td>0</td>
+          </tr>
+        </tbody>
+      </table>
+    </figure></emu-table>
+
+    <p>
+      Let us assume that <var>C</var> finishes executing next.
+      When that happens, <emu-xref aoid="AsyncModuleExecutionFulfilled" id="_ref_106"><a href="#sec-asyncmodulexecutionfulfilled">AsyncModuleExecutionFulfilled</a></emu-xref> is called again, <var>C</var>.[[AsyncEvaluating]] is set to <emu-val>false</emu-val> and <var>A</var>.[[PendingAsyncDependencies]] is decremented to become 1.
+      The fields of the updated modules are as given in  <emu-xref href="#table-module-graph-cycle-async-fields-4" id="_ref_5"><a href="#table-module-graph-cycle-async-fields-4">Table 8</a></emu-xref>.
+    
+    </p>
+
+    <emu-table id="table-module-graph-cycle-async-fields-4" caption="Module fields after module _C_ finishes executing"><figure><figcaption>Table 8: Module fields after module <var>C</var> finishes executing</figcaption>
+      <table>
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>[[DFSIndex]]</th>
+            <th>[[DFSAncestorIndex]]</th>
+            <th>[[AsyncEvaluating]]</th>
+            <th>[[AsyncParentModules]]</th>
+            <th>[[PendingAsyncDependencies]]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><var>A</var></th>
+            <td>0</td>
+            <td>0</td>
+            <td><emu-val>true</emu-val></td>
+            <td>« »</td>
+            <td>1 (<var>B</var>)</td>
+          </tr>
+          <tr>
+            <th><var>C</var></th>
+            <td>2</td>
+            <td>0</td>
+            <td><emu-val>false</emu-val></td>
+            <td>« <var>A</var> »</td>
+            <td>0</td>
+          </tr>
+        </tbody>
+      </table>
+    </figure></emu-table>
+
+    <p>
+      Then, <var>B</var> finishes executing.
+      When that happens, <emu-xref aoid="AsyncModuleExecutionFulfilled" id="_ref_107"><a href="#sec-asyncmodulexecutionfulfilled">AsyncModuleExecutionFulfilled</a></emu-xref> is called again and <var>B</var>.[[AsyncEvaluating]] is set to <emu-val>false</emu-val>.
+      <var>A</var>.[[PendingAsyncDependencies]] is decremented to become 0, so <emu-xref aoid="ExecuteAsyncModule" id="_ref_108"><a href="#sec-execute-async-module">ExecuteAsyncModule</a></emu-xref> is called and it starts executing.
+      The fields of the updated modules are as given in  <emu-xref href="#table-module-graph-cycle-async-fields-5" id="_ref_6"><a href="#table-module-graph-cycle-async-fields-5">Table 9</a></emu-xref>.
+    
+    </p>
+
+    <emu-table id="table-module-graph-cycle-async-fields-5" caption="Module fields after module _B_ finishes executing"><figure><figcaption>Table 9: Module fields after module <var>B</var> finishes executing</figcaption>
+      <table>
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>[[DFSIndex]]</th>
+            <th>[[DFSAncestorIndex]]</th>
+            <th>[[AsyncEvaluating]]</th>
+            <th>[[AsyncParentModules]]</th>
+            <th>[[PendingAsyncDependencies]]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><var>A</var></th>
+            <td>0</td>
+            <td>0</td>
+            <td><emu-val>true</emu-val></td>
+            <td>« »</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <th><var>B</var></th>
+            <td>1</td>
+            <td>0</td>
+            <td><emu-val>false</emu-val></td>
+            <td>« <var>A</var> »</td>
+            <td>0</td>
+          </tr>
+        </tbody>
+      </table>
+    </figure></emu-table>
+
+    <p>
+      Finally, <var>A</var> finishes executing.
+      When that happens, <emu-xref aoid="AsyncModuleExecutionFulfilled" id="_ref_109"><a href="#sec-asyncmodulexecutionfulfilled">AsyncModuleExecutionFulfilled</a></emu-xref> is called again and <var>A</var>.[[AsyncEvaluating]] is set to <emu-val>false</emu-val>.
+      At this point, the Promise in <var>A</var>.[[TopLevelCapability]] (which was returned from <var>A</var>.Evaluate()) is resolved, and this concludes the handling of this module graph.
+      The fields of the updated module are as given in  <emu-xref href="#table-module-graph-cycle-async-fields-6" id="_ref_7"><a href="#table-module-graph-cycle-async-fields-6">Table 10</a></emu-xref>.
+    
+    </p>
+
+    <emu-table id="table-module-graph-cycle-async-fields-6" caption="Module fields after module _A_ finishes executing"><figure><figcaption>Table 10: Module fields after module <var>A</var> finishes executing</figcaption>
+      <table>
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>[[DFSIndex]]</th>
+            <th>[[DFSAncestorIndex]]</th>
+            <th>[[AsyncEvaluating]]</th>
+            <th>[[AsyncParentModules]]</th>
+            <th>[[PendingAsyncDependencies]]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><var>A</var></th>
+            <td>0</td>
+            <td>0</td>
+            <td><emu-val>false</emu-val></td>
+            <td>« »</td>
+            <td>0</td>
+          </tr>
+        </tbody>
+      </table>
+    </figure></emu-table>
+
+  </emu-clause>
+
+  <emu-clause id="sec-toplevelmoduleevaluationjob" aoid="TopLevelModuleEvaluationJob">
+    <h1><span class="secnum">7</span>Runtime Semantics: TopLevelModuleEvaluationJob ( <var>sourceText</var>, <var>hostDefined</var> )</h1>
+    <p>A TopLevelModuleEvaluationJob with parameters <var>sourceText</var> and <var>hostDefined</var> is a job that parses, validates, and evaluates <var>sourceText</var> as a <emu-nt id="_ref_118"><a href="#prod-Module">Module</a></emu-nt>.</p>
+    <emu-alg><ol><li>Assert: <var>sourceText</var> is an ECMAScript source text (see clause <emu-xref href="#sec-ecmascript-language-source-code"><a href="https://tc39.github.io/ecma262/#sec-ecmascript-language-source-code">10</a></emu-xref>).</li><li>Let <var>realm</var> be <emu-xref href="#current-realm"><a href="https://tc39.github.io/ecma262/#current-realm">the current Realm Record</a></emu-xref>.</li><li>Let <var>m</var> be <emu-xref aoid="ParseModule" id="_ref_110"><a href="#sec-parsemodule">ParseModule</a></emu-xref>(<var>sourceText</var>, <var>realm</var>, <var>hostDefined</var>).</li><li>If <var>m</var> is a <emu-xref href="#sec-list-and-record-specification-type"><a href="https://tc39.github.io/ecma262/#sec-list-and-record-specification-type">List</a></emu-xref> of errors, then<ol><li>Perform <emu-xref aoid="HostReportErrors" id="_ref_111"><a href="https://tc39.github.io/ecma262/#sec-host-report-errors">HostReportErrors</a></emu-xref>(<var>m</var>).</li><li>Return <emu-xref aoid="NormalCompletion" id="_ref_112"><a href="https://tc39.github.io/ecma262/#sec-normalcompletion">NormalCompletion</a></emu-xref>(<emu-val>undefined</emu-val>).</li></ol></li><li>Perform ? <var>m</var>.Link().</li><li>Assert: All dependencies of <var>m</var> have been transitively resolved and <var>m</var> is ready for evaluation.</li><li><del>Return</del><ins>Let <var>promise</var> be</ins> ? <var>m</var>.Evaluate().</li><li><ins>Let <var>stepsRejected</var> be the steps of a ReportRejectedError function as specified below.</ins></li><li><ins>Let <var>onRejected</var> be <emu-xref aoid="CreateBuiltinFunction" id="_ref_113"><a href="https://tc39.github.io/ecma262/#sec-createbuiltinfunction">CreateBuiltinFunction</a></emu-xref>(<var>stepsRejected</var>).</ins></li><li><ins>Perform !&nbsp;<emu-xref aoid="PerformPromiseThen" id="_ref_114"><a href="https://tc39.github.io/ecma262/#sec-performpromisethen">PerformPromiseThen</a></emu-xref>(<var>promise</var>, <emu-val>undefined</emu-val>, <var>onRejected</var>).</ins></li><li><ins>Return.</ins>
+    </li></ol></emu-alg>
+
+    <p><ins>A ReportRejectedError function is an anonymous built-in function. When a ReportRejectedError function is called with argument <var>reason</var> it performs the following steps:</ins></p>
+    <emu-alg><ol><li><ins>Perform <emu-xref aoid="HostReportErrors" id="_ref_115"><a href="https://tc39.github.io/ecma262/#sec-host-report-errors">HostReportErrors</a></emu-xref>(« <var>reason</var> »).</ins></li><li><ins>Return.</ins>
+    </li></ol></emu-alg>
+
+    <emu-note><span class="note">Note</span><div class="note-contents">
+      <p>An implementation may parse a <var>sourceText</var> as a <emu-nt id="_ref_119"><a href="#prod-Module">Module</a></emu-nt>, analyse it for Early Error conditions, and link it prior to the execution of the TopLevelModuleEvaluationJob for that <var>sourceText</var>. An implementation may also resolve, pre-parse and pre-analyse, and pre-link module dependencies of <var>sourceText</var>. However, the reporting of any errors detected by these actions must be deferred until the TopLevelModuleEvaluationJob is actually executed.</p>
+    </div></emu-note>
+  </emu-clause>
+
+
+
+<emu-clause id="sec-modules">
+    <h1><span class="secnum">8</span>Modules</h1>
+    <h2>Syntax</h2>
+    <emu-grammar type="definition"><emu-production name="Module" id="prod-Module">
+    <emu-nt><a href="#prod-Module">Module</a></emu-nt><emu-geq>:</emu-geq><emu-rhs a="52f49b96"><emu-nt optional="" id="_ref_120"><a href="#prod-ModuleBody">ModuleBody</a><emu-mods><emu-opt>opt</emu-opt></emu-mods></emu-nt></emu-rhs>
+</emu-production>
+<emu-production name="ModuleBody" id="prod-ModuleBody">
+    <emu-nt><a href="#prod-ModuleBody">ModuleBody</a></emu-nt><emu-geq>:</emu-geq><emu-rhs a="89010d7d"><emu-nt id="_ref_121"><a href="#prod-ModuleItemList">ModuleItemList</a></emu-nt></emu-rhs>
+</emu-production>
+<emu-production name="ModuleItemList" id="prod-ModuleItemList">
+    <emu-nt><a href="#prod-ModuleItemList">ModuleItemList</a></emu-nt><emu-geq>:</emu-geq><emu-rhs a="029ec31e"><emu-nt id="_ref_122"><a href="#prod-ModuleItem">ModuleItem</a></emu-nt></emu-rhs>
+    <emu-rhs a="75ddb725"><emu-nt id="_ref_123"><a href="#prod-ModuleItemList">ModuleItemList</a></emu-nt><emu-nt id="_ref_124"><a href="#prod-ModuleItem">ModuleItem</a></emu-nt></emu-rhs>
+</emu-production>
+<emu-production name="ModuleItem" id="prod-ModuleItem">
+    <emu-nt><a href="#prod-ModuleItem">ModuleItem</a></emu-nt><emu-geq>:</emu-geq><emu-rhs a="e0559377"><emu-nt><a href="https://tc39.github.io/ecma262/#prod-ImportDeclaration">ImportDeclaration</a></emu-nt></emu-rhs>
+    <emu-rhs a="298e81b0"><emu-nt id="_ref_125"><a href="#prod-ExportDeclaration">ExportDeclaration</a></emu-nt></emu-rhs>
+    <del><emu-rhs a="b8d22333"><emu-nt params="~Yield, ~Await, ~Return"><a href="https://tc39.github.io/ecma262/#prod-StatementListItem">StatementListItem</a><emu-mods><emu-params>[~Yield, ~Await, ~Return]</emu-params></emu-mods></emu-nt></emu-rhs></del>
+    <ins><emu-rhs a="41359050"><emu-nt params="~Yield, +Await, ~Return"><a href="https://tc39.github.io/ecma262/#prod-StatementListItem">StatementListItem</a><emu-mods><emu-params>[~Yield, +Await, ~Return]</emu-params></emu-mods></emu-nt></emu-rhs></ins>
+</emu-production></emu-grammar>
+</emu-clause>
+
+<emu-clause id="sec-async-function-definitions">
+  <h1><span class="secnum">9</span>Async Function Definitions</h1>
+  <h2>Syntax</h2>
+  <emu-clause id="sec-async-function-definitions">
+    <h1><span class="secnum">9.1</span>Async Function Definitions</h1>
+    <h2>Syntax</h2>
+    <emu-grammar type="definition"><emu-production name="AsyncFunctionDeclaration" params="Yield, Await, Default" id="prod-AsyncFunctionDeclaration">
+    <emu-nt params="Yield, Await, Default"><a href="#prod-AsyncFunctionDeclaration">AsyncFunctionDeclaration</a><emu-mods><emu-params>[Yield, Await, Default]</emu-params></emu-mods></emu-nt><emu-geq>:</emu-geq><emu-rhs a="f512250e"><emu-t>async</emu-t><emu-gann>[no <emu-nt><a href="https://tc39.github.io/ecma262/#prod-LineTerminator">LineTerminator</a></emu-nt> here]</emu-gann><emu-t>function</emu-t><emu-nt params="?Yield, ?Await"><a href="https://tc39.github.io/ecma262/#prod-BindingIdentifier">BindingIdentifier</a><emu-mods><emu-params>[?Yield, ?Await]</emu-params></emu-mods></emu-nt><emu-t>(</emu-t><emu-nt params="~Yield, +Await"><a href="https://tc39.github.io/ecma262/#prod-FormalParameters">FormalParameters</a><emu-mods><emu-params>[~Yield, +Await]</emu-params></emu-mods></emu-nt><emu-t>)</emu-t><emu-t>{</emu-t><emu-nt id="_ref_126"><a href="#prod-AsyncFunctionBody">AsyncFunctionBody</a></emu-nt><emu-t>}</emu-t></emu-rhs>
+    <emu-rhs a="fef042b8" constraints="+Default"><emu-constraints>[+Default]</emu-constraints><emu-t>async</emu-t><emu-gann>[no <emu-nt><a href="https://tc39.github.io/ecma262/#prod-LineTerminator">LineTerminator</a></emu-nt> here]</emu-gann><emu-t>function</emu-t><emu-t>(</emu-t><emu-nt params="~Yield, +Await"><a href="https://tc39.github.io/ecma262/#prod-FormalParameters">FormalParameters</a><emu-mods><emu-params>[~Yield, +Await]</emu-params></emu-mods></emu-nt><emu-t>)</emu-t><emu-t>{</emu-t><emu-nt id="_ref_127"><a href="#prod-AsyncFunctionBody">AsyncFunctionBody</a></emu-nt><emu-t>}</emu-t></emu-rhs>
+</emu-production>
+<emu-production name="AsyncFunctionExpression" id="prod-AsyncFunctionExpression">
+    <emu-nt><a href="#prod-AsyncFunctionExpression">AsyncFunctionExpression</a></emu-nt><emu-geq>:</emu-geq><emu-rhs a="c25b1d19"><emu-t>async</emu-t><emu-gann>[no <emu-nt><a href="https://tc39.github.io/ecma262/#prod-LineTerminator">LineTerminator</a></emu-nt> here]</emu-gann><emu-t>function</emu-t><emu-t>(</emu-t><emu-nt params="~Yield, +Await"><a href="https://tc39.github.io/ecma262/#prod-FormalParameters">FormalParameters</a><emu-mods><emu-params>[~Yield, +Await]</emu-params></emu-mods></emu-nt><emu-t>)</emu-t><emu-t>{</emu-t><emu-nt id="_ref_128"><a href="#prod-AsyncFunctionBody">AsyncFunctionBody</a></emu-nt><emu-t>}</emu-t></emu-rhs>
+    <emu-rhs a="be6457e0"><emu-t>async</emu-t><emu-gann>[no <emu-nt><a href="https://tc39.github.io/ecma262/#prod-LineTerminator">LineTerminator</a></emu-nt> here]</emu-gann><emu-t>function</emu-t><emu-nt params="~Yield, +Await"><a href="https://tc39.github.io/ecma262/#prod-BindingIdentifier">BindingIdentifier</a><emu-mods><emu-params>[~Yield, +Await]</emu-params></emu-mods></emu-nt><emu-t>(</emu-t><emu-nt params="~Yield, +Await"><a href="https://tc39.github.io/ecma262/#prod-FormalParameters">FormalParameters</a><emu-mods><emu-params>[~Yield, +Await]</emu-params></emu-mods></emu-nt><emu-t>)</emu-t><emu-t>{</emu-t><emu-nt id="_ref_129"><a href="#prod-AsyncFunctionBody">AsyncFunctionBody</a></emu-nt><emu-t>}</emu-t></emu-rhs>
+</emu-production>
+<emu-production name="AsyncMethod" params="Yield, Await" id="prod-AsyncMethod">
+    <emu-nt params="Yield, Await"><a href="#prod-AsyncMethod">AsyncMethod</a><emu-mods><emu-params>[Yield, Await]</emu-params></emu-mods></emu-nt><emu-geq>:</emu-geq><emu-rhs a="a922691e"><emu-t>async</emu-t><emu-gann>[no <emu-nt><a href="https://tc39.github.io/ecma262/#prod-LineTerminator">LineTerminator</a></emu-nt> here]</emu-gann><emu-nt params="?Yield, ?Await"><a href="https://tc39.github.io/ecma262/#prod-PropertyName">PropertyName</a><emu-mods><emu-params>[?Yield, ?Await]</emu-params></emu-mods></emu-nt><emu-t>(</emu-t><emu-nt params="~Yield, +Await"><a href="https://tc39.github.io/ecma262/#prod-UniqueFormalParameters">UniqueFormalParameters</a><emu-mods><emu-params>[~Yield, +Await]</emu-params></emu-mods></emu-nt><emu-t>)</emu-t><emu-t>{</emu-t><emu-nt id="_ref_130"><a href="#prod-AsyncFunctionBody">AsyncFunctionBody</a></emu-nt><emu-t>}</emu-t></emu-rhs>
+</emu-production>
+<emu-production name="AsyncFunctionBody" id="prod-AsyncFunctionBody">
+    <emu-nt><a href="#prod-AsyncFunctionBody">AsyncFunctionBody</a></emu-nt><emu-geq>:</emu-geq><emu-rhs a="8ff4dc7c"><emu-nt params="~Yield, +Await"><a href="https://tc39.github.io/ecma262/#prod-FunctionBody">FunctionBody</a><emu-mods><emu-params>[~Yield, +Await]</emu-params></emu-mods></emu-nt></emu-rhs>
+</emu-production>
+<emu-production name="AwaitExpression" params="Yield" id="prod-AwaitExpression">
+    <emu-nt params="Yield"><a href="#prod-AwaitExpression">AwaitExpression</a><emu-mods><emu-params>[Yield]</emu-params></emu-mods></emu-nt><emu-geq>:</emu-geq><emu-rhs a="c19c56e7"><emu-t>await</emu-t><emu-nt params="?Yield, +Await"><a href="https://tc39.github.io/ecma262/#prod-UnaryExpression">UnaryExpression</a><emu-mods><emu-params>[?Yield, +Await]</emu-params></emu-mods></emu-nt></emu-rhs>
+</emu-production></emu-grammar>
+
+    <emu-note><span class="note">Note</span><div class="note-contents">
+      <p><code>await</code> is parsed as an <emu-nt id="_ref_131"><a href="#prod-AwaitExpression">AwaitExpression</a></emu-nt> when the  <sub>[Await]</sub> parameter is present. The  <sub>[Await]</sub> parameter is present in  <ins>the top level of</ins> the following contexts,  <ins>although these contexts may also contain nonterminals which disable the parameter, such as <emu-nt><a href="https://tc39.github.io/ecma262/#prod-FunctionBody">FunctionBody</a></emu-nt></ins>:</p>
+      <ul>
+        <li>In an <emu-nt id="_ref_132"><a href="#prod-AsyncFunctionBody">AsyncFunctionBody</a></emu-nt>.</li>
+        <li>In the <emu-nt><a href="https://tc39.github.io/ecma262/#prod-FormalParameters">FormalParameters</a></emu-nt> of an <emu-nt id="_ref_133"><a href="#prod-AsyncFunctionDeclaration">AsyncFunctionDeclaration</a></emu-nt>, <emu-nt id="_ref_134"><a href="#prod-AsyncFunctionExpression">AsyncFunctionExpression</a></emu-nt>, <emu-nt>AsyncGeneratorDeclaration</emu-nt>, or <emu-nt>AsyncGeneratorExpression</emu-nt>. <emu-nt id="_ref_135"><a href="#prod-AwaitExpression">AwaitExpression</a></emu-nt> in this position is a Syntax error via static semantics.</li>
+        <li><ins>When <emu-nt id="_ref_136"><a href="#prod-Module">Module</a></emu-nt> is the syntactic <emu-xref href="#sec-context-free-grammars"><a href="https://tc39.github.io/ecma262/#sec-context-free-grammars">goal symbol</a></emu-xref>.</ins></li>
+      </ul>
+      <p><del>When <emu-nt id="_ref_137"><a href="#prod-Module">Module</a></emu-nt> is the syntactic <emu-xref href="#sec-context-free-grammars"><a href="https://tc39.github.io/ecma262/#sec-context-free-grammars">goal symbol</a></emu-xref> and the  <sub>[Await]</sub> parameter is absent, <code>await</code> is parsed as a keyword and will be a Syntax error.</del> When <emu-nt><a href="https://tc39.github.io/ecma262/#prod-Script">Script</a></emu-nt> is the syntactic <emu-xref href="#sec-context-free-grammars"><a href="https://tc39.github.io/ecma262/#sec-context-free-grammars">goal symbol</a></emu-xref>, <code>await</code> may be parsed as an identifier when the  <sub>[Await]</sub> parameter is absent. This includes the following contexts:</p>
+      <ul>
+        <li>Anywhere outside of an <emu-nt id="_ref_138"><a href="#prod-AsyncFunctionBody">AsyncFunctionBody</a></emu-nt> or <emu-nt><a href="https://tc39.github.io/ecma262/#prod-FormalParameters">FormalParameters</a></emu-nt> of an <emu-nt id="_ref_139"><a href="#prod-AsyncFunctionDeclaration">AsyncFunctionDeclaration</a></emu-nt>, <emu-nt id="_ref_140"><a href="#prod-AsyncFunctionExpression">AsyncFunctionExpression</a></emu-nt>, <emu-nt>AsyncGeneratorDeclaration</emu-nt>, or <emu-nt>AsyncGeneratorExpression</emu-nt>.</li>
+        <li>In the <emu-nt><a href="https://tc39.github.io/ecma262/#prod-BindingIdentifier">BindingIdentifier</a></emu-nt> of a <emu-nt><a href="https://tc39.github.io/ecma262/#prod-FunctionExpression">FunctionExpression</a></emu-nt>, <emu-nt><a href="https://tc39.github.io/ecma262/#prod-GeneratorExpression">GeneratorExpression</a></emu-nt>, or <emu-nt>AsyncGeneratorExpression</emu-nt>.</li>
+      </ul>
+    </div></emu-note>
+</emu-clause>
+
+<emu-clause id="sec-imports">
+    <h1><span class="secnum">9.2</span>Imports</h1>
+    <h2>Syntax</h2>
+    <emu-grammar type="definition"><emu-production name="ImportedBinding" id="prod-ImportedBinding">
+    <emu-nt><a href="#prod-ImportedBinding">ImportedBinding</a></emu-nt><emu-geq>:</emu-geq><del><emu-rhs a="06cca55e"><emu-nt params="~Yield, ~Await"><a href="https://tc39.github.io/ecma262/#prod-BindingIdentifier">BindingIdentifier</a><emu-mods><emu-params>[~Yield, ~Await]</emu-params></emu-mods></emu-nt></emu-rhs></del>
+    <ins><emu-rhs a="9c8ec29e"><emu-nt params="~Yield, +Await"><a href="https://tc39.github.io/ecma262/#prod-BindingIdentifier">BindingIdentifier</a><emu-mods><emu-params>[~Yield, +Await]</emu-params></emu-mods></emu-nt></emu-rhs></ins>
+</emu-production></emu-grammar>
+</emu-clause>
+
+<emu-clause id="sec-exports">
+  <h1><span class="secnum">9.3</span>Exports</h1>
+  <h2>Syntax</h2>
+  <emu-grammar type="definition"><emu-production name="ExportDeclaration" id="prod-ExportDeclaration">
+    <emu-nt><a href="#prod-ExportDeclaration">ExportDeclaration</a></emu-nt><emu-geq>:</emu-geq><emu-rhs a="56ae069c"><emu-t>export</emu-t><emu-t>*</emu-t><emu-nt><a href="https://tc39.github.io/ecma262/#prod-FromClause">FromClause</a></emu-nt><emu-t>;</emu-t></emu-rhs>
+    <emu-rhs a="54a8804a"><emu-t>export</emu-t><emu-nt><a href="https://tc39.github.io/ecma262/#prod-ExportClause">ExportClause</a></emu-nt><emu-nt><a href="https://tc39.github.io/ecma262/#prod-FromClause">FromClause</a></emu-nt><emu-t>;</emu-t></emu-rhs>
+    <emu-rhs a="b6878be3"><emu-t>export</emu-t><emu-nt><a href="https://tc39.github.io/ecma262/#prod-ExportClause">ExportClause</a></emu-nt><emu-t>;</emu-t></emu-rhs>
+    <del><emu-rhs a="696b8d6e"><emu-t>export</emu-t><emu-nt params="~Yield, ~Await"><a href="https://tc39.github.io/ecma262/#prod-VariableStatement">VariableStatement</a><emu-mods><emu-params>[~Yield, ~Await]</emu-params></emu-mods></emu-nt></emu-rhs></del>
+    <ins><emu-rhs a="aee773fc"><emu-t>export</emu-t><emu-nt params="~Yield, +Await"><a href="https://tc39.github.io/ecma262/#prod-VariableStatement">VariableStatement</a><emu-mods><emu-params>[~Yield, +Await]</emu-params></emu-mods></emu-nt></emu-rhs></ins>
+    <del><emu-rhs a="6bc99b97"><emu-t>export</emu-t><emu-nt params="~Yield, ~Await"><a href="https://tc39.github.io/ecma262/#prod-Declaration">Declaration</a><emu-mods><emu-params>[~Yield, ~Await]</emu-params></emu-mods></emu-nt></emu-rhs></del>
+    <ins><emu-rhs a="72c855b0"><emu-t>export</emu-t><emu-nt params="~Yield, +Await"><a href="https://tc39.github.io/ecma262/#prod-Declaration">Declaration</a><emu-mods><emu-params>[~Yield, +Await]</emu-params></emu-mods></emu-nt></emu-rhs></ins>
+    <del><emu-rhs a="d298e1ba"><emu-t>export</emu-t><emu-t>default</emu-t><emu-nt params="~Yield, ~Await, +Default"><a href="https://tc39.github.io/ecma262/#prod-HoistableDeclaration">HoistableDeclaration</a><emu-mods><emu-params>[~Yield, ~Await, +Default]</emu-params></emu-mods></emu-nt></emu-rhs></del>
+    <ins><emu-rhs a="3ca58963"><emu-t>export</emu-t><emu-t>default</emu-t><emu-nt params="~Yield, +Await, +Default"><a href="https://tc39.github.io/ecma262/#prod-HoistableDeclaration">HoistableDeclaration</a><emu-mods><emu-params>[~Yield, +Await, +Default]</emu-params></emu-mods></emu-nt></emu-rhs></ins>
+    <del><emu-rhs a="ae276654"><emu-t>export</emu-t><emu-t>default</emu-t><emu-nt params="~Yield, ~Await, +Default"><a href="https://tc39.github.io/ecma262/#prod-ClassDeclaration">ClassDeclaration</a><emu-mods><emu-params>[~Yield, ~Await, +Default]</emu-params></emu-mods></emu-nt></emu-rhs></del>
+    <ins><emu-rhs a="845e67b0"><emu-t>export</emu-t><emu-t>default</emu-t><emu-nt params="~Yield, +Await, +Default"><a href="https://tc39.github.io/ecma262/#prod-ClassDeclaration">ClassDeclaration</a><emu-mods><emu-params>[~Yield, +Await, +Default]</emu-params></emu-mods></emu-nt></emu-rhs></ins>
+    <del><emu-rhs a="e2a585b6"><emu-t>export</emu-t><emu-t>default</emu-t><emu-gann>[lookahead ∉ { <emu-t>function</emu-t>, <emu-t>async</emu-t>
+        <emu-gann>[no <emu-nt><a href="https://tc39.github.io/ecma262/#prod-LineTerminator">LineTerminator</a></emu-nt> here]</emu-gann>
+        <emu-t>function</emu-t>, <emu-t>class</emu-t> }]</emu-gann><emu-nt params="+In, ~Yield, ~Await"><a href="https://tc39.github.io/ecma262/#prod-AssignmentExpression">AssignmentExpression</a><emu-mods><emu-params>[+In, ~Yield, ~Await]</emu-params></emu-mods></emu-nt><emu-t>;</emu-t></emu-rhs></del>
+    <ins><emu-rhs a="ba2bc4cd"><emu-t>export</emu-t><emu-t>default</emu-t><emu-gann>[lookahead ∉ { <emu-t>function</emu-t>, <emu-t>async</emu-t>
+        <emu-gann>[no <emu-nt><a href="https://tc39.github.io/ecma262/#prod-LineTerminator">LineTerminator</a></emu-nt> here]</emu-gann>
+        <emu-t>function</emu-t>, <emu-t>class</emu-t> }]</emu-gann><emu-nt params="+In, ~Yield, +Await"><a href="https://tc39.github.io/ecma262/#prod-AssignmentExpression">AssignmentExpression</a><emu-mods><emu-params>[+In, ~Yield, +Await]</emu-params></emu-mods></emu-nt><emu-t>;</emu-t></emu-rhs></ins>
+</emu-production></emu-grammar>
+</emu-clause>
+</emu-clause></div></body>
