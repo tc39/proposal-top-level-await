@@ -434,7 +434,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <p>The Evaluate concrete method of a Cyclic Module Record implements the corresponding Module Record abstract method.</p>
     <p>Evaluate transitions this module's [[Status]] from `"linked"` to `"evaluated"`.</p>
 
-    <p><del>If execution results in a synchronous exception, that exception is recorded in the [[EvaluationError]] field and rethrown by future invocations of Evaluate.</del></p>
+    <p><del>If execution results in a exception, that exception is recorded in the [[EvaluationError]] field and rethrown by future invocations of Evaluate.</del></p>
 
     <p><ins>The Promise returned by Evaluate is allocated by the first invocation of Evaluate, and its capability is stored in the [[TopLevelCapability]] field. If execution results in an exception, the Promise is rejected. Future invocations of Evaluate return the same Promise.</ins></p>
 
