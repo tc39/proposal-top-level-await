@@ -1022,36 +1022,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
   </emu-clause>
 </emu-clause>
 
-<emu-clause id="sec-toplevelmoduleevaluationjob" aoid="TopLevelModuleEvaluationJob">
-  <h1>Runtime Semantics: TopLevelModuleEvaluationJob ( _sourceText_, _hostDefined_ )</h1>
-  <p>A TopLevelModuleEvaluationJob with parameters _sourceText_ and _hostDefined_ is a job that parses, validates, and evaluates _sourceText_ as a |Module|.</p>
-  <emu-alg>
-    1. Assert: _sourceText_ is an ECMAScript source text (see clause <emu-xref href="#sec-ecmascript-language-source-code"></emu-xref>).
-    1. Let _realm_ be the current Realm Record.
-    1. Let _m_ be ParseModule(_sourceText_, _realm_, _hostDefined_).
-    1. If _m_ is a List of errors, then
-      1. Perform HostReportErrors(_m_).
-      1. Return NormalCompletion(*undefined*).
-    1. Perform ? _m_.Link().
-    1. Assert: All dependencies of _m_ have been transitively resolved and _m_ is ready for evaluation.
-    1. <del>Return</del><ins>Let _promise_ be</ins> ? _m_.Evaluate().
-    1. <ins>Let _stepsRejected_ be the steps of a ReportRejectedError function as specified below.</ins>
-    1. <ins>Let _onRejected_ be CreateBuiltinFunction(_stepsRejected_).</ins>
-    1. <ins>Perform ! PerformPromiseThen(_promise_, *undefined*, _onRejected_).</ins>
-    1. <ins>Return.</ins>
-  </emu-alg>
-
-  <p><ins>A ReportRejectedError function is an anonymous built-in function. When a ReportRejectedError function is called with argument _reason_ it performs the following steps:</ins></p>
-  <emu-alg>
-    1. <ins>Perform HostReportErrors(&laquo; _reason_ &raquo;).</ins>
-    1. <ins>Return.</ins>
-  </emu-alg>
-
-  <emu-note>
-    <p>An implementation may parse a _sourceText_ as a |Module|, analyse it for Early Error conditions, and link it prior to the execution of the TopLevelModuleEvaluationJob for that _sourceText_. An implementation may also resolve, pre-parse and pre-analyse, and pre-link module dependencies of _sourceText_. However, the reporting of any errors detected by these actions must be deferred until the TopLevelModuleEvaluationJob is actually executed.</p>
-  </emu-note>
-</emu-clause>
-
 <emu-clause id="sec-modules">
     <h1>Modules</h1>
     <h2>Syntax</h2>
