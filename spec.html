@@ -50,9 +50,8 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
   <emu-alg>
     1. Assert: _promiseCapability_ is a PromiseCapability Record.
     1. Let _runningContext_ be the running execution context.
-    1. NOTE: Copying the execution state is required for the step below to resume its execution. It is ill-defined to resume a currently executing context.
     1. Set the code evaluation state of _asyncContext_ such that when evaluation is resumed for that execution context the following steps will be performed:
-    1. Let _result_ be the result of evaluating _asyncBody_.
+      1. Let _result_ be the result of evaluating _asyncBody_.
       1. Assert: If we return here, the async function either threw an exception or performed an implicit or explicit return; all awaiting is done.
       1. Remove _asyncContext_ from the execution context stack and restore the execution context that is at the top of the execution context stack as the running execution context.
       1. If _result_.[[Type]] is ~normal~, then
@@ -453,7 +452,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Set _m_.[[EvaluationError]] to _result_.
         1. Assert: _module_.[[Status]] is ~evaluated~ and _module_.[[EvaluationError]] is _result_.
         1. <del>Return _result_.</del>
-        1. <ins>Perform ! Call(_capability_.[[Reject]], *undefined*, &laquo;_result_.[[Value]]&raquo;).</ins>
+        1. <ins>Perform ! Call(_capability_.[[Reject]], *undefined*, &laquo; _result_.[[Value]] &raquo;).</ins>
       1. <ins>Otherwise,</ins>
         1. Assert: _module_.[[Status]] is ~evaluated~ and _module_.[[EvaluationError]] is *undefined*.
         1. <ins>If _module_.[[AsyncEvaluating]] is *false*, then</ins>
