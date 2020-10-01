@@ -499,7 +499,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
               1. <ins>Set _module_.[[PendingAsyncDependencies]] to _module_.[[PendingAsyncDependencies]] + 1.</ins>
               1. <ins>Append _module_ to _requiredModule_.[[AsyncParentModules]].</ins>
         1. <del>Perform ? _module_.ExecuteModule().</del>
-        1. <ins>If _module_.[[PendingAsyncDependencies]] is &gt; 0, set _module_.[[AsyncEvaluating]] to *true*.</ins>
+        1. <ins>If _module_.[[PendingAsyncDependencies]] &gt; 0, set _module_.[[AsyncEvaluating]] to *true*.</ins>
         1. <ins>Otherwise, if _module_.[[Async]] is *true*, perform ! ExecuteAsyncModule(_module_).</ins>
         1. <ins>Otherwise, perform ? _module_.ExecuteModule().</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
@@ -515,17 +515,17 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Return _index_.
       </emu-alg>
       <emu-note>
-        <p><ins>A module is `"evaluating"` while it is being traversed by InnerModuleEvaluation. A module is `"evaluated"` on execution completion and during execution if it is an asynchronous module.</ins></p>
+        <p><ins>A module is ~evaluating~ while it is being traversed by InnerModuleEvaluation. A module is ~evaluated~ on execution completion and during execution if it is an asynchronous module.</ins></p>
       </emu-note>
       <emu-note>
-        <p><ins>Any modules depending on a module of an async cycle when that cycle is not `"evaluating"` will instead depend on the execution of the root of the cycle via GetAsyncCycleRoot. This ensures that the cycle state can be treated as a single strongly connected component through its root module state.</ins></p>
+        <p><ins>Any modules depending on a module of an async cycle when that cycle is not ~evaluating~ will instead depend on the execution of the root of the cycle via GetAsyncCycleRoot. This ensures that the cycle state can be treated as a single strongly connected component through its root module state.</ins></p>
       </emu-note>
     </emu-clause>
 
     <emu-clause id="sec-execute-async-module" aoid="ExecuteAsyncModule">
       <h1><ins>ExecuteAsyncModule ( _module_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is `"evaluating"` or `"evaluated"`.
+        1. Assert: _module_.[[Status]] is ~evaluating~ or ~evaluated~.
         1. Assert: _module_.[[Async]] is *true*.
         1. Set _module_.[[AsyncEvaluating]] to *true*.
         1. Let _capability_ be ! NewPromiseCapability(%Promise%).
@@ -560,7 +560,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-getasynccycleroot" aoid="GetAsyncCycleRoot">
       <h1><ins>GetAsyncCycleRoot ( _module_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is `"evaluated"`.
+        1. Assert: _module_.[[Status]] is ~evaluated~.
         1. If _module_.[[AsyncParentModules]] is an empty List, return _module_.
         1. Repeat, while _module_.[[DFSIndex]] is greater than _module_.[[DFSAncestorIndex]],
           1. Assert: _module_.[[AsyncParentModules]] is a non-empty List.
@@ -575,7 +575,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-asyncmodulexecutionfulfilled" aoid="AsyncModuleExecutionFulfilled">
       <h1><ins>AsyncModuleExecutionFulfilled ( _module_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is `"evaluated"`.
+        1. Assert: _module_.[[Status]] is ~evaluated~.
         1. If _module_.[[AsyncEvaluating]] is *false*,
           1. Assert: _module_.[[EvaluationError]] is not *undefined*.
           1. Return *undefined*.
@@ -607,7 +607,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-AsyncModuleExecutionRejected" aoid="AsyncModuleExecutionRejected">
       <h1><ins>AsyncModuleExecutionRejected ( _module_, _error_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is `"evaluated"`.
+        1. Assert: _module_.[[Status]] is ~evaluated~.
         1. If _module_.[[AsyncEvaluating]] is *false*,
           1. Assert: _module_.[[EvaluationError]] is not *undefined*.
           1. Return *undefined*.
@@ -671,18 +671,18 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <ins><emu-figure id="figure-module-graph-cycle-async" caption="An asynchronous cyclic module graph">
       <img alt="A module graph in which module A depends on module B and C, module B depends on module D, module C depends on module D and E, and module D depends on module A" width="241" height="211" src="img/module-graph-cycle-async.svg">
     </emu-figure></ins>
-    <p><ins>Linking happens as before, and all modules end up with [[Status]] set to `"linked"`.</ins></p>
+    <p><ins>Linking happens as before, and all modules end up with [[Status]] set to ~linked~.</ins></p>
 
     <p><ins>
-      Calling _A_.Evaluate() triggers InnerModuleEvaluation on _A_, _B_, and _D_, which all transition to `"evaluating"`.
-      Then InnerModuleEvaluation is called on _A_ again, which is a no-op because it is already `"evaluating"`.
+      Calling _A_.Evaluate() triggers InnerModuleEvaluation on _A_, _B_, and _D_, which all transition to ~evaluating~.
+      Then InnerModuleEvaluation is called on _A_ again, which is a no-op because it is already ~evaluating~.
       At this point, _D_.[[PendingAsyncDependencies]] is 0, so ExecuteAsyncModule(_D_) is called, which sets _D_.[[AsyncEvaluating]] to *true* and executes _D_ (up until the first `await`).
       We unwind back to the original InnerModuleEvaluation on _A_, setting _B_.[[AsyncEvaluating]] to *true*.
       In the next iteration of the loop over _A_'s dependencies, we call InnerModuleEvaluation on _C_ and thus on _D_ (again a no-op) and _E_.
       As _E_ has no dependencies, ExecuteAsyncModule(_E_) is called, which sets _E_.[[AsyncEvaluating]] to *true* and starts executing.
-      Because _E_ is not part of a cycle, it is immediately removed from the stack and transitions to `"evaluated"`.
+      Because _E_ is not part of a cycle, it is immediately removed from the stack and transitions to ~evaluated~.
       We unwind once more to the original InnerModuleEvaluation on _A_, setting _C_.[[AsyncEvaluating]] to *true*.
-      Now we finish the loop over _A_'s dependencies, set _A_.[[AsyncEvaluating]] to *true*, and remove the entire strongly connected component from the stack, transitioning all of the modules to `"evaluated"` at once.
+      Now we finish the loop over _A_'s dependencies, set _A_.[[AsyncEvaluating]] to *true*, and remove the entire strongly connected component from the stack, transitioning all of the modules to ~evaluated~ at once.
       At this point, the fields of the modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-1"></emu-xref>.
     </ins></p>
 
