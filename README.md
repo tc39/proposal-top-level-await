@@ -396,6 +396,7 @@ In May 2018, this proposal reached Stage 2 in TC39's process, with many design d
 ## Implementations
 
 * V8 [via `--js-flags="--harmony-top-level-await"` flag](https://bugs.chromium.org/p/v8/issues/detail?id=9344)
+* SpiderMonkey via [`javascript.options.experimental.top_level_await`](https://bugzilla.mozilla.org/show_bug.cgi?id=1519100) flag
 * webpack (experimental support in [5.0.0-alpha.15](https://github.com/webpack/webpack/pull/9177))
 
 ## References
