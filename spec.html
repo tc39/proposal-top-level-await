@@ -573,7 +573,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. <ins>Otherwise,</ins>
               1. <ins>Set _requiredModule_ to GetAsyncCycleRoot(_requiredModule_).</ins>
               1. <ins>Assert: _requiredModule_.[[Status]] is ~evaluated~.</ins>
-              1. <ins>If _requiredModule_.[[EvaluationError]] is not *undefined*, return _module_.[[EvaluationError]].</ins>
+              1. <ins>If _requiredModule_.[[EvaluationError]] is not *undefined*, return _requiredModule_.[[EvaluationError]].</ins>
             1. <ins>If _requiredModule_.[[AsyncEvaluating]] is *true*, then</ins>
               1. <ins>Set _module_.[[PendingAsyncDependencies]] to _module_.[[PendingAsyncDependencies]] + 1.</ins>
               1. <ins>Append _module_ to _requiredModule_.[[AsyncParentModules]].</ins>
