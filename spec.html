@@ -547,7 +547,10 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
 
       <emu-alg>
         1. If _module_ is not a Cyclic Module Record, then
-          1. Perform ? _module_.Evaluate().
+          1. Let _promise_ be ! _module_.Evaluate().
+          1. Assert: _promise_.[[PromiseState]] is not ~pending~.
+          1. If _promise_.[[PromiseState]] is ~rejected~, then
+            1. Return ThrowCompletion(_promise_.[[PromiseStateResult]]).
           1. Return _index_.
         1. If _module_.[[Status]] is ~evaluated~, then
           1. If _module_.[[EvaluationError]] is *undefined*, return _index_.
