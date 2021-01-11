@@ -390,7 +390,7 @@ In May 2018, this proposal reached Stage 2 in TC39's process, with many design d
 
 ## Specification
 
-* [Ecmarkup source](https://github.com/tc39/proposal-top-level-await/blob/master/spec.html)
+* [Ecmarkup source](https://github.com/tc39/proposal-top-level-await/blob/HEAD/spec.html)
 * [HTML version](https://tc39.github.io/proposal-top-level-await/)
 
 ## Implementations
