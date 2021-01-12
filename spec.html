@@ -255,7 +255,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           Evaluate()
         </td>
         <td>
-          <p><ins>Returns a promise for the evaluation of this module and its dependencies, resolving on successful evaluation or if it has already been evaluated successfully, and rejecting for an evaluation error or </ins><del>If this module has already been evaluated successfully, return *undefined*; </del>if it has already been evaluated unsuccessfully<del>, throw the exception that was produced. Otherwise, Transitively evaluate all module dependencies of this module and then evaluate this module.</del></p>
+          <p><ins>Returns a promise for the evaluation of this module and its dependencies, resolving on successful evaluation or if it has already been evaluated successfully, and rejecting for an evaluation error or </ins><del>If this module has already been evaluated successfully, return *undefined*; </del>if it has already been evaluated unsuccessfully<del>, throw the exception that was produced. Otherwise, Transitively evaluate all module dependencies of this module and then evaluate this module.</del><ins> If the promise is rejected, hosts are expected to handle the promise rejection and rethrow the evaluation error.</ins></p>
           <p>Link must have completed successfully prior to invoking this method.</p>
         </td>
       </tr>
