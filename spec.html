@@ -371,6 +371,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           <td>
             <ins>Whether this module is queued to execute on completion of its async dependencies or it is an async module that is currently executing but pending top-level completion.</ins>
           </td>
+        </tr>
         <tr>
           <td>
             <ins>[[TopLevelCapability]]</ins>
@@ -410,7 +411,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           <td>
             <ins>
               This tracks the number of async dependency modules remaining to execute for this module if it has any asynchronous dependencies.
-              A module with async dependencies will be executed when this field reaches 0, which will only happen if there are no dependency execution errors.
+              A module with async dependencies will be executed when this field reaches 0 and there are no execution errors.
             </ins>
           </td>
         </tr>
@@ -588,8 +589,11 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
               1. <ins>Set _module_.[[PendingAsyncDependencies]] to _module_.[[PendingAsyncDependencies]] + 1.</ins>
               1. <ins>Append _module_ to _requiredModule_.[[AsyncParentModules]].</ins>
         1. <del>Perform ? _module_.ExecuteModule().</del>
-        1. <ins>If _module_.[[PendingAsyncDependencies]] &gt; 0, set _module_.[[AsyncEvaluating]] to *true*.</ins>
-        1. <ins>Otherwise, if _module_.[[Async]] is *true*, perform ! ExecuteAsyncModule(_module_).</ins>
+        1. <ins>If _module_.[[PendingAsyncDependencies]] &gt; 0 or _module_.[[Async]] is *true*, then</ins>
+          1. <ins>Assert: _module_.[[AsyncEvaluating]] is *false* and was never previously set to *true*.</ins>
+          1. <ins>Set _module_.[[AsyncEvaluating]] to *true*.</ins>
+          1. NOTE: The order in which modules transition to async evaluating is significant. (See <emu-xref href="#sec-async-module-execution-fulfilled"></emu-xref>)
+          1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, perform ! ExecuteAsyncModule(_module_).</ins>
         1. <ins>Otherwise, perform ? _module_.ExecuteModule().</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
@@ -618,7 +622,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       <emu-alg>
         1. Assert: _module_.[[Status]] is ~evaluating~ or ~evaluated~.
         1. Assert: _module_.[[Async]] is *true*.
-        1. Set _module_.[[AsyncEvaluating]] to *true*.
         1. Let _capability_ be ! NewPromiseCapability(%Promise%).
         1. Let _stepsFulfilled_ be the steps of a CallAsyncModuleFulfilled function as specified below.
         1. Let _onFulfilled_ be CreateBuiltinFunction(_stepsFulfilled_, &laquo; [[Module]] &raquo;).
@@ -648,28 +651,44 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       </emu-alg>
     </emu-clause>
 
-    <emu-clause id="sec-async-module-execution-fulfilled" aoid="AsyncModuleExecutionFulfilled">
-      <h1><ins>AsyncModuleExecutionFulfilled ( _module_ )</ins></h1>
+    <emu-clause id="sec-gather-async-parent-completions" aoid="GatherAsyncParentCompletions">
+      <h1><ins>GatherAsyncParentCompletions ( _module_, _execList_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[Status]] is ~evaluated~.
         1. If _module_.[[AsyncEvaluating]] is *false*,
           1. Assert: _module_.[[EvaluationError]] is not ~empty~.
           1. Return *undefined*.
-        1. Assert: _module_.[[EvaluationError]] is ~empty~.
-        1. Set _module_.[[AsyncEvaluating]] to *false*.
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
-          1. Decrement _m_.[[PendingAsyncDependencies]] by 1.
-          1. If _m_.[[PendingAsyncDependencies]] is 0 and _m_.[[EvaluationError]] is ~empty~, then
+          1. If _execList_ does not contain _m_ and _m_.[[CycleRoot]].[[EvaluationError]] is ~empty~, then
+            1. Assert: _m_.[[EvaluationError]] is ~empty~.
             1. Assert: _m_.[[AsyncEvaluating]] is *true*.
-            1. If _m_.[[CycleRoot]].[[EvaluationError]] is not ~empty~, return *undefined*.
-            1. If _m_.[[Async]] is *true*, then
-              1. Perform ! ExecuteAsyncModule(_m_).
-            1. Otherwise,
-              1. Let _result_ be _m_.ExecuteModule().
-              1. If _result_ is a normal completion,
-                1. Perform ! AsyncModuleExecutionFulfilled(_m_).
-              1. Otherwise,
-                1. Perform ! AsyncModuleExecutionRejected(_m_, _result_.[[Value]]).
+            1. Set _m_.[[PendingAsyncDependencies]] to _m_.[[PendingAsyncDependencies]] - 1.
+            1. If _m_.[[PendingAsyncDependencies]] is equal to 0, then
+                1. Append _m_ to _execList_.
+                1. If _m_.[[Async]] is *false*, perform ! GatherAsyncParentCompletions(_m_, _execList_).
+        1. Return *undefined*.
+      </emu-alg>
+      <emu-note>
+        <p>When an async execution for a root _module_ is fulfilled, this function determines the list of modules which are able to synchronously execute together on this completion, populating them in _execList_.</p>
+      </emu-note>
+    </emu-clause>
+
+    <emu-clause id="sec-async-module-execution-fulfilled" aoid="AsyncModuleExecutionFulfilled">
+      <h1><ins>AsyncModuleExecutionFulfilled ( _module_ )</ins></h1>
+      <emu-alg>
+        1. Let _execList_ be a new empty List.
+        1. Perform ! GatherAsyncParentCompletions(_module_, _execList_).
+        1. Let _sortedExecList_ be a List of elements that are the elements of _execList_, in the order in which they had their [[AsyncEvaluating]] fields set to *true* in InnerModuleEvaluation.
+        1. Assert: All elements of _sortedExecList_ have their [[AsyncEvaluating]] field set to *true*, [[PendingAsyncDependencies]] field set to 0 and [[EvaluationError]] field set to *undefined*.
+        1. For each Module _m_ of _sortedExecList_, do
+          1. If _m_.[[AsyncEvaluating]] is *false*, then
+            1. Assert: _m_.[[EvaluatingError]] is not ~empty~.
+          1. Otherwise, if _m_.[[Async]] is *true*, then
+            1. Perform ! ExecuteAsyncModule(_m_).
+          1. Otherwise,
+            1. Let _result_ be _m_.ExecuteModule().
+            1. If _result_ is an abrupt completion,
+              1. Perform ! AsyncModuleExecutionRejected(_m_, _result_.[[Value]]).
         1. If _module_.[[TopLevelCapability]] is not ~empty~, then
           1. Assert: _module_.[[CycleRoot]] is equal to _module_.
           1. Perform ! Call(_module_.[[TopLevelCapability]].[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).
