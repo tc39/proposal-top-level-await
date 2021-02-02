@@ -1,6 +1,7 @@
 # ECMAScript proposal: Top-level `await`
 
-Champion: Myles Borins
+Champions: Myles Borins, Yulia Startsev.
+Authors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, and others.
 
 Status: Stage 3
 
