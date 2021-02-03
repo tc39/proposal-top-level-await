@@ -652,8 +652,8 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       </emu-alg>
     </emu-clause>
 
-    <emu-clause id="sec-cyclicmoduleexecutionfulfilled" aoid="CyclicModuleExecutionFulfilled">
-      <h1><ins>CyclicModuleExecutionFulfilled ( _module_ )</ins></h1>
+    <emu-clause id="sec-async-module-execution-fulfilled" aoid="AsyncModuleExecutionFulfilled">
+      <h1><ins>AsyncModuleExecutionFulfilled ( _module_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[Status]] is ~evaluated~.
         1. If _module_.[[AsyncEvaluating]] is *false*,
@@ -681,7 +681,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       </emu-alg>
     </emu-clause>
 
-    <emu-clause id="sec-AsyncModuleExecutionRejected" aoid="AsyncModuleExecutionRejected">
+    <emu-clause id="sec-async-module-execution-rejected" aoid="AsyncModuleExecutionRejected">
       <h1><ins>AsyncModuleExecutionRejected ( _module_, _error_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[Status]] is ~evaluated~.
