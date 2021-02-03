@@ -341,6 +341,17 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         </tr>
         <tr>
           <td>
+            <ins>[[CycleRoot]]</ins>
+          </td>
+          <td>
+            <ins>Cyclic Module Record | *undefined*</ins>
+          </td>
+          <td>
+            <ins>The first visited module of the cycle, the root DFS ancestor of the strongly connected component. For a module not in a cycle this would be the module itself.</ins>
+          </td>
+        </tr>
+        <tr>
+          <td>
             <ins>[[Async]]</ins>
           </td>
           <td>
@@ -517,7 +528,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       1. Assert: This call to Evaluate is not happening at the same time as another call to Evaluate within the surrounding agent.
       1. Let _module_ be this Cyclic Module Record.
       1. Assert: _module_.[[Status]] is ~linked~ or ~evaluated~.
-      1. <ins>If _module_.[[Status]] is ~evaluated~, set _module_ to GetAsyncCycleRoot(_module_).</ins>
+      1. <ins>If _module_.[[Status]] is ~evaluated~, set _module_ to _module_.[[CycleRoot]].</ins>
       1. <ins>If _module_.[[TopLevelCapability]] is not *undefined*, then</ins>
         1. <ins>Return _module_.[[TopLevelCapability]].[[Promise]].</ins>
       1. Let _stack_ be a new empty List.
@@ -574,7 +585,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. If _requiredModule_.[[Status]] is ~evaluating~, then
               1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
             1. <ins>Otherwise,</ins>
-              1. <ins>Set _requiredModule_ to GetAsyncCycleRoot(_requiredModule_).</ins>
+              1. <ins>Set _requiredModule_ to _requiredModule_.[[CycleRoot]].</ins>
               1. <ins>Assert: _requiredModule_.[[Status]] is ~evaluated~.</ins>
               1. <ins>If _requiredModule_.[[EvaluationError]] is not *undefined*, return _requiredModule_.[[EvaluationError]].</ins>
             1. <ins>If _requiredModule_.[[AsyncEvaluating]] is *true*, then</ins>
@@ -587,6 +598,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
         1. If _module_.[[DFSAncestorIndex]] equals _module_.[[DFSIndex]], then
+          1. <ins>Let _cycleRoot_ be _module_.</ins>
           1. Let _done_ be *false*.
           1. Repeat, while _done_ is *false*,
             1. Let _requiredModule_ be the last element in _stack_.
@@ -594,13 +606,14 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. Assert: _requiredModule_ is a Cyclic Module Record.
             1. Set _requiredModule_.[[Status]] to ~evaluated~.
             1. If _requiredModule_ and _module_ are the same Module Record, set _done_ to *true*.
+            1. <ins>Set _requiredModule_.[[CycleRoot]] to _cycleRoot_.</ins>
         1. Return _index_.
       </emu-alg>
       <emu-note>
         <p><ins>A module is ~evaluating~ while it is being traversed by InnerModuleEvaluation. A module is ~evaluated~ on execution completion and during execution if it is an asynchronous module.</ins></p>
       </emu-note>
       <emu-note>
-        <p><ins>Any modules depending on a module of an async cycle when that cycle is not ~evaluating~ will instead depend on the execution of the root of the cycle via GetAsyncCycleRoot. This ensures that the cycle state can be treated as a single strongly connected component through its root module state.</ins></p>
+        <p><ins>Any modules depending on a module of an async cycle when that cycle is not ~evaluating~ will instead depend on the execution of the root of the cycle via [[CycleRoot]]. This ensures that the cycle state can be treated as a single strongly connected component through its root module state.</ins></p>
       </emu-note>
     </emu-clause>
 
@@ -639,22 +652,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       </emu-alg>
     </emu-clause>
 
-    <emu-clause id="sec-getasynccycleroot" aoid="GetAsyncCycleRoot">
-      <h1><ins>GetAsyncCycleRoot ( _module_ )</ins></h1>
-      <emu-alg>
-        1. Assert: _module_.[[Status]] is ~evaluated~.
-        1. If _module_.[[AsyncParentModules]] is an empty List, return _module_.
-        1. Repeat, while _module_.[[DFSIndex]] is greater than _module_.[[DFSAncestorIndex]],
-          1. Assert: _module_.[[AsyncParentModules]] is a non-empty List.
-          1. Let _nextCycleModule_ be the first element of _module_.[[AsyncParentModules]].
-          1. Assert: _nextCycleModule_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSAncestorIndex]].
-          1. Set _module_ to _nextCycleModule_.
-        1. Assert: _module_.[[DFSIndex]] is equal to _module_.[[DFSAncestorIndex]].
-        1. Return _module_.
-      </emu-alg>
-    </emu-clause>
-
-    <emu-clause id="sec-asyncmodulexecutionfulfilled" aoid="AsyncModuleExecutionFulfilled">
+    <emu-clause id="sec-async-module-execution-fulfilled" aoid="AsyncModuleExecutionFulfilled">
       <h1><ins>AsyncModuleExecutionFulfilled ( _module_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[Status]] is ~evaluated~.
@@ -664,13 +662,10 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Assert: _module_.[[EvaluationError]] is *undefined*.
         1. Set _module_.[[AsyncEvaluating]] to *false*.
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
-          1. If _module_.[[DFSIndex]] is not equal to _module_.[[DFSAncestorIndex]], then
-            1. Assert: _m_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSAncestorIndex]].
           1. Decrement _m_.[[PendingAsyncDependencies]] by 1.
           1. If _m_.[[PendingAsyncDependencies]] is 0 and _m_.[[EvaluationError]] is *undefined*, then
             1. Assert: _m_.[[AsyncEvaluating]] is *true*.
-            1. Let _cycleRoot_ be ! GetAsyncCycleRoot(_m_).
-            1. If _cycleRoot_.[[EvaluationError]] is not *undefined*, return *undefined*.
+            1. If _m_.[[CycleRoot]].[[EvaluationError]] is not *undefined*, return *undefined*.
             1. If _m_.[[Async]] is *true*, then
               1. Perform ! ExecuteAsyncModule(_m_).
             1. Otherwise,
@@ -680,13 +675,13 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
               1. Otherwise,
                 1. Perform ! AsyncModuleExecutionRejected(_m_, _result_.[[Value]]).
         1. If _module_.[[TopLevelCapability]] is not *undefined*, then
-          1. Assert: _module_.[[DFSIndex]] is equal to _module_.[[DFSAncestorIndex]].
+          1. Assert: _module_.[[CycleRoot]] is equal to _module_.
           1. Perform ! Call(_module_.[[TopLevelCapability]].[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).
         1. Return *undefined*.
       </emu-alg>
     </emu-clause>
 
-    <emu-clause id="sec-AsyncModuleExecutionRejected" aoid="AsyncModuleExecutionRejected">
+    <emu-clause id="sec-async-module-execution-rejected" aoid="AsyncModuleExecutionRejected">
       <h1><ins>AsyncModuleExecutionRejected ( _module_, _error_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[Status]] is ~evaluated~.
@@ -697,11 +692,9 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Set _module_.[[EvaluationError]] to ThrowCompletion(_error_).
         1. Set _module_.[[AsyncEvaluating]] to *false*.
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
-          1. If _module_.[[DFSIndex]] is not equal to _module_.[[DFSAncestorIndex]], then
-            1. Assert: _m_.[[DFSAncestorIndex]] is equal to _module_.[[DFSAncestorIndex]].
           1. Perform ! AsyncModuleExecutionRejected(_m_, _error_).
         1. If _module_.[[TopLevelCapability]] is not *undefined*, then
-          1. Assert: _module_.[[DFSIndex]] is equal to _module_.[[DFSAncestorIndex]].
+          1. Assert: _module_.[[CycleRoot]] is equal to _module_.
           1. Perform ! Call(_module_.[[TopLevelCapability]].[[Reject]], *undefined*, &laquo;_error_&raquo;).
         1. Return *undefined*.
       </emu-alg>
@@ -1058,7 +1051,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Else,
           1. Append _ee_ to _indirectExportEntries_.
       1. <ins>Let _async_ be _body_ Contains `await`.</ins>
-      1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: *undefined*, [[Namespace]]: *undefined*, <ins>[[Async]]: _async_, [[AsyncEvaluating]]: *false*, [[TopLevelCapability]]: *undefined*, [[AsyncParentModules]]: *undefined*, [[PendingAsyncDependencies]]: *undefined*, </ins>[[Status]]: ~unlinked~, [[EvaluationError]]: *undefined*, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[Context]]: ~empty~, [[ImportMeta]]: ~empty~, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: *undefined*, [[DFSAncestorIndex]]: *undefined* }.
+      1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: *undefined*, [[Namespace]]: *undefined*, <ins>[[CycleRoot]]: *undefined*, [[Async]]: _async_, [[AsyncEvaluating]]: *false*, [[TopLevelCapability]]: *undefined*, [[AsyncParentModules]]: *undefined*, [[PendingAsyncDependencies]]: *undefined*, </ins>[[Status]]: ~unlinked~, [[EvaluationError]]: *undefined*, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[Context]]: ~empty~, [[ImportMeta]]: ~empty~, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: *undefined*, [[DFSAncestorIndex]]: *undefined* }.
     </emu-alg>
     <emu-note>
       <p>An implementation may parse module source text and analyse it for Early Error conditions prior to the evaluation of ParseModule for that module source text. However, the reporting of any errors must be deferred until the point where this specification actually performs ParseModule upon that source text.</p>
