@@ -171,10 +171,10 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           [[Realm]]
         </td>
         <td>
-          Realm Record | *undefined*
+          Realm Record
         </td>
         <td>
-          The Realm within which this module was created. *undefined* if not yet assigned.
+          The Realm within which this module was created.
         </td>
       </tr>
       <tr>
@@ -1068,7 +1068,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       1. Let _module_ be this Source Text Module Record.
       1. <ins>Let _moduleContext_ be a new ECMAScript code execution context.</ins>
       1. <ins>Set the Function of _moduleContext_ to *null*.</ins>
-      1. <ins>Assert: _module_.[[Realm]] is not *undefined*.</ins>
       1. <ins>Set the Realm of _moduleContext_ to _module_.[[Realm]].</ins>
       1. <ins>Set the ScriptOrModule of _moduleContext_ to _module_.</ins>
       1. <ins>Assert: _module_ has been linked and declarations in its module environment have been linked.</ins>
