@@ -391,7 +391,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             <ins>[[AsyncParentModules]]</ins>
           </td>
           <td>
-            <ins>List of Cyclic Module Record | ~empty~</ins>
+            <ins>List of Cyclic Module Records</ins>
           </td>
           <td>
             <ins>
@@ -569,7 +569,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Set _module_.[[DFSIndex]] to _index_.
         1. Set _module_.[[DFSAncestorIndex]] to _index_.
         1. <ins>Set _module_.[[PendingAsyncDependencies]] to 0.</ins>
-        1. <ins>Set _module_.[[AsyncParentModules]] to a new empty List.</ins>
         1. Set _index_ to _index_ + 1.
         1. Append _module_ to _stack_.
         1. For each String _required_ that is an element of _module_.[[RequestedModules]], do
@@ -1048,7 +1047,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Else,
           1. Append _ee_ to _indirectExportEntries_.
       1. <ins>Let _async_ be _body_ Contains `await`.</ins>
-      1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: ~empty~, [[Namespace]]: ~empty~, <ins>[[CycleRoot]]: ~empty~, [[Async]]: _async_, [[AsyncEvaluating]]: *false*, [[TopLevelCapability]]: ~empty~, [[AsyncParentModules]]: ~empty~, [[PendingAsyncDependencies]]: ~empty~, </ins>[[Status]]: ~unlinked~, [[EvaluationError]]: ~empty~, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[Context]]: ~empty~, [[ImportMeta]]: ~empty~, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: ~empty~, [[DFSAncestorIndex]]: ~empty~ }.
+      1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: ~empty~, [[Namespace]]: ~empty~, <ins>[[CycleRoot]]: ~empty~, [[Async]]: _async_, [[AsyncEvaluating]]: *false*, [[TopLevelCapability]]: ~empty~, [[AsyncParentModules]]: &laquo; &raquo;, [[PendingAsyncDependencies]]: ~empty~, </ins>[[Status]]: ~unlinked~, [[EvaluationError]]: ~empty~, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[Context]]: ~empty~, [[ImportMeta]]: ~empty~, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: ~empty~, [[DFSAncestorIndex]]: ~empty~ }.
     </emu-alg>
     <emu-note>
       <p>An implementation may parse module source text and analyse it for Early Error conditions prior to the evaluation of ParseModule for that module source text. However, the reporting of any errors must be deferred until the point where this specification actually performs ParseModule upon that source text.</p>
