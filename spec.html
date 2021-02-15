@@ -171,10 +171,10 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           [[Realm]]
         </td>
         <td>
-          Realm Record | *undefined*
+          Realm Record
         </td>
         <td>
-          The Realm within which this module was created. *undefined* if not yet assigned.
+          The Realm within which this module was created.
         </td>
       </tr>
       <tr>
@@ -182,7 +182,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           [[Environment]]
         </td>
         <td>
-          module Environment Record | *undefined*
+          module Environment Record | ~empty~
         </td>
         <td>
           The Environment Record containing the top level bindings for this module. This field is set when the module is linked.
@@ -193,10 +193,10 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           [[Namespace]]
         </td>
         <td>
-          Object | *undefined*
+          Object | ~empty~
         </td>
         <td>
-          The Module Namespace Object (<emu-xref href="#sec-module-namespace-objects"></emu-xref>) if one has been created for this module. Otherwise *undefined*.
+          The Module Namespace Object (<emu-xref href="#sec-module-namespace-objects"></emu-xref>) if one has been created for this module.
         </td>
       </tr>
       <tr>
@@ -309,7 +309,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             [[DFSIndex]]
           </td>
           <td>
-            Integer | *undefined*
+            Integer | ~empty~
           </td>
           <td>
             Auxiliary field used during Link and Evaluate only.
@@ -321,7 +321,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             [[DFSAncestorIndex]]
           </td>
           <td>
-            Integer | *undefined*
+            Integer | ~empty~
           </td>
           <td>
             Auxiliary field used during Link and Evaluate only.
@@ -344,7 +344,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             <ins>[[CycleRoot]]</ins>
           </td>
           <td>
-            <ins>Cyclic Module Record | *undefined*</ins>
+            <ins>Cyclic Module Record | ~empty~</ins>
           </td>
           <td>
             <ins>The first visited module of the cycle, the root DFS ancestor of the strongly connected component. For a module not in a cycle this would be the module itself.</ins>
@@ -376,13 +376,13 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             <ins>[[TopLevelCapability]]</ins>
           </td>
           <td>
-            <ins>Promise Capability | *undefined*</ins>
+            <ins>Promise Capability | ~empty~</ins>
           </td>
           <td>
             <ins>
               If Evaluate() was called on this module, this field contains the Promise capability for that entire evaluation.
               It is used to settle the Promise object that is returned from the Evaluate() abstract method.
-              This field will be *undefined* for any dependencies of that module, unless a top-level Evaluate() has been initiated for any of those dependencies.
+              This field will be ~empty~ for any dependencies of that module, unless a top-level Evaluate() has been initiated for any of those dependencies.
             </ins>
           </td>
         </tr>
@@ -391,7 +391,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             <ins>[[AsyncParentModules]]</ins>
           </td>
           <td>
-            <ins>List of Cyclic Module Record | *undefined*</ins>
+            <ins>List of Cyclic Module Records</ins>
           </td>
           <td>
             <ins>
@@ -405,7 +405,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             <ins>[[PendingAsyncDependencies]]</ins>
           </td>
           <td>
-            <ins>Integer | *undefined*</ins>
+            <ins>Integer | ~empty~</ins>
           </td>
           <td>
             <ins>
@@ -465,9 +465,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. For each Cyclic Module Record _m_ in _stack_, do
           1. Assert: _m_.[[Status]] is ~linking~.
           1. Set _m_.[[Status]] to ~unlinked~.
-          1. Set _m_.[[Environment]] to *undefined*.
-          1. Set _m_.[[DFSIndex]] to *undefined*.
-          1. Set _m_.[[DFSAncestorIndex]] to *undefined*.
         1. Assert: _module_.[[Status]] is ~unlinked~.
         1. Return _result_.
       1. Assert: _module_.[[Status]] is ~linked~ or ~evaluated~.
@@ -529,7 +526,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       1. Let _module_ be this Cyclic Module Record.
       1. Assert: _module_.[[Status]] is ~linked~ or ~evaluated~.
       1. <ins>If _module_.[[Status]] is ~evaluated~, set _module_ to _module_.[[CycleRoot]].</ins>
-      1. <ins>If _module_.[[TopLevelCapability]] is not *undefined*, then</ins>
+      1. <ins>If _module_.[[TopLevelCapability]] is not ~empty~, then</ins>
         1. <ins>Return _module_.[[TopLevelCapability]].[[Promise]].</ins>
       1. Let _stack_ be a new empty List.
       1. <ins>Let _capability_ be ! NewPromiseCapability(%Promise%).</ins>
@@ -544,7 +541,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. <del>Return _result_.</del>
         1. <ins>Perform ! Call(_capability_.[[Reject]], *undefined*, &laquo; _result_.[[Value]] &raquo;).</ins>
       1. <ins>Otherwise,</ins>
-        1. Assert: _module_.[[Status]] is ~evaluated~ and _module_.[[EvaluationError]] is *undefined*.
+        1. Assert: _module_.[[Status]] is ~evaluated~ and _module_.[[EvaluationError]] is ~empty~.
         1. <ins>If _module_.[[AsyncEvaluating]] is *false*, then</ins>
           1. <ins>Perform ! Call(_capability_.[[Resolve]], *undefined*, &laquo; *undefined* &raquo;).</ins>
         1. Assert: _stack_ is empty.
@@ -564,7 +561,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. Return ThrowCompletion(_promise_.[[PromiseStateResult]]).
           1. Return _index_.
         1. If _module_.[[Status]] is ~evaluated~, then
-          1. If _module_.[[EvaluationError]] is *undefined*, return _index_.
+          1. If _module_.[[EvaluationError]] is ~empty~, return _index_.
           1. Otherwise, return _module_.[[EvaluationError]].
         1. If _module_.[[Status]] is ~evaluating~, return _index_.
         1. Assert: _module_.[[Status]] is ~linked~.
@@ -572,7 +569,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Set _module_.[[DFSIndex]] to _index_.
         1. Set _module_.[[DFSAncestorIndex]] to _index_.
         1. <ins>Set _module_.[[PendingAsyncDependencies]] to 0.</ins>
-        1. <ins>Set _module_.[[AsyncParentModules]] to a new empty List.</ins>
         1. Set _index_ to _index_ + 1.
         1. Append _module_ to _stack_.
         1. For each String _required_ that is an element of _module_.[[RequestedModules]], do
@@ -587,7 +583,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. <ins>Otherwise,</ins>
               1. <ins>Set _requiredModule_ to _requiredModule_.[[CycleRoot]].</ins>
               1. <ins>Assert: _requiredModule_.[[Status]] is ~evaluated~.</ins>
-              1. <ins>If _requiredModule_.[[EvaluationError]] is not *undefined*, return _requiredModule_.[[EvaluationError]].</ins>
+              1. <ins>If _requiredModule_.[[EvaluationError]] is not ~empty~, return _requiredModule_.[[EvaluationError]].</ins>
             1. <ins>If _requiredModule_.[[AsyncEvaluating]] is *true*, then</ins>
               1. <ins>Set _module_.[[PendingAsyncDependencies]] to _module_.[[PendingAsyncDependencies]] + 1.</ins>
               1. <ins>Append _module_ to _requiredModule_.[[AsyncParentModules]].</ins>
@@ -657,15 +653,15 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       <emu-alg>
         1. Assert: _module_.[[Status]] is ~evaluated~.
         1. If _module_.[[AsyncEvaluating]] is *false*,
-          1. Assert: _module_.[[EvaluationError]] is not *undefined*.
+          1. Assert: _module_.[[EvaluationError]] is not ~empty~.
           1. Return *undefined*.
-        1. Assert: _module_.[[EvaluationError]] is *undefined*.
+        1. Assert: _module_.[[EvaluationError]] is ~empty~.
         1. Set _module_.[[AsyncEvaluating]] to *false*.
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
           1. Decrement _m_.[[PendingAsyncDependencies]] by 1.
-          1. If _m_.[[PendingAsyncDependencies]] is 0 and _m_.[[EvaluationError]] is *undefined*, then
+          1. If _m_.[[PendingAsyncDependencies]] is 0 and _m_.[[EvaluationError]] is ~empty~, then
             1. Assert: _m_.[[AsyncEvaluating]] is *true*.
-            1. If _m_.[[CycleRoot]].[[EvaluationError]] is not *undefined*, return *undefined*.
+            1. If _m_.[[CycleRoot]].[[EvaluationError]] is not ~empty~, return *undefined*.
             1. If _m_.[[Async]] is *true*, then
               1. Perform ! ExecuteAsyncModule(_m_).
             1. Otherwise,
@@ -674,7 +670,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
                 1. Perform ! AsyncModuleExecutionFulfilled(_m_).
               1. Otherwise,
                 1. Perform ! AsyncModuleExecutionRejected(_m_, _result_.[[Value]]).
-        1. If _module_.[[TopLevelCapability]] is not *undefined*, then
+        1. If _module_.[[TopLevelCapability]] is not ~empty~, then
           1. Assert: _module_.[[CycleRoot]] is equal to _module_.
           1. Perform ! Call(_module_.[[TopLevelCapability]].[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).
         1. Return *undefined*.
@@ -686,14 +682,14 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       <emu-alg>
         1. Assert: _module_.[[Status]] is ~evaluated~.
         1. If _module_.[[AsyncEvaluating]] is *false*,
-          1. Assert: _module_.[[EvaluationError]] is not *undefined*.
+          1. Assert: _module_.[[EvaluationError]] is not ~empty~.
           1. Return *undefined*.
-        1. Assert: _module_.[[EvaluationError]] is *undefined*.
+        1. Assert: _module_.[[EvaluationError]] is ~empty~.
         1. Set _module_.[[EvaluationError]] to ThrowCompletion(_error_).
         1. Set _module_.[[AsyncEvaluating]] to *false*.
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
           1. Perform ! AsyncModuleExecutionRejected(_m_, _error_).
-        1. If _module_.[[TopLevelCapability]] is not *undefined*, then
+        1. If _module_.[[TopLevelCapability]] is not ~empty~, then
           1. Assert: _module_.[[CycleRoot]] is equal to _module_.
           1. Perform ! Call(_module_.[[TopLevelCapability]].[[Reject]], *undefined*, &laquo;_error_&raquo;).
         1. Return *undefined*.
@@ -1051,7 +1047,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. Else,
           1. Append _ee_ to _indirectExportEntries_.
       1. <ins>Let _async_ be _body_ Contains `await`.</ins>
-      1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: *undefined*, [[Namespace]]: *undefined*, <ins>[[CycleRoot]]: *undefined*, [[Async]]: _async_, [[AsyncEvaluating]]: *false*, [[TopLevelCapability]]: *undefined*, [[AsyncParentModules]]: *undefined*, [[PendingAsyncDependencies]]: *undefined*, </ins>[[Status]]: ~unlinked~, [[EvaluationError]]: *undefined*, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[Context]]: ~empty~, [[ImportMeta]]: ~empty~, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: *undefined*, [[DFSAncestorIndex]]: *undefined* }.
+      1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: ~empty~, [[Namespace]]: ~empty~, <ins>[[CycleRoot]]: ~empty~, [[Async]]: _async_, [[AsyncEvaluating]]: *false*, [[TopLevelCapability]]: ~empty~, [[AsyncParentModules]]: &laquo; &raquo;, [[PendingAsyncDependencies]]: ~empty~, </ins>[[Status]]: ~unlinked~, [[EvaluationError]]: ~empty~, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[Context]]: ~empty~, [[ImportMeta]]: ~empty~, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: ~empty~, [[DFSAncestorIndex]]: ~empty~ }.
     </emu-alg>
     <emu-note>
       <p>An implementation may parse module source text and analyse it for Early Error conditions prior to the evaluation of ParseModule for that module source text. However, the reporting of any errors must be deferred until the point where this specification actually performs ParseModule upon that source text.</p>
@@ -1068,7 +1064,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       1. Let _module_ be this Source Text Module Record.
       1. <ins>Let _moduleContext_ be a new ECMAScript code execution context.</ins>
       1. <ins>Set the Function of _moduleContext_ to *null*.</ins>
-      1. <ins>Assert: _module_.[[Realm]] is not *undefined*.</ins>
       1. <ins>Set the Realm of _moduleContext_ to _module_.[[Realm]].</ins>
       1. <ins>Set the ScriptOrModule of _moduleContext_ to _module_.</ins>
       1. <ins>Assert: _module_ has been linked and declarations in its module environment have been linked.</ins>
