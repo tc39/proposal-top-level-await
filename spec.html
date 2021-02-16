@@ -677,6 +677,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       <h1><ins>AsyncModuleExecutionFulfilled ( _module_ )</ins></h1>
       <emu-alg>
         1. Let _execList_ be a new empty List.
+        1. Assert: _module_.[[AsyncEvaluating]] is *true*.
         1. Perform ! GatherAsyncParentCompletions(_module_, _execList_).
         1. Let _sortedExecList_ be a List of elements that are the elements of _execList_, in the order in which they had their [[AsyncEvaluating]] fields set to *true* in InnerModuleEvaluation.
         1. Assert: All elements of _sortedExecList_ have their [[AsyncEvaluating]] field set to *true*, [[PendingAsyncDependencies]] field set to 0 and [[EvaluationError]] field set to *undefined*.
