@@ -655,9 +655,6 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       <h1><ins>GatherAsyncParentCompletions ( _module_, _execList_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[Status]] is ~evaluated~.
-        1. If _module_.[[AsyncEvaluating]] is *false*,
-          1. Assert: _module_.[[EvaluationError]] is not ~empty~.
-          1. Return *undefined*.
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
           1. If _execList_ does not contain _m_ and _m_.[[CycleRoot]].[[EvaluationError]] is ~empty~, then
             1. Assert: _m_.[[EvaluationError]] is ~empty~.
@@ -676,8 +673,9 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-async-module-execution-fulfilled" aoid="AsyncModuleExecutionFulfilled">
       <h1><ins>AsyncModuleExecutionFulfilled ( _module_ )</ins></h1>
       <emu-alg>
-        1. Let _execList_ be a new empty List.
         1. Assert: _module_.[[AsyncEvaluating]] is *true*.
+        1. Set _module_.[[AsyncEvaluating]] to *false*.
+        1. Let _execList_ be a new empty List.
         1. Perform ! GatherAsyncParentCompletions(_module_, _execList_).
         1. Let _sortedExecList_ be a List of elements that are the elements of _execList_, in the order in which they had their [[AsyncEvaluating]] fields set to *true* in InnerModuleEvaluation.
         1. Assert: All elements of _sortedExecList_ have their [[AsyncEvaluating]] field set to *true*, [[PendingAsyncDependencies]] field set to 0 and [[EvaluationError]] field set to *undefined*.
