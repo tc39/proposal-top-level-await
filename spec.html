@@ -674,6 +674,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       <h1><ins>AsyncModuleExecutionFulfilled ( _module_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[AsyncEvaluating]] is *true*.
+        1. Assert: _module_.[[EvaluationError]] is ~empty~.
         1. Set _module_.[[AsyncEvaluating]] to *false*.
         1. Let _execList_ be a new empty List.
         1. Perform ! GatherAsyncParentCompletions(_module_, _execList_).
