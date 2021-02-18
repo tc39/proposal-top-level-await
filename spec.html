@@ -659,7 +659,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. If _execList_ does not contain _m_ and _m_.[[CycleRoot]].[[EvaluationError]] is ~empty~, then
             1. Assert: _m_.[[EvaluationError]] is ~empty~.
             1. Assert: _m_.[[AsyncEvaluating]] is *true*.
-            1. Assert: 0 < _m_.[[PendingAsyncDependencies]].
+            1. Assert: _m_.[[PendingAsyncDependencies]] > 0.
             1. Set _m_.[[PendingAsyncDependencies]] to _m_.[[PendingAsyncDependencies]] - 1.
             1. If _m_.[[PendingAsyncDependencies]] is equal to 0, then
                 1. Append _m_ to _execList_.
