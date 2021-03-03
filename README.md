@@ -400,7 +400,7 @@ In May 2018, this proposal reached Stage 2 in TC39's process, with many design d
 * [V8 v8.9](https://v8.dev/blog/v8-release-89)
 * SpiderMonkey via [`javascript.options.experimental.top_level_await`](https://bugzilla.mozilla.org/show_bug.cgi?id=1519100) flag
 * [JavaScriptCore](https://bugs.webkit.org/show_bug.cgi?id=202484)
-* webpack (experimental support in [5.0.0-alpha.15](https://github.com/webpack/webpack/pull/9177))
+* [webpack 5.0.0](https://webpack.js.org/blog/2020-10-10-webpack-5-release/)
 
 ## References
 
