@@ -1016,6 +1016,117 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         </tbody>
       </table>
     </emu-table>
+
+    <p><ins>
+      Alternatively, Let's consider a failure case, where _C_ fails execution andd returns an error.  When that happens, AsyncModuleExecutionRejected is called and _C_.[[AsyncEvaluating]] is set to *false*. We then set the evaluation error of the module to the error returned by executing _C_. We then propogate this error to all of the AsyncParentModules by performing AsyncModuleExeutionRejected on each of them. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-7"></emu-xref>.
+    </ins></p>
+
+    <emu-table id="table-module-graph-cycle-async-fields-7" caption="Module fields after module _C_ finishes with an error">
+      <table>
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>[[DFSIndex]]</th>
+            <th>[[DFSAncestorIndex]]</th>
+            <th>[[AsyncEvaluating]]</th>
+            <th>[[AsyncParentModules]]</th>
+            <th>[[PendingAsyncDependencies]]</th>
+            <th>[[EvaluationError]]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>_A_</th>
+            <td>0</td>
+            <td>0</td>
+            <td>*true*</td>
+            <td>&laquo; &raquo;</td>
+            <td>1 (_B_)</td>
+            <td>~empty~</td>
+          </tr>
+          <tr>
+            <th>_C_</th>
+            <td>2</td>
+            <td>1</td>
+            <td>*false*</td>
+            <td>&laquo; _A_ &raquo;</td>
+            <td>_C_'s evaluation error</td>
+          </tr>
+        </tbody>
+      </table>
+    </emu-table>
+
+    <p><ins>
+      _A_ will be rejected with the same error as _C_, as _C_ will call AsynModuleExecutionRejected on _A_, with _C_'s error. _A_.[[AsyncEvaluating]] is set to *false*.  At this point, the Promise in _A_.[[TopLevelCapability]] (which was returned from _A_.Evaluate()) is rejected. The fields of the updated module are as given in <emu-xref href="#table-module-graph-cycle-async-fields-8"></emu-xref>.
+    </ins></p>
+
+    <emu-table id="table-module-graph-cycle-async-fields-8" caption="Module fields after module _A_ is rejected">
+      <table>
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>[[DFSIndex]]</th>
+            <th>[[DFSAncestorIndex]]</th>
+            <th>[[AsyncEvaluating]]</th>
+            <th>[[AsyncParentModules]]</th>
+            <th>[[PendingAsyncDependencies]]</th>
+            <th>[[EvaluationError]]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>_A_</th>
+            <td>0</td>
+            <td>0</td>
+            <td>*false*</td>
+            <td>&laquo; &raquo;</td>
+            <td>0</td>
+            <td>_C_'s Evaluation Error</td>
+          </tr>
+        </tbody>
+      </table>
+    </emu-table>
+
+    <p><ins>
+      Then, _B_ finishes executing without an error. When that happens, AsyncModuleExecutionFulfilled is called again and _B_.[[AsyncEvaluating]] is set to *false*.  However, _A_ has already been rejected, so it will not be executed, and the sortedExecList will be empty, and AsyncModuleExecutionFulfilled will return. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-9"></emu-xref>.
+    </ins></p>
+
+    <emu-table id="table-module-graph-cycle-async-fields-5" caption="Module fields after module _B_ finishes executing in an erroring graph">
+      <table>
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>[[DFSIndex]]</th>
+            <th>[[DFSAncestorIndex]]</th>
+            <th>[[AsyncEvaluating]]</th>
+            <th>[[AsyncParentModules]]</th>
+            <th>[[PendingAsyncDependencies]]</th>
+            <th>[[EvaluationError]]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>_A_</th>
+            <td>0</td>
+            <td>0</td>
+            <td>*false*</td>
+            <td>&laquo; &raquo;</td>
+            <td>0</td>
+            <td>_C_'s Evaluation Error</td>
+          </tr>
+          <tr>
+            <th>_B_</th>
+            <td>1</td>
+            <td>0</td>
+            <td>*false*</td>
+            <td>&laquo; _A_ &raquo;</td>
+            <td>0</td>
+            <td>~empty~</td>
+          </tr>
+        </tbody>
+      </table>
+    </emu-table>
+
   </emu-clause>
 </emu-clause>
 <emu-clause id="sec-source-text-module-records">
