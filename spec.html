@@ -287,10 +287,10 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             [[Status]]
           </td>
           <td>
-            ~unlinked~ | ~linking~ | ~linked~ | ~evaluating~ | ~evaluated~
+            ~unlinked~ | ~linking~ | ~linked~ | <del>~evaluating~</del><ins>~processing~</ins> | <del>~evaluated~</del><ins>~processed~</ins>
           </td>
           <td>
-            Initially ~unlinked~. Transitions to ~linking~, ~linked~, ~evaluating~, ~evaluated~ (in that order) as the module progresses throughout its lifecycle.
+            Initially ~unlinked~. Transitions to ~linking~, ~linked~, <del>~evaluating~</del><ins>~processing~</ins>, <del>~evaluated~</del><ins>~processed~</ins> (in that order) as the module progresses throughout its lifecycle.
           </td>
         </tr>
         <tr>
@@ -301,7 +301,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             An abrupt completion | *undefined*
           </td>
           <td>
-            A completion of type ~throw~ representing the exception that occurred during evaluation.  *undefined* if no exception occurred or if [[Status]] is not ~evaluated~.
+            A completion of type ~throw~ representing the exception that occurred during evaluation. *undefined* if no exception occurred or if [[Status]] is not <del>~evaluated~</del><ins>~processed~</ins>.
           </td>
         </tr>
         <tr>
@@ -313,7 +313,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           </td>
           <td>
             Auxiliary field used during Link and Evaluate only.
-            If [[Status]] is ~linking~<del> or</del><ins>,</ins> ~evaluating~<ins>, or ~evaluated~</ins>, this nonnegative number records the point at which the module was first visited during the depth-first traversal of the dependency graph.
+            If [[Status]] is ~linking~<del> or ~evaluated~</del><ins>, ~processing~, or ~processed~</ins>, this nonnegative number records the point at which the module was first visited during the depth-first traversal of the dependency graph.
           </td>
         </tr>
         <tr>
@@ -325,7 +325,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           </td>
           <td>
             Auxiliary field used during Link and Evaluate only.
-            If [[Status]] is ~linking~<del> or</del><ins>,</ins> ~evaluating~<ins>, or ~evaluated~</ins>, this is either the module's own [[DFSIndex]] or that of an "earlier" module in the same strongly connected component.
+            If [[Status]] is ~linking~<del> or ~evaluated~</del><ins>, ~processing~, or ~processed~</ins>, this is either the module's own [[DFSIndex]] or that of an "earlier" module in the same strongly connected component.
           </td>
         </tr>
         <tr>
@@ -459,7 +459,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
 
     <emu-alg>
       1. Let _module_ be this Cyclic Module Record.
-      1. Assert: _module_.[[Status]] is not ~linking~ or ~evaluating~.
+      1. Assert: _module_.[[Status]] is not ~linking~ or <del>~evaluating~</del><ins>~processing~</ins>.
       1. Let _stack_ be a new empty List.
       1. Let _result_ be InnerModuleLinking(_module_, _stack_, 0).
       1. If _result_ is an abrupt completion, then
@@ -468,7 +468,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Set _m_.[[Status]] to ~unlinked~.
         1. Assert: _module_.[[Status]] is ~unlinked~.
         1. Return _result_.
-      1. Assert: _module_.[[Status]] is ~linked~ or ~evaluated~.
+      1. Assert: _module_.[[Status]] is ~linked~ or <del>~evaluated~</del><ins>~processed~</ins>.
       1. Assert: _stack_ is empty.
       1. Return *undefined*.
     </emu-alg>
@@ -482,7 +482,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. If _module_ is not a Cyclic Module Record, then
           1. Perform ? _module_.Link().
           1. Return _index_.
-        1. If _module_.[[Status]] is ~linking~, ~linked~, or ~evaluated~, then
+        1. If _module_.[[Status]] is ~linking~, ~linked~, or <del>~evaluated~</del><ins>~processed~</ins>, then
           1. Return _index_.
         1. Assert: _module_.[[Status]] is ~unlinked~.
         1. Set _module_.[[Status]] to ~linking~.
@@ -494,7 +494,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. Let _requiredModule_ be ? HostResolveImportedModule(_module_, _required_).
           1. Set _index_ to ? InnerModuleLinking(_requiredModule_, _stack_, _index_).
           1. If _requiredModule_ is a Cyclic Module Record, then
-            1. Assert: _requiredModule_.[[Status]] is either ~linking~, ~linked~, or ~evaluated~.
+            1. Assert: _requiredModule_.[[Status]] is either ~linking~, ~linked~, or <del>~evaluated~</del><ins>~processed~</ins>.
             1. Assert: _requiredModule_.[[Status]] is ~linking~ if and only if _requiredModule_ is in _stack_.
             1. If _requiredModule_.[[Status]] is ~linking~, then
               1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
@@ -517,7 +517,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
   <emu-clause id="sec-moduleevaluation">
     <h1>Evaluate ( ) Concrete Method</h1>
     <p>The Evaluate concrete method of a Cyclic Module Record implements the corresponding Module Record abstract method.</p>
-    <p>Evaluate transitions this module's [[Status]] from ~linked~ to ~evaluated~.</p>
+    <p>Evaluate transitions this module's [[Status]] from ~linked~ to <del>~evaluated~</del><ins>~processed~</ins>.</p>
     <p><del>If execution results in an exception, that exception is recorded in the [[EvaluationError]] field and rethrown by future invocations of Evaluate.</del></p>
     <p><ins>The Promise returned by Evaluate is allocated by the first invocation of Evaluate, and its capability is stored in the [[TopLevelCapability]] field. If execution results in an exception, the Promise is rejected. Future invocations of Evaluate return the same Promise.</ins></p>
     <p>This abstract method performs the following steps (most of the work is done by the auxiliary function InnerModuleEvaluation):</p>
@@ -525,8 +525,8 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-alg>
       1. Assert: This call to Evaluate is not happening at the same time as another call to Evaluate within the surrounding agent.
       1. Let _module_ be this Cyclic Module Record.
-      1. Assert: _module_.[[Status]] is ~linked~ or ~evaluated~.
-      1. <ins>If _module_.[[Status]] is ~evaluated~, set _module_ to _module_.[[CycleRoot]].</ins>
+      1. Assert: _module_.[[Status]] is ~linked~ or <del>~evaluated~</del><ins>~processed~</ins>.
+      1. <ins>If _module_.[[Status]] is <del>~evaluated~</del><ins>~processed~</ins>, set _module_ to _module_.[[CycleRoot]].</ins>
       1. <ins>If _module_.[[TopLevelCapability]] is not ~empty~, then</ins>
         1. <ins>Return _module_.[[TopLevelCapability]].[[Promise]].</ins>
       1. Let _stack_ be a new empty List.
@@ -535,14 +535,14 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       1. Let _result_ be InnerModuleEvaluation(_module_, _stack_, 0).
       1. If _result_ is an abrupt completion, then
         1. For each Cyclic Module Record _m_ in _stack_, do
-          1. Assert: _m_.[[Status]] is ~evaluating~.
-          1. Set _m_.[[Status]] to ~evaluated~.
+          1. Assert: _m_.[[Status]] is <del>~evaluating~</del><ins>~processing~</ins>.
+          1. Set _m_.[[Status]] to <del>~evaluated~</del><ins>~processed~</ins>.
           1. Set _m_.[[EvaluationError]] to _result_.
-        1. Assert: _module_.[[Status]] is ~evaluated~ and _module_.[[EvaluationError]] is _result_.
+        1. Assert: _module_.[[Status]] is <del>~evaluated~</del><ins>~processed~</ins> and _module_.[[EvaluationError]] is _result_.
         1. <del>Return _result_.</del>
         1. <ins>Perform ! Call(_capability_.[[Reject]], *undefined*, &laquo; _result_.[[Value]] &raquo;).</ins>
       1. <ins>Otherwise,</ins>
-        1. Assert: _module_.[[Status]] is ~evaluated~ and _module_.[[EvaluationError]] is ~empty~.
+        1. Assert: _module_.[[Status]] is <del>~evaluated~</del><ins>~processed~</ins> and _module_.[[EvaluationError]] is ~empty~.
         1. <ins>If _module_.[[AsyncEvaluating]] is *false*, then</ins>
           1. <ins>Perform ! Call(_capability_.[[Resolve]], *undefined*, &laquo; *undefined* &raquo;).</ins>
         1. Assert: _stack_ is empty.
@@ -561,12 +561,12 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. If _promise_.[[PromiseState]] is ~rejected~, then
             1. Return ThrowCompletion(_promise_.[[PromiseStateResult]]).
           1. Return _index_.
-        1. If _module_.[[Status]] is ~evaluated~, then
+        1. If _module_.[[Status]] is <del>~evaluated~</del><ins>~processed~</ins>, then
           1. If _module_.[[EvaluationError]] is ~empty~, return _index_.
           1. Otherwise, return _module_.[[EvaluationError]].
-        1. If _module_.[[Status]] is ~evaluating~, return _index_.
+        1. If _module_.[[Status]] is <del>~evaluating~</del><ins>~processing~</ins>, return _index_.
         1. Assert: _module_.[[Status]] is ~linked~.
-        1. Set _module_.[[Status]] to ~evaluating~.
+        1. Set _module_.[[Status]] to <del>~evaluating~</del><ins>~processing~</ins>.
         1. Set _module_.[[DFSIndex]] to _index_.
         1. Set _module_.[[DFSAncestorIndex]] to _index_.
         1. <ins>Set _module_.[[PendingAsyncDependencies]] to 0.</ins>
@@ -577,13 +577,13 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
           1. NOTE: Link must be completed successfully prior to invoking this method, so every requested module is guaranteed to resolve successfully.
           1. Set _index_ to ? InnerModuleEvaluation(_requiredModule_, _stack_, _index_).
           1. If _requiredModule_ is a Cyclic Module Record, then
-            1. Assert: _requiredModule_.[[Status]] is either ~evaluating~ or ~evaluated~.
-            1. Assert: _requiredModule_.[[Status]] is ~evaluating~ if and only if _requiredModule_ is in _stack_.
-            1. If _requiredModule_.[[Status]] is ~evaluating~, then
+            1. Assert: _requiredModule_.[[Status]] is either <del>~evaluating~</del><ins>~processing~</ins> or <del>~evaluated~</del><ins>~processed~</ins>.
+            1. Assert: _requiredModule_.[[Status]] is <del>~evaluating~</del><ins>~processing~</ins> if and only if _requiredModule_ is in _stack_.
+            1. If _requiredModule_.[[Status]] is <del>~evaluating~</del><ins>~processing~</ins>, then
               1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
             1. <ins>Otherwise,</ins>
               1. <ins>Set _requiredModule_ to _requiredModule_.[[CycleRoot]].</ins>
-              1. <ins>Assert: _requiredModule_.[[Status]] is ~evaluated~.</ins>
+              1. <ins>Assert: _requiredModule_.[[Status]] is ~processed~.</ins>
               1. <ins>If _requiredModule_.[[EvaluationError]] is not ~empty~, return _requiredModule_.[[EvaluationError]].</ins>
             1. <ins>If _requiredModule_.[[AsyncEvaluating]] is *true*, then</ins>
               1. <ins>Set _module_.[[PendingAsyncDependencies]] to _module_.[[PendingAsyncDependencies]] + 1.</ins>
@@ -592,7 +592,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. <ins>If _module_.[[PendingAsyncDependencies]] &gt; 0 or _module_.[[Async]] is *true*, then</ins>
           1. <ins>Assert: _module_.[[AsyncEvaluating]] is *false* and was never previously set to *true*.</ins>
           1. <ins>Set _module_.[[AsyncEvaluating]] to *true*.</ins>
-          1. NOTE: The order in which modules transition to async evaluating is significant. (See <emu-xref href="#sec-async-module-execution-fulfilled"></emu-xref>)
+          1. NOTE: The order in which modules transition to async evaluation is significant. (See <emu-xref href="#sec-async-module-execution-fulfilled"></emu-xref>)
           1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, perform ! ExecuteAsyncModule(_module_).</ins>
         1. <ins>Otherwise, perform ? _module_.ExecuteModule().</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
@@ -604,23 +604,23 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
             1. Let _requiredModule_ be the last element in _stack_.
             1. Remove the last element of _stack_.
             1. Assert: _requiredModule_ is a Cyclic Module Record.
-            1. Set _requiredModule_.[[Status]] to ~evaluated~.
+            1. Set _requiredModule_.[[Status]] to <del>~evaluated~</del><ins>~processed~</ins>.
             1. If _requiredModule_ and _module_ are the same Module Record, set _done_ to *true*.
             1. <ins>Set _requiredModule_.[[CycleRoot]] to _cycleRoot_.</ins>
         1. Return _index_.
       </emu-alg>
       <emu-note>
-        <p><ins>A module is ~evaluating~ while it is being traversed by InnerModuleEvaluation. A module is ~evaluated~ on execution completion and during execution if it is an asynchronous module.</ins></p>
+        <p><ins>A module is ~processing~ while it is being traversed by InnerModuleEvaluation. A module is ~processed~ on execution completion and during execution if it is an asynchronous module.</ins></p>
       </emu-note>
       <emu-note>
-        <p><ins>Any modules depending on a module of an async cycle when that cycle is not ~evaluating~ will instead depend on the execution of the root of the cycle via [[CycleRoot]]. This ensures that the cycle state can be treated as a single strongly connected component through its root module state.</ins></p>
+        <p><ins>Any modules depending on a module of an async cycle when that cycle is not ~processing~ will instead depend on the execution of the root of the cycle via [[CycleRoot]]. This ensures that the cycle state can be treated as a single strongly connected component through its root module state.</ins></p>
       </emu-note>
     </emu-clause>
 
     <emu-clause id="sec-execute-async-module" aoid="ExecuteAsyncModule">
       <h1><ins>ExecuteAsyncModule ( _module_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is ~evaluating~ or ~evaluated~.
+        1. Assert: _module_.[[Status]] is ~processing~ or ~processed~.
         1. Assert: _module_.[[Async]] is *true*.
         1. Let _capability_ be ! NewPromiseCapability(%Promise%).
         1. Let _stepsFulfilled_ be the steps of a CallAsyncModuleFulfilled function as specified below.
@@ -654,7 +654,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-gather-async-parent-completions" aoid="GatherAsyncParentCompletions">
       <h1><ins>GatherAsyncParentCompletions ( _module_, _execList_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is ~evaluated~.
+        1. Assert: _module_.[[Status]] is ~processed~.
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
           1. If _execList_ does not contain _m_ and _m_.[[CycleRoot]].[[EvaluationError]] is ~empty~, then
             1. Assert: _m_.[[EvaluationError]] is ~empty~.
@@ -705,7 +705,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <emu-clause id="sec-async-module-execution-rejected" aoid="AsyncModuleExecutionRejected">
       <h1><ins>AsyncModuleExecutionRejected ( _module_, _error_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is ~evaluated~.
+        1. Assert: _module_.[[Status]] is ~processed~.
         1. If _module_.[[AsyncEvaluating]] is *false*,
           1. Assert: _module_.[[EvaluationError]] is not ~empty~.
           1. Return *undefined*.
@@ -734,10 +734,10 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       <img alt="A module graph in which module A depends on module B, and module B depends on module C" width="121" height="211" src="img/module-graph-simple.svg">
     </emu-figure>
 
-    <p>Let's first assume that there are no error conditions. When a host first calls _A_.Link(), this will complete successfully by assumption, and recursively link modules _B_ and _C_ as well, such that _A_.[[Status]] = _B_.[[Status]] = _C_.[[Status]] = ~linked~. This preparatory step can be performed at any time. Later, when the host is ready to incur any possible side effects of the modules, it can call _A_.Evaluate(), which will complete successfully<ins>, returning a Promise resolving to undefined</ins> (again by assumption), recursively having evaluated first _C_ and then _B_. Each module's [[Status]] at this point will be ~evaluated~.</p>
+    <p>Let's first assume that there are no error conditions. When a host first calls _A_.Link(), this will complete successfully by assumption, and recursively link modules _B_ and _C_ as well, such that _A_.[[Status]] = _B_.[[Status]] = _C_.[[Status]] = ~linked~. This preparatory step can be performed at any time. Later, when the host is ready to incur any possible side effects of the modules, it can call _A_.Evaluate(), which will complete successfully<ins>, returning a Promise resolving to undefined</ins> (again by assumption), recursively having evaluated first _C_ and then _B_. Each module's [[Status]] at this point will be <del>~evaluating</del><ins>~processed~</ins>.</p>
     <p>Consider then cases involving linking errors. If InnerModuleLinking of _C_ succeeds but, thereafter, fails for _B_, for example because it imports something that _C_ does not provide, then the original _A_.Link() will fail, and both _A_ and _B_'s [[Status]] remain ~unlinked~. _C_'s [[Status]] has become ~linked~, though.</p>
 
-    <p>Finally, consider a case involving evaluation errors. If InnerModuleEvaluation of _C_ succeeds but, thereafter, fails for _B_, for example because _B_ contains code that throws an exception, then the original _A_.Evaluate() will fail<ins>, returning a rejected Promise</ins>. The resulting exception will be recorded in both _A_ and _B_'s [[EvaluationError]] fields, and their [[Status]] will become ~evaluated~. _C_ will also become ~evaluated~ but, in contrast to _A_ and _B_, will remain without an [[EvaluationError]], as it successfully completed evaluation. Storing the exception ensures that any time a host tries to reuse _A_ or _B_ by calling their Evaluate() method, it will encounter the same exception. (Hosts are not required to reuse Cyclic Module Records; similarly, hosts are not required to expose the exception objects thrown by these  methods. However, the specification enables such uses.)</p>
+    <p>Finally, consider a case involving evaluation errors. If InnerModuleEvaluation of _C_ succeeds but, thereafter, fails for _B_, for example because _B_ contains code that throws an exception, then the original _A_.Evaluate() will fail<ins>, returning a rejected Promise</ins>.  The resulting exception will be recorded in both _A_ and _B_'s [[EvaluationError]] fields, and their [[Status]] will become <del>~evaluated~</del><ins>~processed~</ins>. _C_ will also become ~processed~ but, in contrast to _A_ and _B_, will remain without an [[EvaluationError]], as it successfully completed evaluation. Storing the exception ensures that any time a host tries to reuse _A_ or _B_ by calling their Evaluate() method, it will encounter the same exception. (Hosts are not required to reuse Cyclic Module Records; similarly, hosts are not required to expose the exception objects thrown by these  methods. However, the specification enables such uses.)</p>
 
     <p>The difference here between linking and evaluation errors is due to how evaluation must be only performed once, as it can cause side effects; it is thus important to remember whether evaluation has already been performed, even if unsuccessfully. (In the error case, it makes sense to also remember the exception because otherwise subsequent Evaluate() calls would have to synthesize a new one.) Linking, on the other hand, is side-effect-free, and thus even if it fails, it can be retried at a later time with no issues.</p>
 
@@ -761,7 +761,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
 
     <p>Now consider a case where _A_ has an linking error; for example, it tries to import a binding from _C_ that does not exist. In that case, the above steps still occur, including the early return from the second call to InnerModuleLinking on _A_. However, once we unwind back to the original InnerModuleLinking on _A_, it fails during InitializeEnvironment, namely right after _C_.ResolveExport(). The thrown *SyntaxError* exception propagates up to _A_.Link, which resets all modules that are currently on its _stack_ (these are always exactly the modules that are still ~linking~). Hence both _A_ and _B_ become ~unlinked~. Note that _C_ is left as ~linked~.</p>
 
-    <p>Finally, consider a case where _A_ has an evaluation error; for example, its source code throws an exception. In that case, the evaluation-time analog of the above steps still occurs, including the early return from the second call to InnerModuleEvaluation on _A_. However, once we unwind back to the original InnerModuleEvaluation on _A_, it fails by assumption. The exception thrown propagates up to _A_.Evaluate(), which records the error in all modules that are currently on its _stack_ (i.e., the modules that are still ~evaluating~)<ins> as well as via [[AsyncParentModules]], which form a chain for modules which contain or depend on top-level `await` through the whole dependency graph through the AsyncModuleExecutionRejected algorithm</ins>. Hence both _A_ and _B_ become ~evaluated~ and the exception is recorded in both _A_ and _B_'s [[EvaluationError]] fields, while _C_ is left as ~evaluated~ with no [[EvaluationError]].</p>
+    <p>Finally, consider a case where _A_ has an evaluation error; for example, its source code throws an exception. In that case, the evaluation-time analog of the above steps still occurs, including the early return from the second call to InnerModuleEvaluation on _A_. However, once we unwind back to the original InnerModuleEvaluation on _A_, it fails by assumption. The exception thrown propagates up to _A_.Evaluate(), which records the error in all modules that are currently on its _stack_ (i.e., the modules that are still <del>~evaluating~</del><ins>~processing~</ins>)<ins> as well as via [[AsyncParentModules]], which form a chain for modules which contain or depend on top-level `await` through the whole dependency graph through the AsyncModuleExecutionRejected algorithm</ins>. Hence both _A_ and _B_ become <del>~evaluated~</del><ins>~processed~</ins> and the exception is recorded in both _A_ and _B_'s [[EvaluationError]] fields, while _C_ is left as <del>~evaluated~</del><ins>~processed~</ins> with no [[EvaluationError]].</p>
 
     <p><ins>Lastly, consider a module graph with a cycle, where all modules complete asynchronously:</ins></p>
     <ins><emu-figure id="figure-module-graph-cycle-async" caption="An asynchronous cyclic module graph">
@@ -770,15 +770,18 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <p><ins>Linking happens as before, and all modules end up with [[Status]] set to ~linked~.</ins></p>
 
     <p><ins>
-      Calling _A_.Evaluate() triggers InnerModuleEvaluation on _A_, _B_, and _D_, which all transition to ~evaluating~.
-      Then InnerModuleEvaluation is called on _A_ again, which is a no-op because it is already ~evaluating~.
+      Calling _A_.Evaluate() triggers InnerModuleEvaluation on _A_, _B_, and _D_, which all transition to ~processing~.
+      Then InnerModuleEvaluation is called on _A_ again, which is a no-op because it is already ~processing~.
       At this point, _D_.[[PendingAsyncDependencies]] is 0, so ExecuteAsyncModule(_D_) is called, which sets _D_.[[AsyncEvaluating]] to *true* and executes _D_ (up until the first `await`).
       We unwind back to the original InnerModuleEvaluation on _A_, setting _B_.[[AsyncEvaluating]] to *true*.
       In the next iteration of the loop over _A_'s dependencies, we call InnerModuleEvaluation on _C_ and thus on _D_ (again a no-op) and _E_.
       As _E_ has no dependencies, ExecuteAsyncModule(_E_) is called, which sets _E_.[[AsyncEvaluating]] to *true* and starts executing.
-      Because _E_ is not part of a cycle, it is immediately removed from the stack and transitions to ~evaluated~.
+      Because _E_ is not part of a cycle, it is immediately removed from the stack and transitions
+      to ~processed~.
       We unwind once more to the original InnerModuleEvaluation on _A_, setting _C_.[[AsyncEvaluating]] to *true*.
-      Now we finish the loop over _A_'s dependencies, set _A_.[[AsyncEvaluating]] to *true*, and remove the entire strongly connected component from the stack, transitioning all of the modules to ~evaluated~ at once.
+      Now we finish the loop over _A_'s dependencies, set _A_.[[AsyncEvaluating]] to *true*, and
+      remove the entire strongly connected component from the stack, transitioning all of the
+      modules to ~processed~ at once.
       At this point, the fields of the modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-1"></emu-xref>.
     </ins></p>
 
