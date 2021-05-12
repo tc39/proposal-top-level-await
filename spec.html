@@ -465,9 +465,9 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
         1. For each Cyclic Module Record _m_ in _stack_, do
           1. Assert: _m_.[[Status]] is ~linking~.
           1. Set _m_.[[Status]] to ~unlinked~.
-          1. Set _m_.[[Environment]] to *undefined*.
-          1. Set _m_.[[DFSIndex]] to *undefined*.
-          1. Set _m_.[[DFSAncestorIndex]] to *undefined*.
+          1. Set _m_.[[Environment]] to ~empty~.
+          1. Set _m_.[[DFSIndex]] to ~empty~.
+          1. Set _m_.[[DFSAncestorIndex]] to ~empty~.
         1. Assert: _module_.[[Status]] is ~unlinked~.
         1. Return _result_.
       1. Assert: _module_.[[Status]] is ~linked~ or ~evaluated~.
