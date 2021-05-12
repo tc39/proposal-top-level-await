@@ -1074,7 +1074,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       1. <ins>Assert: _module_ has been linked and declarations in its module environment have been linked.</ins>
       1. <ins>Set the VariableEnvironment of _moduleContext_ to _module_.[[Environment]].</ins>
       1. <ins>Set the LexicalEnvironment of _moduleContext_ to _module_.[[Environment]].</ins>
-      1. Suspend the currently running execution context.
+      1. <del>Suspend the currently running execution context.</del>
       1. <del>Let _moduleContext_ be _module_.[[Context]].</del>
       1. <del>Push _moduleContext_ onto the execution context stack; moduleContext is now the running execution context.</del>
       1. <del>Let _result_ be the result of evaluating _module_.[[ECMAScriptCode]].</del>
@@ -1082,6 +1082,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
       1. <del>Resume the context that is now on the top of the execution context stack as the running execution context.</del>
       1. <del>Return Completion(_result_). </del>
       1. <ins>If _module_.[[Async]] is *false*, then</ins>
+        1. <ins>Suspend the currently running execution context.</ins>
         1. <ins>Assert: _capability_ was not provided.</ins>
         1. <ins>Push _moduleCxt_ on to the execution context stack; _moduleCxt_ is now the running execution context.</ins>
         1. <ins>Let _result_ be the result of evaluating _module_.[[ECMAScriptCode]].</ins>
