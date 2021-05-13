@@ -1018,7 +1018,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     </emu-table>
 
     <p><ins>
-      Alternatively, Let's consider a failure case, where _C_ fails execution andd returns an error.  When that happens, AsyncModuleExecutionRejected is called and _C_.[[AsyncEvaluating]] is set to *false*. We then set the evaluation error of the module to the error returned by executing _C_. We then propogate this error to all of the AsyncParentModules by performing AsyncModuleExeutionRejected on each of them. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-7"></emu-xref>.
+      Alternatively, consider a failure case where _C_ fails execution and returns an error.  When that happens, AsyncModuleExecutionRejected is called and _C_.[[AsyncEvaluating]] is set to *false*. We then set the evaluation error of the module to the error returned by executing _C_. We then propagate this error to all of the AsyncParentModules by performing AsyncModuleExeutionRejected on each of them. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-7"></emu-xref>.
     </ins></p>
 
     <emu-table id="table-module-graph-cycle-async-fields-7" caption="Module fields after module _C_ finishes with an error">
@@ -1057,7 +1057,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     </emu-table>
 
     <p><ins>
-      _A_ will be rejected with the same error as _C_, as _C_ will call AsynModuleExecutionRejected on _A_, with _C_'s error. _A_.[[AsyncEvaluating]] is set to *false*.  At this point, the Promise in _A_.[[TopLevelCapability]] (which was returned from _A_.Evaluate()) is rejected. The fields of the updated module are as given in <emu-xref href="#table-module-graph-cycle-async-fields-8"></emu-xref>.
+      _A_ will be rejected with the same error as _C_ since _C_ will call AsyncModuleExecutionRejected on _A_ with _C_'s error. _A_.[[AsyncEvaluating]] is set to *false*.  At this point the Promise in _A_.[[TopLevelCapability]] (which was returned from _A_.Evaluate()) is rejected. The fields of the updated module are as given in <emu-xref href="#table-module-graph-cycle-async-fields-8"></emu-xref>.
     </ins></p>
 
     <emu-table id="table-module-graph-cycle-async-fields-8" caption="Module fields after module _A_ is rejected">
@@ -1088,7 +1088,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     </emu-table>
 
     <p><ins>
-      Then, _B_ finishes executing without an error. When that happens, AsyncModuleExecutionFulfilled is called again and _B_.[[AsyncEvaluating]] is set to *false*.  However, _A_ has already been rejected, so it will not be executed, and the sortedExecList will be empty, and AsyncModuleExecutionFulfilled will return. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-9"></emu-xref>.
+      Then, _B_ finishes executing without an error. When that happens, AsyncModuleExecutionFulfilled is called again and _B_.[[AsyncEvaluating]] is set to *false*. GatherAsyncParentCompletions is called on _B_. However, _A_.[[CycleRoot]] is _A_ which has an evaluation error, so it will not be added to the returned _sortedExecList_ and AsyncModuleExecutionFulfilled will return without further processing. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-9"></emu-xref>.
     </ins></p>
 
     <emu-table id="table-module-graph-cycle-async-fields-5" caption="Module fields after module _B_ finishes executing in an erroring graph">
