@@ -1018,7 +1018,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     </emu-table>
 
     <p><ins>
-      Alternatively, consider a failure case where _C_ fails execution and returns an error.  When that happens, AsyncModuleExecutionRejected is called and _C_.[[AsyncEvaluating]] is set to *false*. We then set the evaluation error of the module to the error returned by executing _C_. We then propagate this error to all of the AsyncParentModules by performing AsyncModuleExeutionRejected on each of them. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-7"></emu-xref>.
+      Alternatively, consider a failure case where _C_ fails execution and returns an error before _B_ has finished executing. When that happens, AsyncModuleExecutionRejected is called and _C_.[[AsyncEvaluating]] is set to *false*. We then set the evaluation error of the module to the error returned by executing _C_. We then propagate this error to all of the AsyncParentModules by performing AsyncModuleExeutionRejected on each of them. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-7"></emu-xref>.
     </ins></p>
 
     <emu-table id="table-module-graph-cycle-async-fields-7" caption="Module fields after module _C_ finishes with an error">
@@ -1088,7 +1088,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     </emu-table>
 
     <p><ins>
-      Then, _B_ finishes executing without an error. When that happens, AsyncModuleExecutionFulfilled is called again and _B_.[[AsyncEvaluating]] is set to *false*. GatherAsyncParentCompletions is called on _B_. However, _A_.[[CycleRoot]] is _A_ which has an evaluation error, so it will not be added to the returned _sortedExecList_ and AsyncModuleExecutionFulfilled will return without further processing. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-9"></emu-xref>.
+      Then, _B_ finishes executing without an error. When that happens, AsyncModuleExecutionFulfilled is called again and _B_.[[AsyncEvaluating]] is set to *false*.  GatherAsyncParentCompletions is called on _B_. However, _A_.[[CycleRoot]] is _A_ which has an evaluation error, so it will not be added to the returned _sortedExecList_ and AsyncModuleExecutionFulfilled will return without further processing. Any future importer of _B_ will resolve the rejection of _B_.[[CycleRoot]].[[EvaluationError]] from the evaluation error from _C_ that was set on the cycle root _A_. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-9"></emu-xref>.
     </ins></p>
 
     <emu-table id="table-module-graph-cycle-async-fields-5" caption="Module fields after module _B_ finishes executing in an erroring graph">
