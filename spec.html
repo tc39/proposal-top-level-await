@@ -370,7 +370,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <ins>*true* | *false* | ~empty~</ins>
           </td>
           <td>
-            <ins>Whether this module has one or more asynchronous dependencies so that its evaluation is queued on their completion.</ins>
+            <ins>Whether this module is either itself async or has an asynchronous dependency.</ins>
           </td>
         </tr>
         <tr>
@@ -544,7 +544,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
         1. <ins>Perform ! Call(_capability_.[[Reject]], *undefined*, &laquo; _result_.[[Value]] &raquo;).</ins>
       1. <ins>Otherwise,</ins>
         1. Assert: _module_.[[Status]] is <ins>~async-evaluating~ or</ins>~evaluated~ and _module_.[[EvaluationError]] is ~empty~.
-        1. <ins>If _module_.[[Async]] is *false* and _module_.[[QueuedEvaluation]] is *false*, then</ins>
+        1. <ins>If _module_.[[QueuedEvaluation]] is *false*, then</ins>
           1. <ins>Assert: _module_.[[Status]] is ~evaluated~.</ins>
           1. <ins>Perform ! Call(_capability_.[[Resolve]], *undefined*, &laquo; *undefined* &raquo;).</ins>
         1. Assert: _stack_ is empty.
@@ -586,18 +586,18 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
               1. <ins>Set _requiredModule_ to _requiredModule_.[[CycleRoot]].</ins>
               1. <ins>Assert: _requiredModule_.[[Status]] is ~async-evaluating~ or ~evaluated~.</ins>
               1. <ins>If _requiredModule_.[[EvaluationError]] is not ~empty~, return _requiredModule_.[[EvaluationError]].</ins>
-            1. <ins>If _requiredModule_.[[Async]] is *true* or _requiredModule_.[[QueuedEvaluation]] is *true*, then</ins>
+            1. <ins>If _requiredModule_.[[QueuedEvaluation]] is *true*, then</ins>
               1. <ins>Set _module_.[[PendingAsyncDependencies]] to _module_.[[PendingAsyncDependencies]] + 1.</ins>
               1. <ins>Append _module_ to _requiredModule_.[[AsyncParentModules]].</ins>
         1. <del>Perform ? _module_.ExecuteModule().</del>
-        1. <ins>If _module_.[[PendingAsyncDependencies]] &gt; 0, then</ins>
+        1. <ins>If _module_.[[PendingAsyncDependencies]] &gt; 0 or _module_.[[Async]] is *true*, then</ins>
           1. <ins>Assert: _module_.[[QueuedEvaluation]] is ~empty~.</ins>
           1. <ins>Set _module_.[[QueuedEvaluation]] to *true*.</ins>
           1. NOTE: The order in which [[QueuedEvaluation]] transitions to *true* is significant. (See <emu-xref href="#sec-async-module-execution-fulfilled"></emu-xref>)
+          1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, perform ! ExecuteAsyncModule(_module_).</ins>
         1. <ins>Otherwise,</ins>
           1. <ins>Set _module_.[[QueuedEvaluation]] to *false*.</ins>
-          1. <ins>If _module_.[[Async]] is *true*, perform ! ExecuteAsyncModule(_module_).</ins>
-          1. <ins>Otherwise, perform ? _module_.ExecuteModule().</ins>
+          1. <ins>Perform ? _module_.ExecuteModule().</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
         1. If _module_.[[DFSAncestorIndex]] equals _module_.[[DFSIndex]], then
@@ -680,7 +680,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
       <h1><ins>AsyncModuleExecutionFulfilled ( _module_ )</ins></h1>
       <emu-alg>
         1. Assert: _module_.[[Status]] is ~async-evaluating~.
-        1. Assert: _module_.[[Async]] is *true* or _module_.[[QueuedEvaluation]] is *true*.
+        1. Assert: _module_.[[QueuedEvaluation]] is *true*.
         1. Assert: _module_.[[EvaluationError]] is ~empty~.
         1. Set _module_.[[Status]] to ~evaluated~.
         1. If _module_.[[TopLevelCapability]] is not ~empty~, then
@@ -835,7 +835,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <td>3</td>
             <td>0</td>
             <td>~async-evaluating~</td>
-            <td>*false*</td>
+            <td>*true*</td>
             <td>&laquo; _B_, _C_ &raquo;</td>
             <td>0</td>
           </tr>
@@ -844,7 +844,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <td>4</td>
             <td>4</td>
             <td>~async-evaluating~</td>
-            <td>*false*</td>
+            <td>*true*</td>
             <td>&laquo; _C_ &raquo;</td>
             <td>0</td>
           </tr>
@@ -854,7 +854,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
 
     <p><ins>
       Let us assume that _E_ finishes executing first.
-      When that happens, AsyncModuleExecutionFulfilled is called, _E_.[[State]] is set to ~evaluated~ and _C_.[[PendingAsyncDependencies]] is decremented to become 1.
+      When that happens, AsyncModuleExecutionFulfilled is called, _E_.[[Status]] is set to ~evaluated~ and _C_.[[PendingAsyncDependencies]] is decremented to become 1.
       The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-2"></emu-xref>.
     </ins></p>
 
@@ -886,7 +886,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <td>4</td>
             <td>4</td>
             <td>~evaluated~</td>
-            <td>*false*</td>
+            <td>*true*</td>
             <td>&laquo; _C_ &raquo;</td>
             <td>0</td>
           </tr>
@@ -896,7 +896,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
 
     <p><ins>
       _D_ is next to finish (as it was the only module that was still executing).
-      When that happens, AsyncModuleExecutionFulfilled is called again and _D_.[[State]] is set to ~evaluated~.
+      When that happens, AsyncModuleExecutionFulfilled is called again and _D_.[[Status]] is set to ~evaluated~.
       Then _B_.[[PendingAsyncDependencies]] is decremented to become 0, ExecuteAsyncModule is called on _B_, and its execution is triggered.
       _C_.[[PendingAsyncDependencies]] is also decremented to become 0, and _C_'s execution is triggered.
       The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-3"></emu-xref>.
@@ -939,7 +939,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <td>3</td>
             <td>0</td>
             <td>~evaluated~</td>
-            <td>*false*</td>
+            <td>*true*</td>
             <td>&laquo; _B_, _C_ &raquo;</td>
             <td>0</td>
           </tr>
@@ -949,7 +949,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
 
     <p><ins>
       Let us assume that _C_ finishes executing next.
-      When that happens, AsyncModuleExecutionFulfilled is called again, _C_.[[State]] is set to ~evaluated~ and _A_.[[PendingAsyncDependencies]] is decremented to become 1.
+      When that happens, AsyncModuleExecutionFulfilled is called again, _C_.[[Status]] is set to ~evaluated~ and _A_.[[PendingAsyncDependencies]] is decremented to become 1.
       The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-4"></emu-xref>.
     </ins></p>
 
@@ -991,7 +991,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
 
     <p><ins>
       Then, _B_ finishes executing.
-      When that happens, AsyncModuleExecutionFulfilled is called again and _B_.[[State]] is set to ~evaluated~.
+      When that happens, AsyncModuleExecutionFulfilled is called again and _B_.[[Status]] is set to ~evaluated~.
       _A_.[[PendingAsyncDependencies]] is decremented to become 0, so ExecuteAsyncModule is called and _A_'s execution is triggered.
       The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-5"></emu-xref>.
     </ins></p>
@@ -1034,7 +1034,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
 
     <p><ins>
       Finally, _A_ finishes executing.
-      When that happens, AsyncModuleExecutionFulfilled is called again and _A_.[[State]] is set to ~evaluated~.
+      When that happens, AsyncModuleExecutionFulfilled is called again and _A_.[[Status]] is set to ~evaluated~.
       At this point, the Promise in _A_.[[TopLevelCapability]] (which was returned from _A_.Evaluate()) is resolved, and this concludes the handling of this module graph.
       The fields of the updated module are as given in <emu-xref href="#table-module-graph-cycle-async-fields-6"></emu-xref>.
     </ins></p>
