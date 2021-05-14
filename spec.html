@@ -776,15 +776,16 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
     <p><ins>Linking happens as before, and all modules end up with [[Status]] set to ~linked~.</ins></p>
 
     <p><ins>
-      Calling _A_.Evaluate() triggers InnerModuleEvaluation on _A_, _B_, and _D_.  which all transition to ~async-evaluating~.
-      Then InnerModuleEvaluation is called on _A_ again, which is a no-op because it is already ~async-evaluating~.
-      At this point, _D_.[[PendingAsyncDependencies]] is 0, so ExecuteAsyncModule(_D_) is called, which sets _D_.[[QueuedEvaluation]] to *true* and triggers the execution promise for _D_.
-      We unwind back to the original InnerModuleEvaluation on _A_, setting _B_.[[QueuedEvaluation]] to *true*.
+      Calling _A_.Evaluate() triggers InnerModuleEvaluation on _A_, _B_, and _D_.  which all transition to ~evaluating~.
+      Then InnerModuleEvaluation is called on _A_ again, which is a no-op because it is already ~evaluating~.
+      At this point, _D_.[[PendingAsyncDependencies]] is 0, so ExecuteAsyncModule(_D_) is called and triggers the execution promise for _D_.
+      We unwind back to the InnerModuleEvaluation on _B_, setting _B_.[[PendingAsyncDependencies]] to 1 and _B_.[[QueuedEvaluation]] to *true*.
+      We unwind back to the original InnerModuleEvaluation on _A_, setting _A_.[[PendingAsyncDependencies]] to 1.
       In the next iteration of the loop over _A_'s dependencies, we call InnerModuleEvaluation on _C_ and thus on _D_ (again a no-op) and _E_.
-      As _E_ has no dependencies, ExecuteAsyncModule(_E_) is called, which sets _E_.[[QueuedEvaluation]] to *true* and triggers its execution promise.
+      As _E_ has no dependencies, ExecuteAsyncModule(_E_) is called, which triggers its execution promise.
       Because _E_ is not part of a cycle, it is immediately removed from the stack and transitions to ~evaluated~.
       We unwind once more to the original InnerModuleEvaluation on _A_, setting _C_.[[QueuedEvaluation]] to *true*.
-      Now we finish the loop over _A_'s dependencies, set _A_.[[QueuedEvaluation]] to *true*, and remove the entire strongly connected component from the stack, transitioning all of the modules to ~evaluated~ at once.
+      Now we finish the loop over _A_'s dependencies, set _A_.[[QueuedEvaluation]] to *true*, and remove the entire strongly connected component from the stack, transitioning all of the modules to ~async-evaluating~ at once.
       At this point, the fields of the modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-1"></emu-xref>.
     </ins></p>
 
@@ -795,6 +796,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>Module</th>
             <th>[[DFSIndex]]</th>
             <th>[[DFSAncestorIndex]]</th>
+            <th>[[Status]]</th>
             <th>[[QueuedEvaluation]]</th>
             <th>[[AsyncParentModules]]</th>
             <th>[[PendingAsyncDependencies]]</th>
@@ -805,6 +807,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_A_</th>
             <td>0</td>
             <td>0</td>
+            <td>~async-evaluating~</td>
             <td>*true*</td>
             <td>&laquo; &raquo;</td>
             <td>2 (_B_ and _C_)</td>
@@ -813,6 +816,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_B_</th>
             <td>1</td>
             <td>0</td>
+            <td>~async-evaluating~</td>
             <td>*true*</td>
             <td>&laquo; _A_ &raquo;</td>
             <td>1 (_D_)</td>
@@ -821,6 +825,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_C_</th>
             <td>2</td>
             <td>0</td>
+            <td>~async-evaluating~</td>
             <td>*true*</td>
             <td>&laquo; _A_ &raquo;</td>
             <td>2 (_D_ and _E_)</td>
@@ -829,7 +834,8 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_D_</th>
             <td>3</td>
             <td>0</td>
-            <td>*true*</td>
+            <td>~async-evaluating~</td>
+            <td>*false*</td>
             <td>&laquo; _B_, _C_ &raquo;</td>
             <td>0</td>
           </tr>
@@ -837,7 +843,8 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_E_</th>
             <td>4</td>
             <td>4</td>
-            <td>*true*</td>
+            <td>~async-evaluating~</td>
+            <td>*false*</td>
             <td>&laquo; _C_ &raquo;</td>
             <td>0</td>
           </tr>
@@ -858,6 +865,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>Module</th>
             <th>[[DFSIndex]]</th>
             <th>[[DFSAncestorIndex]]</th>
+            <th>[[Status]]</th>
             <th>[[QueuedEvaluation]]</th>
             <th>[[AsyncParentModules]]</th>
             <th>[[PendingAsyncDependencies]]</th>
@@ -868,6 +876,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_C_</th>
             <td>2</td>
             <td>0</td>
+            <td>~async-evaluating~</td>
             <td>*true*</td>
             <td>&laquo; _A_ &raquo;</td>
             <td>1 (_D_)</td>
@@ -876,7 +885,8 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_E_</th>
             <td>4</td>
             <td>4</td>
-            <td>*true*</td>
+            <td>~evaluated~</td>
+            <td>*false*</td>
             <td>&laquo; _C_ &raquo;</td>
             <td>0</td>
           </tr>
@@ -888,7 +898,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
       _D_ is next to finish (as it was the only module that was still executing).
       When that happens, AsyncModuleExecutionFulfilled is called again and _D_.[[State]] is set to ~evaluated~.
       Then _B_.[[PendingAsyncDependencies]] is decremented to become 0, ExecuteAsyncModule is called on _B_, and its execution is triggered.
-      Once the synchronous part of _B_'s execution has finished, _C_.[[PendingAsyncDependencies]] is also decremented to become 0, and _C_'s execution is triggered.
+      _C_.[[PendingAsyncDependencies]] is also decremented to become 0, and _C_'s execution is triggered.
       The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-3"></emu-xref>.
     </ins></p>
 
@@ -899,6 +909,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>Module</th>
             <th>[[DFSIndex]]</th>
             <th>[[DFSAncestorIndex]]</th>
+            <th>[[Status]]</th>
             <th>[[QueuedEvaluation]]</th>
             <th>[[AsyncParentModules]]</th>
             <th>[[PendingAsyncDependencies]]</th>
@@ -909,6 +920,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_B_</th>
             <td>1</td>
             <td>0</td>
+            <td>~async-evaluating~</td>
             <td>*true*</td>
             <td>&laquo; _A_ &raquo;</td>
             <td>0</td>
@@ -917,6 +929,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_C_</th>
             <td>2</td>
             <td>0</td>
+            <td>~async-evaluating~</td>
             <td>*true*</td>
             <td>&laquo; _A_ &raquo;</td>
             <td>0</td>
@@ -925,6 +938,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_D_</th>
             <td>3</td>
             <td>0</td>
+            <td>~evaluated~</td>
             <td>*false*</td>
             <td>&laquo; _B_, _C_ &raquo;</td>
             <td>0</td>
@@ -946,6 +960,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>Module</th>
             <th>[[DFSIndex]]</th>
             <th>[[DFSAncestorIndex]]</th>
+            <th>[[Status]]</th>
             <th>[[QueuedEvaluation]]</th>
             <th>[[AsyncParentModules]]</th>
             <th>[[PendingAsyncDependencies]]</th>
@@ -956,6 +971,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_A_</th>
             <td>0</td>
             <td>0</td>
+            <th>~async-evaluating~</th>
             <td>*true*</td>
             <td>&laquo; &raquo;</td>
             <td>1 (_B_)</td>
@@ -964,7 +980,8 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_C_</th>
             <td>2</td>
             <td>0</td>
-            <td>*false*</td>
+            <th>~evaluated~</th>
+            <td>*true*</td>
             <td>&laquo; _A_ &raquo;</td>
             <td>0</td>
           </tr>
@@ -975,7 +992,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
     <p><ins>
       Then, _B_ finishes executing.
       When that happens, AsyncModuleExecutionFulfilled is called again and _B_.[[State]] is set to ~evaluated~.
-      _A_.[[PendingAsyncDependencies]] is decremented to become 0, so ExecuteAsyncModule is called and its execution is triggered.
+      _A_.[[PendingAsyncDependencies]] is decremented to become 0, so ExecuteAsyncModule is called and _A_'s execution is triggered.
       The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-5"></emu-xref>.
     </ins></p>
 
@@ -986,6 +1003,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>Module</th>
             <th>[[DFSIndex]]</th>
             <th>[[DFSAncestorIndex]]</th>
+            <th>[[Status]]</th>
             <th>[[QueuedEvaluation]]</th>
             <th>[[AsyncParentModules]]</th>
             <th>[[PendingAsyncDependencies]]</th>
@@ -996,6 +1014,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_A_</th>
             <td>0</td>
             <td>0</td>
+            <td>~async-evaluating~</td>
             <td>*true*</td>
             <td>&laquo; &raquo;</td>
             <td>0</td>
@@ -1004,7 +1023,8 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_B_</th>
             <td>1</td>
             <td>0</td>
-            <td>*false*</td>
+            <td>~evaluated~</td>
+            <td>*true*</td>
             <td>&laquo; _A_ &raquo;</td>
             <td>0</td>
           </tr>
@@ -1026,6 +1046,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>Module</th>
             <th>[[DFSIndex]]</th>
             <th>[[DFSAncestorIndex]]</th>
+            <th>[[Status]]</th>
             <th>[[QueuedEvaluation]]</th>
             <th>[[AsyncParentModules]]</th>
             <th>[[PendingAsyncDependencies]]</th>
@@ -1036,7 +1057,8 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_A_</th>
             <td>0</td>
             <td>0</td>
-            <td>*false*</td>
+            <td>~evaluated~</td>
+            <td>*true*</td>
             <td>&laquo; &raquo;</td>
             <td>0</td>
           </tr>
@@ -1045,7 +1067,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
     </emu-table>
 
     <p><ins>
-      Alternatively, consider a failure case where _C_ fails execution and returns an error before _B_ has finished executing. When that happens, AsyncModuleExecutionRejected is called and _C_.[[AsyncEvaluating]] is set to *false*. We then set the evaluation error of the module to the error returned by executing _C_. We then propagate this error to all of the AsyncParentModules by performing AsyncModuleExeutionRejected on each of them. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-7"></emu-xref>.
+      Alternatively, consider a failure case where _C_ fails execution and returns an error before _B_ has finished executing. When that happens, AsyncModuleExecutionRejected is called and _C_.[[Status]] is set to ~evaluated~. We then set the evaluation error of the module to the error returned by executing _C_. We then propagate this error to all of the AsyncParentModules by performing AsyncModuleExeutionRejected on each of them. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-7"></emu-xref>.
     </ins></p>
 
     <emu-table id="table-module-graph-cycle-async-fields-7" caption="Module fields after module _C_ finishes with an error">
@@ -1055,7 +1077,8 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>Module</th>
             <th>[[DFSIndex]]</th>
             <th>[[DFSAncestorIndex]]</th>
-            <th>[[AsyncEvaluating]]</th>
+            <th>[[Status]]</th>
+            <th>[[QueuedEvaluation]]</th>
             <th>[[AsyncParentModules]]</th>
             <th>[[PendingAsyncDependencies]]</th>
             <th>[[EvaluationError]]</th>
@@ -1066,6 +1089,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_A_</th>
             <td>0</td>
             <td>0</td>
+            <td>~evaluated~</td>
             <td>*true*</td>
             <td>&laquo; &raquo;</td>
             <td>1 (_B_)</td>
@@ -1075,7 +1099,8 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_C_</th>
             <td>2</td>
             <td>1</td>
-            <td>*false*</td>
+            <td>~evaluated~</td>
+            <td>*true*</td>
             <td>&laquo; _A_ &raquo;</td>
             <td>_C_'s evaluation error</td>
           </tr>
@@ -1094,7 +1119,8 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>Module</th>
             <th>[[DFSIndex]]</th>
             <th>[[DFSAncestorIndex]]</th>
-            <th>[[AsyncEvaluating]]</th>
+            <th>[[Status]]</th>
+            <th>[[QueuedEvaluation]]</th>
             <th>[[AsyncParentModules]]</th>
             <th>[[PendingAsyncDependencies]]</th>
             <th>[[EvaluationError]]</th>
@@ -1105,7 +1131,8 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_A_</th>
             <td>0</td>
             <td>0</td>
-            <td>*false*</td>
+            <td>~evaluated~</td>
+            <td>*true*</td>
             <td>&laquo; &raquo;</td>
             <td>0</td>
             <td>_C_'s Evaluation Error</td>
@@ -1115,7 +1142,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
     </emu-table>
 
     <p><ins>
-      Then, _B_ finishes executing without an error. When that happens, AsyncModuleExecutionFulfilled is called again and _B_.[[AsyncEvaluating]] is set to *false*.  GatherAsyncParentCompletions is called on _B_. However, _A_.[[CycleRoot]] is _A_ which has an evaluation error, so it will not be added to the returned _sortedExecList_ and AsyncModuleExecutionFulfilled will return without further processing. Any future importer of _B_ will resolve the rejection of _B_.[[CycleRoot]].[[EvaluationError]] from the evaluation error from _C_ that was set on the cycle root _A_. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-9"></emu-xref>.
+      Then, _B_ finishes executing without an error. When that happens, AsyncModuleExecutionFulfilled is called again and _B_.[[Status]] is set to ~evaluated~.  GatherAsyncParentCompletions is called on _B_. However, _A_.[[CycleRoot]] is _A_ which has an evaluation error, so it will not be added to the returned _sortedExecList_ and AsyncModuleExecutionFulfilled will return without further processing. Any future importer of _B_ will resolve the rejection of _B_.[[CycleRoot]].[[EvaluationError]] from the evaluation error from _C_ that was set on the cycle root _A_. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-9"></emu-xref>.
     </ins></p>
 
     <emu-table id="table-module-graph-cycle-async-fields-5" caption="Module fields after module _B_ finishes executing in an erroring graph">
@@ -1125,7 +1152,8 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>Module</th>
             <th>[[DFSIndex]]</th>
             <th>[[DFSAncestorIndex]]</th>
-            <th>[[AsyncEvaluating]]</th>
+            <th>[[Status]]</th>
+            <th>[[QueuedEvaluation]]</th>
             <th>[[AsyncParentModules]]</th>
             <th>[[PendingAsyncDependencies]]</th>
             <th>[[EvaluationError]]</th>
@@ -1136,7 +1164,8 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_A_</th>
             <td>0</td>
             <td>0</td>
-            <td>*false*</td>
+            <td>~evaluated~</td>
+            <td>*true*</td>
             <td>&laquo; &raquo;</td>
             <td>0</td>
             <td>_C_'s Evaluation Error</td>
@@ -1145,7 +1174,8 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <th>_B_</th>
             <td>1</td>
             <td>0</td>
-            <td>*false*</td>
+            <td>~evaluated~</td>
+            <td>*true*</td>
             <td>&laquo; _A_ &raquo;</td>
             <td>0</td>
             <td>~empty~</td>
