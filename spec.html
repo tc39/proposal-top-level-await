@@ -772,10 +772,10 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <p><ins>
       Calling _A_.Evaluate() triggers InnerModuleEvaluation on _A_, _B_, and _D_, which all transition to ~evaluating~.
       Then InnerModuleEvaluation is called on _A_ again, which is a no-op because it is already ~evaluating~.
-      At this point, _D_.[[PendingAsyncDependencies]] is 0, so ExecuteAsyncModule(_D_) is called, which sets _D_.[[AsyncEvaluating]] to *true* and executes _D_ (up until the first `await`).
+      At this point, _D_.[[PendingAsyncDependencies]] is 0, so ExecuteAsyncModule(_D_) is called, which sets _D_.[[AsyncEvaluating]] to *true* and triggers the execution promise for _D_.
       We unwind back to the original InnerModuleEvaluation on _A_, setting _B_.[[AsyncEvaluating]] to *true*.
       In the next iteration of the loop over _A_'s dependencies, we call InnerModuleEvaluation on _C_ and thus on _D_ (again a no-op) and _E_.
-      As _E_ has no dependencies, ExecuteAsyncModule(_E_) is called, which sets _E_.[[AsyncEvaluating]] to *true* and starts executing.
+      As _E_ has no dependencies, ExecuteAsyncModule(_E_) is called, which sets _E_.[[AsyncEvaluating]] to *true* and triggers its execution promise.
       Because _E_ is not part of a cycle, it is immediately removed from the stack and transitions to ~evaluated~.
       We unwind once more to the original InnerModuleEvaluation on _A_, setting _C_.[[AsyncEvaluating]] to *true*.
       Now we finish the loop over _A_'s dependencies, set _A_.[[AsyncEvaluating]] to *true*, and remove the entire strongly connected component from the stack, transitioning all of the modules to ~evaluated~ at once.
@@ -881,8 +881,8 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <p><ins>
       _D_ is next to finish (as it was the only module that was still executing).
       When that happens, AsyncModuleExecutionFulfilled is called again and _D_.[[AsyncEvaluating]] is set to *false*.
-      Then _B_.[[PendingAsyncDependencies]] is decremented to become 0, ExecuteAsyncModule is called on _B_, and it starts executing.
-      Once the synchronous part of _B_'s execution has finished, _C_.[[PendingAsyncDependencies]] is also decremented to become 0, and _C_ starts executing.
+      Then _B_.[[PendingAsyncDependencies]] is decremented to become 0, ExecuteAsyncModule is called on _B_, and its execution is triggered.
+      Once the synchronous part of _B_'s execution has finished, _C_.[[PendingAsyncDependencies]] is also decremented to become 0, and _C_'s execution is triggered.
       The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-3"></emu-xref>.
     </ins></p>
 
@@ -969,7 +969,7 @@ contributors: Myles Borins, Guy Bedford, Daniel Ehrenberg
     <p><ins>
       Then, _B_ finishes executing.
       When that happens, AsyncModuleExecutionFulfilled is called again and _B_.[[AsyncEvaluating]] is set to *false*.
-      _A_.[[PendingAsyncDependencies]] is decremented to become 0, so ExecuteAsyncModule is called and it starts executing.
+      _A_.[[PendingAsyncDependencies]] is decremented to become 0, so ExecuteAsyncModule is called and its execution is triggered.
       The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-5"></emu-xref>.
     </ins></p>
 
