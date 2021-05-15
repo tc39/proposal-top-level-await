@@ -356,7 +356,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <ins>[[Async]]</ins>
           </td>
           <td>
-            <ins>*true* or *false*</ins>
+            <ins>Boolean</ins>
           </td>
           <td>
             <ins>Whether this module is individually asynchronous (for example, if it's a Source Text Module Record containing a top-level await). Having an asynchronous dependency does not make the module asynchronous. This field must not change after the module is parsed.</ins>
@@ -367,10 +367,11 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             <ins>[[QueuedEvaluation]]</ins>
           </td>
           <td>
-            <ins>*true* | *false* | ~empty~</ins>
+            <ins>Boolean</ins>
           </td>
           <td>
             <ins>Whether this module is either itself async or has an asynchronous dependency.</ins>
+            <ins>Note: This order in which this field is set also acts as counter for ordering queued executions, see <emu-xref href="#sec-async-module-execution-fulfilled"></emu-xref>.</ins>
           </td>
         </tr>
         <tr>
@@ -591,13 +592,11 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
               1. <ins>Append _module_ to _requiredModule_.[[AsyncParentModules]].</ins>
         1. <del>Perform ? _module_.ExecuteModule().</del>
         1. <ins>If _module_.[[PendingAsyncDependencies]] &gt; 0 or _module_.[[Async]] is *true*, then</ins>
-          1. <ins>Assert: _module_.[[QueuedEvaluation]] is ~empty~.</ins>
+          1. <ins>Assert: _module_.[[QueuedEvaluation]] is *false*.</ins>
           1. <ins>Set _module_.[[QueuedEvaluation]] to *true*.</ins>
           1. NOTE: The order in which [[QueuedEvaluation]] transitions to *true* is significant. (See <emu-xref href="#sec-async-module-execution-fulfilled"></emu-xref>)
           1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, perform ! ExecuteAsyncModule(_module_).</ins>
-        1. <ins>Otherwise,</ins>
-          1. <ins>Set _module_.[[QueuedEvaluation]] to *false*.</ins>
-          1. <ins>Perform ? _module_.ExecuteModule().</ins>
+        1. <ins>Otherwise, perform ? _module_.ExecuteModule().</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
         1. If _module_.[[DFSAncestorIndex]] equals _module_.[[DFSIndex]], then
@@ -607,7 +606,6 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             1. Let _requiredModule_ be the last element in _stack_.
             1. Remove the last element of _stack_.
             1. Assert: _requiredModule_ is a Cyclic Module Record.
-            1. <ins>Assert: _requiredModule_.[[QueuedEvaluation]] is not ~empty~.</ins>
             1. <ins>If _requiredModule_.[[QueuedEvaluation]] is *false*, set _requiredModule_.[[Status]] to ~evaluated~.</ins>
             1. <ins>Otherwise, set _requiredModule_.[[Status]] to ~async-evaluating~.</ins>
             1. If _requiredModule_ and _module_ are the same Module Record, set _done_ to *true*.
