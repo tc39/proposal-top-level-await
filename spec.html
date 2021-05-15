@@ -371,7 +371,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
           </td>
           <td>
             <ins>Whether this module is either itself async or has an asynchronous dependency.</ins>
-            <ins>Note: This order in which this field is set also acts as counter for ordering queued executions, see <emu-xref href="#sec-async-module-execution-fulfilled"></emu-xref>.</ins>
+            <ins>Note: The order in which this field is set is used to order queued executions, see <emu-xref href="#sec-async-module-execution-fulfilled"></emu-xref>.</ins>
           </td>
         </tr>
         <tr>
@@ -479,12 +479,11 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
       <h1>InnerModuleLinking ( _module_, _stack_, _index_ )</h1>
       <p>The abstract operation InnerModuleLinking takes arguments _module_ (a Cyclic Module Record), _stack_, and _index_. It is used by Link to perform the actual linking process for _module_, as well as recursively on all other modules in the dependency graph. The _stack_ and _index_ parameters, as well as a module's [[DFSIndex]] and [[DFSAncestorIndex]] fields, keep track of the depth-first search (DFS) traversal. In particular, [[DFSAncestorIndex]] is used to discover strongly connected components (SCCs), such that all modules in an SCC transition to ~linked~ together. It performs the following steps when called:</p>
 
-
       <emu-alg>
         1. If _module_ is not a Cyclic Module Record, then
           1. Perform ? _module_.Link().
           1. Return _index_.
-        1. If _module_.[[Status]] is ~linking~, ~linked~, or ~evaluated~, then
+        1. If _module_.[[Status]] is ~linking~, ~linked~<ins>, ~evaluating-async~</ins> or ~evaluated~, then
           1. Return _index_.
         1. Assert: _module_.[[Status]] is ~unlinked~.
         1. Set _module_.[[Status]] to ~linking~.
@@ -496,7 +495,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
           1. Let _requiredModule_ be ? HostResolveImportedModule(_module_, _required_).
           1. Set _index_ to ? InnerModuleLinking(_requiredModule_, _stack_, _index_).
           1. If _requiredModule_ is a Cyclic Module Record, then
-            1. Assert: _requiredModule_.[[Status]] is either ~linking~, ~linked~, or ~evaluated~.
+            1. Assert: _requiredModule_.[[Status]] is either ~linking~, ~linked~<ins>, ~evaluating-async~</ins> or ~evaluated~.
             1. Assert: _requiredModule_.[[Status]] is ~linking~ if and only if _requiredModule_ is in _stack_.
             1. If _requiredModule_.[[Status]] is ~linking~, then
               1. Set _module_.[[DFSAncestorIndex]] to min(_module_.[[DFSAncestorIndex]], _requiredModule_.[[DFSAncestorIndex]]).
@@ -594,13 +593,12 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
         1. <ins>If _module_.[[PendingAsyncDependencies]] &gt; 0 or _module_.[[Async]] is *true*, then</ins>
           1. <ins>Assert: _module_.[[QueuedEvaluation]] is *false*.</ins>
           1. <ins>Set _module_.[[QueuedEvaluation]] to *true*.</ins>
-          1. NOTE: The order in which [[QueuedEvaluation]] transitions to *true* is significant. (See <emu-xref href="#sec-async-module-execution-fulfilled"></emu-xref>)
+          1. <ins>NOTE: The order in which [[QueuedEvaluation]] transitions to *true* is significant. (See <emu-xref href="#sec-async-module-execution-fulfilled"></emu-xref>)</ins>
           1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, perform ! ExecuteAsyncModule(_module_).</ins>
         1. <ins>Otherwise, perform ? _module_.ExecuteModule().</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
         1. Assert: _module_.[[DFSAncestorIndex]] is less than or equal to _module_.[[DFSIndex]].
         1. If _module_.[[DFSAncestorIndex]] equals _module_.[[DFSIndex]], then
-          1. <ins>Let _cycleRoot_ be _module_.</ins>
           1. Let _done_ be *false*.
           1. Repeat, while _done_ is *false*,
             1. Let _requiredModule_ be the last element in _stack_.
@@ -609,7 +607,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
             1. <ins>If _requiredModule_.[[QueuedEvaluation]] is *false*, set _requiredModule_.[[Status]] to ~evaluated~.</ins>
             1. <ins>Otherwise, set _requiredModule_.[[Status]] to ~evaluating-async~.</ins>
             1. If _requiredModule_ and _module_ are the same Module Record, set _done_ to *true*.
-            1. <ins>Set _requiredModule_.[[CycleRoot]] to _cycleRoot_.</ins>
+            1. <ins>Set _requiredModule_.[[CycleRoot]] to _module_.</ins>
         1. Return _index_.
       </emu-alg>
       <emu-note>
@@ -623,7 +621,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
     <emu-clause id="sec-execute-async-module" aoid="ExecuteAsyncModule">
       <h1><ins>ExecuteAsyncModule ( _module_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is ~evaluating-async~.
+        1. Assert: _module_.[[Status]] is ~evaluating~ or ~evaluating-async~.
         1. Assert: _module_.[[Async]] is *true*.
         1. Let _capability_ be ! NewPromiseCapability(%Promise%).
         1. Let _stepsFulfilled_ be the steps of a CallAsyncModuleFulfilled function as specified below.
@@ -657,16 +655,16 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
     <emu-clause id="sec-gather-async-parent-completions" aoid="GatherAsyncParentCompletions">
       <h1><ins>GatherAsyncParentCompletions ( _module_, _execList_ )</ins></h1>
       <emu-alg>
-        1. Assert: _module_.[[Status]] is ~evaluating-async~.
         1. For each Module _m_ of _module_.[[AsyncParentModules]], do
           1. If _execList_ does not contain _m_ and _m_.[[CycleRoot]].[[EvaluationError]] is ~empty~, then
-            1. Assert: _m_.[[EvaluationError]] is ~empty~.
             1. Assert: _m_.[[Status]] is ~evaluating-async~.
+            1. Assert: _m_.[[EvaluationError]] is ~empty~.
+            1. Assert: _m_.[[QueuedEvaluation]] is *true*.
             1. Assert: _m_.[[PendingAsyncDependencies]] > 0.
             1. Set _m_.[[PendingAsyncDependencies]] to _m_.[[PendingAsyncDependencies]] - 1.
             1. If _m_.[[PendingAsyncDependencies]] is equal to 0, then
-                1. Append _m_ to _execList_.
-                1. If _m_.[[Async]] is *false*, perform ! GatherAsyncParentCompletions(_m_, _execList_).
+              1. Append _m_ to _execList_.
+              1. If _m_.[[Async]] is *false*, perform ! GatherAsyncParentCompletions(_m_, _execList_).
         1. Return *undefined*.
       </emu-alg>
       <emu-note>
@@ -1107,7 +1105,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
     </emu-table>
 
     <p><ins>
-      _A_ will be rejected with the same error as _C_ since _C_ will call AsyncModuleExecutionRejected on _A_ with _C_'s error. _A_.[[AsyncEvaluating]] is set to *false*.  At this point the Promise in _A_.[[TopLevelCapability]] (which was returned from _A_.Evaluate()) is rejected. The fields of the updated module are as given in <emu-xref href="#table-module-graph-cycle-async-fields-8"></emu-xref>.
+      _A_ will be rejected with the same error as _C_ since _C_ will call AsyncModuleExecutionRejected on _A_ with _C_'s error. _A_.[[Status]] is set to ~evaluated~.  At this point the Promise in _A_.[[TopLevelCapability]] (which was returned from _A_.Evaluate()) is rejected. The fields of the updated module are as given in <emu-xref href="#table-module-graph-cycle-async-fields-8"></emu-xref>.
     </ins></p>
 
     <emu-table id="table-module-graph-cycle-async-fields-8" caption="Module fields after module _A_ is rejected">
@@ -1217,7 +1215,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
         1. Else,
           1. Append _ee_ to _indirectExportEntries_.
       1. <ins>Let _async_ be _body_ Contains `await`.</ins>
-      1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: ~empty~, [[Namespace]]: ~empty~, <ins>[[CycleRoot]]: ~empty~, [[Async]]: _async_, [[QueuedEvaluation]]: ~empty~, [[TopLevelCapability]]: ~empty~, [[AsyncParentModules]]: &laquo; &raquo;, [[PendingAsyncDependencies]]: ~empty~, </ins>[[Status]]: ~unlinked~, [[EvaluationError]]: ~empty~, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[Context]]: ~empty~, [[ImportMeta]]: ~empty~, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: ~empty~, [[DFSAncestorIndex]]: ~empty~ }.
+      1. Return Source Text Module Record { [[Realm]]: _realm_, [[Environment]]: ~empty~, [[Namespace]]: ~empty~, <ins>[[CycleRoot]]: ~empty~, [[Async]]: _async_, [[QueuedEvaluation]]: *false*, [[TopLevelCapability]]: ~empty~, [[AsyncParentModules]]: &laquo; &raquo;, [[PendingAsyncDependencies]]: ~empty~, </ins>[[Status]]: ~unlinked~, [[EvaluationError]]: ~empty~, [[HostDefined]]: _hostDefined_, [[ECMAScriptCode]]: _body_, [[Context]]: ~empty~, [[ImportMeta]]: ~empty~, [[RequestedModules]]: _requestedModules_, [[ImportEntries]]: _importEntries_, [[LocalExportEntries]]: _localExportEntries_, [[IndirectExportEntries]]: _indirectExportEntries_, [[StarExportEntries]]: _starExportEntries_, [[DFSIndex]]: ~empty~, [[DFSAncestorIndex]]: ~empty~ }.
     </emu-alg>
     <emu-note>
       <p>An implementation may parse module source text and analyse it for Early Error conditions prior to the evaluation of ParseModule for that module source text. However, the reporting of any errors must be deferred until the point where this specification actually performs ParseModule upon that source text.</p>
