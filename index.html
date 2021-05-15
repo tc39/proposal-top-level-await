@@ -501,10 +501,10 @@
     <p><ins>
       Calling <var>A</var>.Evaluate() triggers <emu-xref aoid="InnerModuleEvaluation" id="_ref_126"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref> on <var>A</var>, <var>B</var>, and <var>D</var>, which all transition to <emu-const>evaluating</emu-const>.
       Then <emu-xref aoid="InnerModuleEvaluation" id="_ref_127"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref> is called on <var>A</var> again, which is a no-op because it is already <emu-const>evaluating</emu-const>.
-      At this point, <var>D</var>.[[PendingAsyncDependencies]] is 0, so <emu-xref aoid="ExecuteAsyncModule" id="_ref_128"><a href="#sec-execute-async-module">ExecuteAsyncModule</a></emu-xref>(<var>D</var>) is called, which sets <var>D</var>.[[AsyncEvaluating]] to <emu-val>true</emu-val> and executes <var>D</var> (up until the first <code>await</code>).
+      At this point, <var>D</var>.[[PendingAsyncDependencies]] is 0, so <emu-xref aoid="ExecuteAsyncModule" id="_ref_128"><a href="#sec-execute-async-module">ExecuteAsyncModule</a></emu-xref>(<var>D</var>) is called, which sets <var>D</var>.[[AsyncEvaluating]] to <emu-val>true</emu-val> and triggers the execution promise for <var>D</var>.
       We unwind back to the original <emu-xref aoid="InnerModuleEvaluation" id="_ref_129"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref> on <var>A</var>, setting <var>B</var>.[[AsyncEvaluating]] to <emu-val>true</emu-val>.
       In the next iteration of the loop over <var>A</var>'s dependencies, we call <emu-xref aoid="InnerModuleEvaluation" id="_ref_130"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref> on <var>C</var> and thus on <var>D</var> (again a no-op) and <var>E</var>.
-      As <var>E</var> has no dependencies, <emu-xref aoid="ExecuteAsyncModule" id="_ref_131"><a href="#sec-execute-async-module">ExecuteAsyncModule</a></emu-xref>(<var>E</var>) is called, which sets <var>E</var>.[[AsyncEvaluating]] to <emu-val>true</emu-val> and starts executing.
+      As <var>E</var> has no dependencies, <emu-xref aoid="ExecuteAsyncModule" id="_ref_131"><a href="#sec-execute-async-module">ExecuteAsyncModule</a></emu-xref>(<var>E</var>) is called, which sets <var>E</var>.[[AsyncEvaluating]] to <emu-val>true</emu-val> and triggers its execution promise.
       Because <var>E</var> is not part of a cycle, it is immediately removed from the stack and transitions to <emu-const>evaluated</emu-const>.
       We unwind once more to the original <emu-xref aoid="InnerModuleEvaluation" id="_ref_132"><a href="#sec-innermoduleevaluation">InnerModuleEvaluation</a></emu-xref> on <var>A</var>, setting <var>C</var>.[[AsyncEvaluating]] to <emu-val>true</emu-val>.
       Now we finish the loop over <var>A</var>'s dependencies, set <var>A</var>.[[AsyncEvaluating]] to <emu-val>true</emu-val>, and remove the entire strongly connected component from the stack, transitioning all of the modules to <emu-const>evaluated</emu-const> at once.
@@ -610,8 +610,8 @@
     <p><ins>
       <var>D</var> is next to finish (as it was the only module that was still executing).
       When that happens, <emu-xref aoid="AsyncModuleExecutionFulfilled" id="_ref_134"><a href="#sec-async-module-execution-fulfilled">AsyncModuleExecutionFulfilled</a></emu-xref> is called again and <var>D</var>.[[AsyncEvaluating]] is set to <emu-val>false</emu-val>.
-      Then <var>B</var>.[[PendingAsyncDependencies]] is decremented to become 0, <emu-xref aoid="ExecuteAsyncModule" id="_ref_135"><a href="#sec-execute-async-module">ExecuteAsyncModule</a></emu-xref> is called on <var>B</var>, and it starts executing.
-      Once the synchronous part of <var>B</var>'s execution has finished, <var>C</var>.[[PendingAsyncDependencies]] is also decremented to become 0, and <var>C</var> starts executing.
+      Then <var>B</var>.[[PendingAsyncDependencies]] is decremented to become 0, <emu-xref aoid="ExecuteAsyncModule" id="_ref_135"><a href="#sec-execute-async-module">ExecuteAsyncModule</a></emu-xref> is called on <var>B</var>, and its execution is triggered.
+      Once the synchronous part of <var>B</var>'s execution has finished, <var>C</var>.[[PendingAsyncDependencies]] is also decremented to become 0, and <var>C</var>'s execution is triggered.
       The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-3" id="_ref_7"><a href="#table-module-graph-cycle-async-fields-3">Table 7</a></emu-xref>.
     </ins></p>
 
@@ -698,7 +698,7 @@
     <p><ins>
       Then, <var>B</var> finishes executing.
       When that happens, <emu-xref aoid="AsyncModuleExecutionFulfilled" id="_ref_137"><a href="#sec-async-module-execution-fulfilled">AsyncModuleExecutionFulfilled</a></emu-xref> is called again and <var>B</var>.[[AsyncEvaluating]] is set to <emu-val>false</emu-val>.
-      <var>A</var>.[[PendingAsyncDependencies]] is decremented to become 0, so <emu-xref aoid="ExecuteAsyncModule" id="_ref_138"><a href="#sec-execute-async-module">ExecuteAsyncModule</a></emu-xref> is called and it starts executing.
+      <var>A</var>.[[PendingAsyncDependencies]] is decremented to become 0, so <emu-xref aoid="ExecuteAsyncModule" id="_ref_138"><a href="#sec-execute-async-module">ExecuteAsyncModule</a></emu-xref> is called and its execution is triggered.
       The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-5" id="_ref_9"><a href="#table-module-graph-cycle-async-fields-5">Table 13</a></emu-xref>.
     </ins></p>
 
