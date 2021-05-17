@@ -772,7 +772,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
     <p><ins>Linking happens as before, and all modules end up with [[Status]] set to ~linked~.</ins></p>
 
     <p><ins>
-      Calling _A_.Evaluate() triggers InnerModuleEvaluation on _A_, _B_, and _D_.  which all transition to ~evaluating~.
+      Calling _A_.Evaluate() triggers InnerModuleEvaluation on _A_, _B_, and _D_, which all transition to ~evaluating~.
       Then InnerModuleEvaluation is called on _A_ again, which is a no-op because it is already ~evaluating~.
       At this point, _D_.[[PendingAsyncDependencies]] is 0, so ExecuteAsyncModule(_D_) is called and triggers the execution promise for _D_.
       We unwind back to the InnerModuleEvaluation on _B_, setting _B_.[[PendingAsyncDependencies]] to 1 and _B_.[[QueuedEvaluation]] to *true*.
