@@ -371,7 +371,6 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
           </td>
           <td>
             <ins>Whether this module is either itself async or has an asynchronous dependency.</ins>
-            <ins>Note: The order in which this field is set is used to order queued executions, see <emu-xref href="#sec-async-module-execution-fulfilled"></emu-xref>.</ins>
           </td>
         </tr>
         <tr>
@@ -593,7 +592,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
         1. <ins>If _module_.[[PendingAsyncDependencies]] &gt; 0 or _module_.[[Async]] is *true*, then</ins>
           1. <ins>Assert: _module_.[[AsyncEvaluation]] is *false*.</ins>
           1. <ins>Set _module_.[[AsyncEvaluation]] to *true*.</ins>
-          1. <ins>NOTE: The order in which [[AsyncEvaluation]] transitions to *true* is significant. (See <emu-xref href="#sec-async-module-execution-fulfilled"></emu-xref>)</ins>
+          1. <ins>NOTE: The order in which [[AsyncEvaluation]] transitions to *true* is corresponds to the DFS ordering used in <emu-xref href="#sec-async-module-execution-fulfilled"></emu-xref></ins>
           1. <ins>If _module_.[[PendingAsyncDependencies]] is 0, perform ! ExecuteAsyncModule(_module_).</ins>
         1. <ins>Otherwise, perform ? _module_.ExecuteModule().</ins>
         1. Assert: _module_ occurs exactly once in _stack_.
@@ -687,7 +686,7 @@ contributors: Myles Borins, Yulia Startsev, Daniel Ehrenberg, Guy Bedford, Ms2ge
           1. Perform ! Call(_module_.[[TopLevelCapability]].[[Resolve]], *undefined*, &laquo;*undefined*&raquo;).
         1. Let _execList_ be a new empty List.
         1. Perform ! GatherAsyncParentCompletions(_module_, _execList_).
-        1. Let _sortedExecList_ be a List of elements that are the elements of _execList_, in the order in which they had their [[AsyncEvaluation]] fields set to *true* in InnerModuleEvaluation.
+        1. Let _sortedExecList_ be a List of elements that are the elements of _execList_, sorted in the original DFS ordering in which they had their execution first initiated by InnerModuleEvaluation.
         1. Assert: All elements of _sortedExecList_ have their [[AsyncEvaluation]] field set to *true*, [[PendingAsyncDependencies]] field set to 0 and [[EvaluationError]] field set to *undefined*.
         1. For each Module _m_ of _sortedExecList_, do
           1. If _m_.[[Status]] is ~evaluated~, then
